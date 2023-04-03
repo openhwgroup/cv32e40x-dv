@@ -16,7 +16,7 @@
 // under the License.
 //
 
-class cv32e40s_pma_cfg extends uvm_object;
+class cv32e40x_pma_cfg extends uvm_object;
   pma_cfg_t regions[$];
 
   constraint attr_comb_c {
@@ -28,9 +28,9 @@ class cv32e40s_pma_cfg extends uvm_object;
   // This variable refers to generated number of regions, not CORE_PARAM_PMA_NUM_REGIONS
   int pma_num_regions               = 0;
 
-  `uvm_object_utils(cv32e40s_pma_cfg)
+  `uvm_object_utils(cv32e40x_pma_cfg)
 
-  function new(string name="cv32e40s_pma_cfg");
+  function new(string name="cv32e40x_pma_cfg");
     pma_adapted_memory_regions_c pma_memory;
     super.new(name);
     pma_memory = new(CORE_PARAM_PMA_CFG);
@@ -39,4 +39,4 @@ class cv32e40s_pma_cfg extends uvm_object;
       pma_num_regions = pma_num_regions + 1;
     end
   endfunction : new
-endclass : cv32e40s_pma_cfg
+endclass : cv32e40x_pma_cfg

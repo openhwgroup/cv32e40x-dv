@@ -16,48 +16,48 @@
 // limitations under the License.
 //
 
-`ifndef __UVMA_CV32E40S_CORE_CNTRL_DRV_SV__
-`define __UVMA_CV32E40S_CORE_CNTRL_DRV_SV__
+`ifndef __UVMA_CV32E40X_CORE_CNTRL_DRV_SV__
+`define __UVMA_CV32E40X_CORE_CNTRL_DRV_SV__
 
 /**
- * Component driving bootstrap pins and other misecllaneous I/O for cv32e40s core
+ * Component driving bootstrap pins and other misecllaneous I/O for cv32e40x core
  */
-class uvma_cv32e40s_core_cntrl_drv_c extends uvma_core_cntrl_drv_c;
+class uvma_cv32e40x_core_cntrl_drv_c extends uvma_core_cntrl_drv_c;
 
-   `uvm_component_utils_begin(uvma_cv32e40s_core_cntrl_drv_c)
+   `uvm_component_utils_begin(uvma_cv32e40x_core_cntrl_drv_c)
    `uvm_component_utils_end
 
    /**
     * Default constructor.
     */
-   extern function new(string name="uvma_cv32e40s_core_cntrl_drv", uvm_component parent=null);
+   extern function new(string name="uvma_cv32e40x_core_cntrl_drv", uvm_component parent=null);
 
    extern task drive_bootstrap();
 
-endclass : uvma_cv32e40s_core_cntrl_drv_c
+endclass : uvma_cv32e40x_core_cntrl_drv_c
 
-function uvma_cv32e40s_core_cntrl_drv_c::new(string name="uvma_cv32e40s_core_cntrl_drv", uvm_component parent=null);
+function uvma_cv32e40x_core_cntrl_drv_c::new(string name="uvma_cv32e40x_core_cntrl_drv", uvm_component parent=null);
 
    super.new(name, parent);
 
 endfunction : new
 
-task uvma_cv32e40s_core_cntrl_drv_c::drive_bootstrap();
+task uvma_cv32e40x_core_cntrl_drv_c::drive_bootstrap();
 
-   uvma_cv32e40s_core_cntrl_cntxt_c e40s_cntxt;
+   uvma_cv32e40x_core_cntrl_cntxt_c e40x_cntxt;
 
-   $cast(e40s_cntxt, cntxt);
+   $cast(e40x_cntxt, cntxt);
 
-   e40s_cntxt.core_cntrl_vif.boot_addr         = cfg.boot_addr;
-   e40s_cntxt.core_cntrl_vif.nmi_addr          = cfg.nmi_addr;
-   e40s_cntxt.core_cntrl_vif.mtvec_addr        = cfg.mtvec_addr;
-   e40s_cntxt.core_cntrl_vif.dm_halt_addr      = cfg.dm_halt_addr;
-   e40s_cntxt.core_cntrl_vif.dm_exception_addr = cfg.dm_exception_addr;
-   e40s_cntxt.core_cntrl_vif.mhartid           = cfg.mhartid;
-   e40s_cntxt.core_cntrl_vif.mimpid_patch      = cfg.mimpid_patch;
-   e40s_cntxt.core_cntrl_vif.fetch_en          = 1'b0;
-   e40s_cntxt.core_cntrl_vif.scan_cg_en        = 1'b0;
+   e40x_cntxt.core_cntrl_vif.boot_addr         = cfg.boot_addr;
+   e40x_cntxt.core_cntrl_vif.nmi_addr          = cfg.nmi_addr;
+   e40x_cntxt.core_cntrl_vif.mtvec_addr        = cfg.mtvec_addr;
+   e40x_cntxt.core_cntrl_vif.dm_halt_addr      = cfg.dm_halt_addr;
+   e40x_cntxt.core_cntrl_vif.dm_exception_addr = cfg.dm_exception_addr;
+   e40x_cntxt.core_cntrl_vif.mhartid           = cfg.mhartid;
+   e40x_cntxt.core_cntrl_vif.mimpid_patch      = cfg.mimpid_patch;
+   e40x_cntxt.core_cntrl_vif.fetch_en          = 1'b0;
+   e40x_cntxt.core_cntrl_vif.scan_cg_en        = 1'b0;
 
 endtask : drive_bootstrap
 
-`endif // __UVMA_CV32E40S_CORE_CNTRL_DRV_SV__
+`endif // __UVMA_CV32E40X_CORE_CNTRL_DRV_SV__

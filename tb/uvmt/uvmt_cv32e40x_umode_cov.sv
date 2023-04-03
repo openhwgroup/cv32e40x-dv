@@ -20,7 +20,7 @@
 `default_nettype none
 
 
-module  uvmt_cv32e40s_umode_cov
+module  uvmt_cv32e40x_umode_cov
   import uvma_rvfi_pkg::*;
 #(
   int ILEN = DEFAULT_ILEN,
@@ -438,7 +438,7 @@ module  uvmt_cv32e40s_umode_cov
   cg  cg_inst = new;
 
 
-endmodule : uvmt_cv32e40s_umode_cov
+endmodule : uvmt_cv32e40x_umode_cov
 
 
 `default_nettype wire

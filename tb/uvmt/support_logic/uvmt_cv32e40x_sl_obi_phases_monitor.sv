@@ -1,5 +1,5 @@
 
-module uvmt_cv32e40s_sl_obi_phases_monitor
+module uvmt_cv32e40x_sl_obi_phases_monitor
   import uvm_pkg::*;
   (
     input logic clk_i,
@@ -70,4 +70,4 @@ module uvmt_cv32e40s_sl_obi_phases_monitor
       end
     end
   end
-endmodule : uvmt_cv32e40s_sl_obi_phases_monitor
+endmodule : uvmt_cv32e40x_sl_obi_phases_monitor

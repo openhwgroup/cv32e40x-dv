@@ -15,31 +15,31 @@
 // limitations under the License.
 
 
-`ifndef __UVMA_CV32E40S_CORE_CNTRL_CNTXT_SV__
-`define __UVMA_CV32E40S_CORE_CNTRL_CNTXT_SV__
+`ifndef __UVMA_CV32E40X_CORE_CNTRL_CNTXT_SV__
+`define __UVMA_CV32E40X_CORE_CNTRL_CNTXT_SV__
 
 
 /**
  * Object encapsulating all state variables for all Rvvi agent
  * (uvma_core_cntrl_agent_c) components.
  */
- class uvma_cv32e40s_core_cntrl_cntxt_c extends uvma_core_cntrl_cntxt_c;
+ class uvma_cv32e40x_core_cntrl_cntxt_c extends uvma_core_cntrl_cntxt_c;
 
-   virtual uvme_cv32e40s_core_cntrl_if core_cntrl_vif;
+   virtual uvme_cv32e40x_core_cntrl_if core_cntrl_vif;
 
-   `uvm_object_utils_begin(uvma_cv32e40s_core_cntrl_cntxt_c)
+   `uvm_object_utils_begin(uvma_cv32e40x_core_cntrl_cntxt_c)
    `uvm_object_utils_end
 
    /**
     * Builds events.
     */
-   extern function new(string name="uvma_cv32e40s_core_cntrl_cntxt");
+   extern function new(string name="uvma_cv32e40x_core_cntrl_cntxt");
 
-endclass : uvma_cv32e40s_core_cntrl_cntxt_c
+endclass : uvma_cv32e40x_core_cntrl_cntxt_c
 
 `pragma protect begin
 
-function uvma_cv32e40s_core_cntrl_cntxt_c::new(string name="uvma_cv32e40s_core_cntrl_cntxt");
+function uvma_cv32e40x_core_cntrl_cntxt_c::new(string name="uvma_cv32e40x_core_cntrl_cntxt");
 
    super.new(name);
 
@@ -48,4 +48,4 @@ endfunction : new
 `pragma protect end
 
 
-`endif // __UVMA_CV32E40S_CORE_CNTRL_CNTXT_SV__
+`endif // __UVMA_CV32E40X_CORE_CNTRL_CNTXT_SV__

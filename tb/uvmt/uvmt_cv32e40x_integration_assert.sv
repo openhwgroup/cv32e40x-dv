@@ -19,7 +19,7 @@
 // This module contains assertions relating to the "Core Integration" chapter
 // of the user manual
 
-module uvmt_cv32e40s_integration_assert
+module uvmt_cv32e40x_integration_assert
   import uvm_pkg::*;
 (
   input clk_i,
@@ -39,7 +39,7 @@ module uvmt_cv32e40s_integration_assert
   default clocking @(posedge clk_i); endclocking
   default disable iff !rst_ni;
 
-  string info_tag = "CV32E40S_INTEGRATION_ASSERT";
+  string info_tag = "CV32E40X_INTEGRATION_ASSERT";
 
 
   // Helper Logic
@@ -104,4 +104,4 @@ module uvmt_cv32e40s_integration_assert
   ) else `uvm_error(info_tag, "scan test should be disabled in normal operation");
 
 
-endmodule : uvmt_cv32e40s_integration_assert
+endmodule : uvmt_cv32e40x_integration_assert

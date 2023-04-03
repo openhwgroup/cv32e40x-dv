@@ -16,8 +16,8 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.0
 
 
-`ifndef __UVME_CV32E40S_BUSERR_SB_SV__
-`define __UVME_CV32E40S_BUSERR_SB_SV__
+`ifndef __UVME_CV32E40X_BUSERR_SB_SV__
+`define __UVME_CV32E40X_BUSERR_SB_SV__
 
 
 `uvm_analysis_imp_decl(_obid)  // D-side OBI
@@ -25,7 +25,7 @@
 `uvm_analysis_imp_decl(_rvfi)
 
 
-// Class: uvme_cv32e40s_buserr_sb_c
+// Class: uvme_cv32e40x_buserr_sb_c
 // A scoreboard to check that OBI "err" bus faults arrive at the RVFI.
 // For I-side "err"s, the main mode of checking is to store every err-flagged
 //   OBI transaction in a queue, and then compare the PC addresses of RVFI
@@ -34,13 +34,13 @@
 //   (in, potentially, a series of "err"s) and demand that no more than two
 //   RVFI retires (non-debug/step) happen before we must enter the NMI handler.
 // There are also a couple of other checks to see if all counts are as expected.
-class uvme_cv32e40s_buserr_sb_c extends uvm_scoreboard;
+class uvme_cv32e40x_buserr_sb_c extends uvm_scoreboard;
 
   string info_tag = "BUSERRSB";
 
-  uvm_analysis_imp_obid#(uvma_obi_memory_mon_trn_c, uvme_cv32e40s_buserr_sb_c)  obid;
-  uvm_analysis_imp_obii#(uvma_obi_memory_mon_trn_c, uvme_cv32e40s_buserr_sb_c)  obii;
-  uvm_analysis_imp_rvfi#(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN), uvme_cv32e40s_buserr_sb_c)  rvfi;
+  uvm_analysis_imp_obid#(uvma_obi_memory_mon_trn_c, uvme_cv32e40x_buserr_sb_c)  obid;
+  uvm_analysis_imp_obii#(uvma_obi_memory_mon_trn_c, uvme_cv32e40x_buserr_sb_c)  obii;
+  uvm_analysis_imp_rvfi#(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN), uvme_cv32e40x_buserr_sb_c)  rvfi;
 
   // OBI D-side variables:
   int cnt_obid_trn;      // Count of all obi d-side transactions
@@ -60,9 +60,9 @@ class uvme_cv32e40s_buserr_sb_c extends uvm_scoreboard;
   int                       late_retires;      // Number of non-debug/step/handler retires since "pending_nmi"
   uvma_obi_memory_mon_trn_c obii_err_queue[$]; // All I-side OBI trns last seen with "err"
 
-  `uvm_component_utils(uvme_cv32e40s_buserr_sb_c)
+  `uvm_component_utils(uvme_cv32e40x_buserr_sb_c)
 
-  extern function              new(string name="uvme_cv32e40s_buserr_sb", uvm_component parent=null);
+  extern function              new(string name="uvme_cv32e40x_buserr_sb", uvm_component parent=null);
   extern virtual function void write_obid(uvma_obi_memory_mon_trn_c trn);
   extern virtual function void write_obii(uvma_obi_memory_mon_trn_c trn);
   extern virtual function void write_rvfi(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) trn);
@@ -72,17 +72,17 @@ class uvme_cv32e40s_buserr_sb_c extends uvm_scoreboard;
   extern function void         remove_from_err_queue(uvma_obi_memory_mon_trn_c  trn);
   extern function void         add_to_err_queue(uvma_obi_memory_mon_trn_c  trn);
 
-endclass : uvme_cv32e40s_buserr_sb_c
+endclass : uvme_cv32e40x_buserr_sb_c
 
 
-function uvme_cv32e40s_buserr_sb_c::new(string name="uvme_cv32e40s_buserr_sb", uvm_component parent=null);
+function uvme_cv32e40x_buserr_sb_c::new(string name="uvme_cv32e40x_buserr_sb", uvm_component parent=null);
 
   super.new(name, parent);
 
 endfunction : new
 
 
-function void uvme_cv32e40s_buserr_sb_c::write_obid(uvma_obi_memory_mon_trn_c trn);
+function void uvme_cv32e40x_buserr_sb_c::write_obid(uvma_obi_memory_mon_trn_c trn);
 
   cnt_obid_trn++;
 
@@ -98,7 +98,7 @@ function void uvme_cv32e40s_buserr_sb_c::write_obid(uvma_obi_memory_mon_trn_c tr
 endfunction : write_obid
 
 
-function void uvme_cv32e40s_buserr_sb_c::write_obii(uvma_obi_memory_mon_trn_c trn);
+function void uvme_cv32e40x_buserr_sb_c::write_obii(uvma_obi_memory_mon_trn_c trn);
 
   cnt_obii_trn++;
 
@@ -113,7 +113,7 @@ function void uvme_cv32e40s_buserr_sb_c::write_obii(uvma_obi_memory_mon_trn_c tr
 endfunction : write_obii
 
 
-function void uvme_cv32e40s_buserr_sb_c::write_rvfi(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) trn);
+function void uvme_cv32e40x_buserr_sb_c::write_rvfi(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) trn);
 
   bit [31:0] mcause = trn.csrs["mcause"].rdata;
   bit [31:0] dcsr = trn.csrs["dcsr"].get_csr_retirement_data;
@@ -165,7 +165,7 @@ function void uvme_cv32e40s_buserr_sb_c::write_rvfi(uvma_rvfi_instr_seq_item_c#(
 endfunction : write_rvfi
 
 
-function void uvme_cv32e40s_buserr_sb_c::build_phase(uvm_phase phase);
+function void uvme_cv32e40x_buserr_sb_c::build_phase(uvm_phase phase);
 
   super.build_phase(phase);
 
@@ -176,7 +176,7 @@ function void uvme_cv32e40s_buserr_sb_c::build_phase(uvm_phase phase);
 endfunction : build_phase
 
 
-function void uvme_cv32e40s_buserr_sb_c::check_phase(uvm_phase phase);
+function void uvme_cv32e40x_buserr_sb_c::check_phase(uvm_phase phase);
 
   super.check_phase(phase);
 
@@ -238,7 +238,7 @@ function void uvme_cv32e40s_buserr_sb_c::check_phase(uvm_phase phase);
 endfunction : check_phase
 
 
-function bit uvme_cv32e40s_buserr_sb_c::should_instr_err(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_trn);
+function bit uvme_cv32e40x_buserr_sb_c::should_instr_err(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_trn);
 
   uvma_obi_memory_addr_l_t  err_addrs[$];
   bit [31:0]                rvfi_addr = rvfi_trn.pc_rdata;
@@ -264,7 +264,7 @@ function bit uvme_cv32e40s_buserr_sb_c::should_instr_err(uvma_rvfi_instr_seq_ite
 endfunction : should_instr_err
 
 
-function void uvme_cv32e40s_buserr_sb_c::remove_from_err_queue(uvma_obi_memory_mon_trn_c  trn);
+function void uvme_cv32e40x_buserr_sb_c::remove_from_err_queue(uvma_obi_memory_mon_trn_c  trn);
 
   foreach (obii_err_queue[i]) begin
     if (obii_err_queue[i].address == trn.address) begin
@@ -276,7 +276,7 @@ function void uvme_cv32e40s_buserr_sb_c::remove_from_err_queue(uvma_obi_memory_m
 endfunction : remove_from_err_queue
 
 
-function void uvme_cv32e40s_buserr_sb_c::add_to_err_queue(uvma_obi_memory_mon_trn_c  trn);
+function void uvme_cv32e40x_buserr_sb_c::add_to_err_queue(uvma_obi_memory_mon_trn_c  trn);
 
   remove_from_err_queue(trn);  // (In case of old entry w/ same addr)
   obii_err_queue.push_back(trn);
@@ -284,4 +284,4 @@ function void uvme_cv32e40s_buserr_sb_c::add_to_err_queue(uvma_obi_memory_mon_tr
 endfunction : add_to_err_queue
 
 
-`endif  // __UVME_CV32E40S_BUSERR_SB_SV__
+`endif  // __UVME_CV32E40X_BUSERR_SB_SV__

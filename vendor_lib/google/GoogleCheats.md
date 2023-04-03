@@ -33,5 +33,5 @@ $ python3 ./run.py -si dsim --target rv32imc --steps gen -v --test riscv_jump_st
 Unlike all the other tests, which are produced by a SystemVerilog/UVM program, the CSR test is generated
 by a Python3 script using a YAML file to specify the CSRs.  To run it:
 ```
-$ python3 ./riscv-dv/scripts/gen_csr_test.py --csr_file corev-dv/cv32e40s_csr_template.yaml --out ./corev-dv
+$ python3 ./riscv-dv/scripts/gen_csr_test.py --csr_file corev-dv/cv32e40x_csr_template.yaml --out ./corev-dv
 ```

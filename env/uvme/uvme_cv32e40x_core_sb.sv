@@ -14,21 +14,21 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_CORE_SB_SV__
-`define __UVME_CV32E40S_CORE_SB_SV__
+`ifndef __UVME_CV32E40X_CORE_SB_SV__
+`define __UVME_CV32E40X_CORE_SB_SV__
 
 `uvm_analysis_imp_decl(_core_sb_rvfi_instr)
 `uvm_analysis_imp_decl(_core_sb_rvvi_state)
 
-class uvme_cv32e40s_core_sb_c extends uvm_scoreboard;
+class uvme_cv32e40x_core_sb_c extends uvm_scoreboard;
 
    // Fail-safe to kill the test with fatal error if the reorder queue gets to a certain size
    localparam RVFI_INSTR_REORDER_QUEUE_SIZE_LIMIT = 2;
    localparam RVFI_INSTR_QUEUE_SIZE_LIMIT = 2;
 
    // Objects
-   uvme_cv32e40s_cfg_c    cfg;
-   uvme_cv32e40s_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c    cfg;
+   uvme_cv32e40x_cntxt_c  cntxt;
 
    // State queues
    uvma_rvfi_instr_seq_item_c#(ILEN,XLEN)  rvfi_instr_q[$];
@@ -49,10 +49,10 @@ class uvme_cv32e40s_core_sb_c extends uvm_scoreboard;
    int unsigned csr_checked_cnt;
 
    // Analysis exports
-   uvm_analysis_imp_core_sb_rvfi_instr#(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN), uvme_cv32e40s_core_sb_c) rvfi_instr_export;
-   uvm_analysis_imp_core_sb_rvvi_state#(uvma_rvvi_state_seq_item_c#(ILEN,XLEN), uvme_cv32e40s_core_sb_c) rvvi_state_export;
+   uvm_analysis_imp_core_sb_rvfi_instr#(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN), uvme_cv32e40x_core_sb_c) rvfi_instr_export;
+   uvm_analysis_imp_core_sb_rvvi_state#(uvma_rvvi_state_seq_item_c#(ILEN,XLEN), uvme_cv32e40x_core_sb_c) rvvi_state_export;
 
-   `uvm_component_utils_begin(uvme_cv32e40s_core_sb_c)
+   `uvm_component_utils_begin(uvme_cv32e40x_core_sb_c)
       `uvm_field_object(cfg  , UVM_DEFAULT)
       `uvm_field_object(cntxt, UVM_DEFAULT)
    `uvm_component_utils_end
@@ -60,7 +60,7 @@ class uvme_cv32e40s_core_sb_c extends uvm_scoreboard;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_core_sb", uvm_component parent=null);
+   extern function new(string name="uvme_cv32e40x_core_sb", uvm_component parent=null);
 
    /**
     * Create and configures sub-scoreboards via:
@@ -122,10 +122,10 @@ class uvme_cv32e40s_core_sb_c extends uvm_scoreboard;
 
    extern virtual function void print_instr_checked_stats();
 
-endclass : uvme_cv32e40s_core_sb_c
+endclass : uvme_cv32e40x_core_sb_c
 
 
-function uvme_cv32e40s_core_sb_c::new(string name="uvme_cv32e40s_core_sb", uvm_component parent=null);
+function uvme_cv32e40x_core_sb_c::new(string name="uvme_cv32e40x_core_sb", uvm_component parent=null);
 
    super.new(name, parent);
 
@@ -133,27 +133,27 @@ function uvme_cv32e40s_core_sb_c::new(string name="uvme_cv32e40s_core_sb", uvm_c
    rvvi_state_export = new("rvvi_state_export", this);
 endfunction : new
 
-function void uvme_cv32e40s_core_sb_c::build_phase(uvm_phase phase);
+function void uvme_cv32e40x_core_sb_c::build_phase(uvm_phase phase);
 
    super.build_phase(phase);
 
-   void'(uvm_config_db#(uvme_cv32e40s_cfg_c)::get(this, "", "cfg", cfg));
+   void'(uvm_config_db#(uvme_cv32e40x_cfg_c)::get(this, "", "cfg", cfg));
    if (!cfg) begin
       `uvm_fatal("CFG", "Configuration handle is null")
    end
 
-   void'(uvm_config_db#(uvme_cv32e40s_cntxt_c)::get(this, "", "cntxt", cntxt));
+   void'(uvm_config_db#(uvme_cv32e40x_cntxt_c)::get(this, "", "cntxt", cntxt));
    if (!cntxt) begin
       `uvm_fatal("CNTXT", "Context handle is null")
    end
 
 endfunction : build_phase
 
-task uvme_cv32e40s_core_sb_c::run_phase(uvm_phase phase);
+task uvme_cv32e40x_core_sb_c::run_phase(uvm_phase phase);
 
 endtask : run_phase
 
-function void uvme_cv32e40s_core_sb_c::check_phase(uvm_phase phase);
+function void uvme_cv32e40x_core_sb_c::check_phase(uvm_phase phase);
 
    // RVFI Reorder Instruction queue must be complete at the end of the test
    if (rvfi_instr_reorder_q.size()) begin
@@ -178,15 +178,15 @@ function void uvme_cv32e40s_core_sb_c::check_phase(uvm_phase phase);
 
 endfunction : check_phase
 
-function void uvme_cv32e40s_core_sb_c::report_phase(uvm_phase phase);
+function void uvme_cv32e40x_core_sb_c::report_phase(uvm_phase phase);
    print_instr_checked_stats();
 endfunction : report_phase
 
-function void uvme_cv32e40s_core_sb_c::pre_abort();
+function void uvme_cv32e40x_core_sb_c::pre_abort();
    print_instr_checked_stats();
 endfunction : pre_abort
 
-function void uvme_cv32e40s_core_sb_c::print_instr_checked_stats();
+function void uvme_cv32e40x_core_sb_c::print_instr_checked_stats();
    if ($test$plusargs("USE_ISS")) begin
      if ((pc_checked_cnt > 0) && cfg.scoreboarding_enabled) begin
         `uvm_info("CORESB", $sformatf("checked %0d instruction retirements", pc_checked_cnt), UVM_NONE)
@@ -202,7 +202,7 @@ function void uvme_cv32e40s_core_sb_c::print_instr_checked_stats();
   end
 endfunction : print_instr_checked_stats
 
-function void uvme_cv32e40s_core_sb_c::write_core_sb_rvfi_instr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr);
+function void uvme_cv32e40x_core_sb_c::write_core_sb_rvfi_instr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr);
 
    // Skip if scoreboard disabled
    if (!cfg.scoreboarding_enabled)
@@ -254,7 +254,7 @@ function void uvme_cv32e40s_core_sb_c::write_core_sb_rvfi_instr(uvma_rvfi_instr_
    check_instr_queue();
 endfunction : write_core_sb_rvfi_instr
 
-function void uvme_cv32e40s_core_sb_c::write_core_sb_rvvi_state(uvma_rvvi_state_seq_item_c#(ILEN,XLEN) rvvi_state);
+function void uvme_cv32e40x_core_sb_c::write_core_sb_rvvi_state(uvma_rvvi_state_seq_item_c#(ILEN,XLEN) rvvi_state);
    if (!cfg.scoreboarding_enabled)
       return;
 
@@ -276,7 +276,7 @@ function void uvme_cv32e40s_core_sb_c::write_core_sb_rvvi_state(uvma_rvvi_state_
 
 endfunction : write_core_sb_rvvi_state
 
-function void uvme_cv32e40s_core_sb_c::check_instr_queue();
+function void uvme_cv32e40x_core_sb_c::check_instr_queue();
 
    while (rvvi_state_q.size() && rvfi_instr_q.size()) begin
       uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr = rvfi_instr_q.pop_front();
@@ -295,7 +295,7 @@ function void uvme_cv32e40s_core_sb_c::check_instr_queue();
 
 endfunction : check_instr_queue
 
-function void uvme_cv32e40s_core_sb_c::check_instr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
+function void uvme_cv32e40x_core_sb_c::check_instr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
                                                    uvma_rvvi_state_seq_item_c#(ILEN,XLEN) rvvi_state);
 
    `uvm_info("CORE_SB", $sformatf("Check PC: %0d RVFI.size() = %0d, RVVI.size() = %0d",
@@ -330,7 +330,7 @@ function void uvme_cv32e40s_core_sb_c::check_instr(uvma_rvfi_instr_seq_item_c#(I
 
 endfunction : check_instr
 
-function void uvme_cv32e40s_core_sb_c::check_gpr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
+function void uvme_cv32e40x_core_sb_c::check_gpr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
                                                  uvma_rvvi_state_seq_item_c#(ILEN,XLEN) rvvi_state);
 
 
@@ -357,7 +357,7 @@ function void uvme_cv32e40s_core_sb_c::check_gpr(uvma_rvfi_instr_seq_item_c#(ILE
 
 endfunction : check_gpr
 
-function void uvme_cv32e40s_core_sb_c::check_csr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
+function void uvme_cv32e40x_core_sb_c::check_csr(uvma_rvfi_instr_seq_item_c#(ILEN,XLEN) rvfi_instr,
                                                  uvma_rvvi_state_seq_item_c#(ILEN,XLEN) rvvi_state);
 
    foreach (rvfi_instr.csrs[i]) begin
@@ -396,4 +396,4 @@ function void uvme_cv32e40s_core_sb_c::check_csr(uvma_rvfi_instr_seq_item_c#(ILE
 
 endfunction : check_csr
 
-`endif // __UVME_CV32E40S_CORE_SB_SV_
+`endif // __UVME_CV32E40X_CORE_SB_SV_

@@ -22,9 +22,9 @@
 // Defines
 
 `define RVFI_CSR_BIND(csr_name)                             \
-  bind cv32e40s_wrapper                                     \
+  bind cv32e40x_wrapper                                     \
     uvma_rvfi_csr_if #(                                     \
-      uvme_cv32e40s_pkg::XLEN                               \
+      uvme_cv32e40x_pkg::XLEN                               \
     ) rvfi_csr_``csr_name``_if_0_i (                        \
       .clk(clk_i),                                          \
       .reset_n(rst_ni),                                     \
@@ -42,15 +42,15 @@
 
 // Packages
 
-package uvmt_cv32e40s_pkg;
-  `include "uvmt_cv32e40s_constants.sv"
-  `include "uvmt_cv32e40s_tdefs.sv"
+package uvmt_cv32e40x_pkg;
+  `include "uvmt_cv32e40x_constants.sv"
+  `include "uvmt_cv32e40x_tdefs.sv"
 
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
 endpackage
 
-package uvme_cv32e40s_pkg;
-  `include "uvme_cv32e40s_constants.sv"
+package uvme_cv32e40x_pkg;
+  `include "uvme_cv32e40x_constants.sv"
 endpackage
 
 package uvma_rvfi_pkg;

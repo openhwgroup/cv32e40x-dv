@@ -15,30 +15,30 @@
 // limitations under the License.
 //
 
-`ifndef __UVME_CV32E40S_RANDOM_DEBUG__
-`define __UVME_CV32E40S_RANDOM_DEBUG__
+`ifndef __UVME_CV32E40X_RANDOM_DEBUG__
+`define __UVME_CV32E40X_RANDOM_DEBUG__
 
-class uvme_cv32e40s_random_debug_c extends uvme_cv32e40s_base_vseq_c;
+class uvme_cv32e40x_random_debug_c extends uvme_cv32e40x_base_vseq_c;
 
 
-    `uvm_object_utils_begin(uvme_cv32e40s_random_debug_c)
+    `uvm_object_utils_begin(uvme_cv32e40x_random_debug_c)
     `uvm_object_utils_end
 
-    extern function new(string name="uvme_cv32e40s_random_debug");
+    extern function new(string name="uvme_cv32e40x_random_debug");
 
     extern virtual task body();
     extern virtual task rand_delay();
-endclass : uvme_cv32e40s_random_debug_c
+endclass : uvme_cv32e40x_random_debug_c
 
-function uvme_cv32e40s_random_debug_c::new(string name="uvme_cv32e40s_random_debug");
+function uvme_cv32e40x_random_debug_c::new(string name="uvme_cv32e40x_random_debug");
     super.new(name);
 endfunction : new
 
-task uvme_cv32e40s_random_debug_c::rand_delay();
+task uvme_cv32e40x_random_debug_c::rand_delay();
     #($urandom_range(10000, 1));
 endtask : rand_delay
 
-task uvme_cv32e40s_random_debug_c::body();
+task uvme_cv32e40x_random_debug_c::body();
     fork
         while(1) begin
             uvma_debug_seq_item_c debug_req;
@@ -47,4 +47,4 @@ task uvme_cv32e40s_random_debug_c::body();
         end
     join
 endtask : body
-`endif // __UVME_CV32E40S_RANDOM_DEBUG__
+`endif // __UVME_CV32E40X_RANDOM_DEBUG__

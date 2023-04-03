@@ -19,15 +19,15 @@
 // Copy/Modify version of riscv-dv/tests/riscv_instr_gen_tb_top.sv to add the
 // corev specific tests.
 //-----------------------------------------------------------------------------
-module cv32e40s_instr_gen_tb_top;
+module cv32e40x_instr_gen_tb_top;
 
   import uvm_pkg::*;
   import riscv_instr_test_pkg::*;
   import corev_instr_test_pkg::*;
-  import cv32e40s_instr_test_pkg::*;
+  import cv32e40x_instr_test_pkg::*;
 
   initial begin
     run_test();
   end
 
-endmodule : cv32e40s_instr_gen_tb_top
+endmodule : cv32e40x_instr_gen_tb_top

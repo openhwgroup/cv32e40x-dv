@@ -45,7 +45,7 @@ _____________  |  _____________  |  _____________  |
 */
 
 
-module uvmt_cv32e40s_sl_req_attribute_fifo
+module uvmt_cv32e40x_sl_req_attribute_fifo
   (
     input logic rst_ni,
     input logic clk_i,
@@ -92,5 +92,5 @@ module uvmt_cv32e40s_sl_req_attribute_fifo
     end
   end
 
-endmodule : uvmt_cv32e40s_sl_req_attribute_fifo
+endmodule : uvmt_cv32e40x_sl_req_attribute_fifo
 

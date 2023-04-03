@@ -28,7 +28,7 @@ proc cvfv_rerun {} {
 
   # Analyze & Elaborate
   analyze  -sv12  -f fv.flist
-  elaborate  -top  uvmt_cv32e40s_tb
+  elaborate  -top  uvmt_cv32e40x_tb
 
   # Clock & Reset
   clock  clknrst_if.clk

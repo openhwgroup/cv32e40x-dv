@@ -1,5 +1,5 @@
 name: coremark
-uvm_test: uvmt_cv32e40s_firmware_test_c
+uvm_test: uvmt_cv32e40x_firmware_test_c
 default_cflags: >
     -O3
     -mabi=ilp32

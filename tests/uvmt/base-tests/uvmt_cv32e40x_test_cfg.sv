@@ -14,14 +14,14 @@
 // limitations under the License.
 
 
-`ifndef __UVMT_CV32E40S_TEST_CFG_SV__
-`define __UVMT_CV32E40S_TEST_CFG_SV__
+`ifndef __UVMT_CV32E40X_TEST_CFG_SV__
+`define __UVMT_CV32E40X_TEST_CFG_SV__
 
 
 /**
  * Configuration object for testcases
  */
-class uvmt_cv32e40s_test_cfg_c extends uvm_object;
+class uvmt_cv32e40x_test_cfg_c extends uvm_object;
 
 
    // Knobs for environment control
@@ -56,7 +56,7 @@ class uvmt_cv32e40s_test_cfg_c extends uvm_object;
    bit    run_riscv_gcc_toolchain  = 0;
    bit    print_uvm_runflow_banner = 0;
 
-   `uvm_object_utils_begin(uvmt_cv32e40s_test_cfg_c)
+   `uvm_object_utils_begin(uvmt_cv32e40x_test_cfg_c)
       `uvm_field_int(heartbeat_mon_enabled, UVM_DEFAULT)
       `uvm_field_int(startup_timeout,       UVM_DEFAULT | UVM_DEC)
       `uvm_field_int(heartbeat_period,      UVM_DEFAULT | UVM_DEC)
@@ -72,8 +72,8 @@ class uvmt_cv32e40s_test_cfg_c extends uvm_object;
 
    constraint timeouts_default_cons {
       soft startup_timeout  == 100_000_000; // Set to be huge for now so that sim can finish
-      soft heartbeat_period ==    200_000; //  2 us // TODO Set default Heartbeat Monitor period for uvmt_cv32e40s_base_test_c
-      soft watchdog_timeout == 100_000_000; // 10 ms // TODO Set default Watchdog timeout period for uvmt_cv32e40s_base_test_c
+      soft heartbeat_period ==    200_000; //  2 us // TODO Set default Heartbeat Monitor period for uvmt_cv32e40x_base_test_c
+      soft watchdog_timeout == 100_000_000; // 10 ms // TODO Set default Watchdog timeout period for uvmt_cv32e40x_base_test_c
    }
 
    //constraint test_type_default_cons {
@@ -83,17 +83,17 @@ class uvmt_cv32e40s_test_cfg_c extends uvm_object;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvmt_cv32e40s_test_cfg");
+   extern function new(string name="uvmt_cv32e40x_test_cfg");
 
    /**
-    * TODO Describe uvmt_cv32e40s_test_cfg_c::process_cli_args()
+    * TODO Describe uvmt_cv32e40x_test_cfg_c::process_cli_args()
     */
    extern function void process_cli_args();
 
-endclass : uvmt_cv32e40s_test_cfg_c
+endclass : uvmt_cv32e40x_test_cfg_c
 
 
-function uvmt_cv32e40s_test_cfg_c::new(string name="uvmt_cv32e40s_test_cfg");
+function uvmt_cv32e40x_test_cfg_c::new(string name="uvmt_cv32e40x_test_cfg");
 
    super.new(name);
 
@@ -104,7 +104,7 @@ function uvmt_cv32e40s_test_cfg_c::new(string name="uvmt_cv32e40s_test_cfg");
 endfunction : new
 
 
-function void uvmt_cv32e40s_test_cfg_c::process_cli_args();
+function void uvmt_cv32e40x_test_cfg_c::process_cli_args();
 
    string  cli_block_name_parsed_str           = "";
 
@@ -144,4 +144,4 @@ function void uvmt_cv32e40s_test_cfg_c::process_cli_args();
 endfunction : process_cli_args
 
 
-`endif // __UVMT_CV32E40S_TEST_CFG_SV__
+`endif // __UVMT_CV32E40X_TEST_CFG_SV__

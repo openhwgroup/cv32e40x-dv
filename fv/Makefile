@@ -20,9 +20,9 @@
 
 CORE_V_VERIF ?= $(realpath ../..)
 
-CV_CORE ?= cv32e40s
+CV_CORE ?= cv32e40x
 
-CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40s
+CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40x
 CV_CORE_BRANCH ?= master
 CV_CORE_TAG    ?= none
 CV_CORE_HASH   ?= head

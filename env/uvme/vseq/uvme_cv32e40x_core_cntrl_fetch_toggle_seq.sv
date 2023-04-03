@@ -14,17 +14,17 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_FETCH_TOGGLE_SEQ_C__
-`define __UVME_CV32E40S_FETCH_TOGGLE_SEQ_C__
+`ifndef __UVME_CV32E40X_FETCH_TOGGLE_SEQ_C__
+`define __UVME_CV32E40X_FETCH_TOGGLE_SEQ_C__
 
 /**
  * Virtual sequence responsible for controlling fetch_en during tests
  */
-class uvme_cv32e40s_fetch_toggle_seq_c extends uvme_cv32e40s_core_cntrl_base_seq_c;
+class uvme_cv32e40x_fetch_toggle_seq_c extends uvme_cv32e40x_core_cntrl_base_seq_c;
 
   rand fetch_toggle_t fetch_toggle_mode;
 
-  `uvm_object_utils_begin(uvme_cv32e40s_fetch_toggle_seq_c);
+  `uvm_object_utils_begin(uvme_cv32e40x_fetch_toggle_seq_c);
     `uvm_field_enum(fetch_toggle_t, fetch_toggle_mode, UVM_DEFAULT)
   `uvm_object_utils_end
 
@@ -42,9 +42,9 @@ class uvme_cv32e40s_fetch_toggle_seq_c extends uvme_cv32e40s_core_cntrl_base_seq
 
   extern virtual task fetch_random_toggle();
 
-endclass : uvme_cv32e40s_fetch_toggle_seq_c
+endclass : uvme_cv32e40x_fetch_toggle_seq_c
 
-function uvme_cv32e40s_fetch_toggle_seq_c::new(string name = "");
+function uvme_cv32e40x_fetch_toggle_seq_c::new(string name = "");
 
   super.new(name);
 
@@ -63,7 +63,7 @@ function uvme_cv32e40s_fetch_toggle_seq_c::new(string name = "");
 
 endfunction : new
 
-task uvme_cv32e40s_fetch_toggle_seq_c::body();
+task uvme_cv32e40x_fetch_toggle_seq_c::body();
 
   `uvm_info("FETCHTOGGLE", $sformatf("Driving fetch_en with mode: %s", fetch_toggle_mode.name()), UVM_LOW)
 
@@ -78,21 +78,21 @@ task uvme_cv32e40s_fetch_toggle_seq_c::body();
 
 endtask : body
 
-task uvme_cv32e40s_fetch_toggle_seq_c::fetch_constant();
+task uvme_cv32e40x_fetch_toggle_seq_c::fetch_constant();
 
   // Start fetching as fast as possible
   cntxt.core_cntrl_vif.drv_cb.fetch_en <= 1'b1;
 
 endtask : fetch_constant
 
-task uvme_cv32e40s_fetch_toggle_seq_c::fetch_initial_delay();
+task uvme_cv32e40x_fetch_toggle_seq_c::fetch_initial_delay();
 
   repeat (cfg.fetch_toggle_initial_delay) @(cntxt.core_cntrl_vif.drv_cb);
   cntxt.core_cntrl_vif.drv_cb.fetch_en <= 1'b1;
 
 endtask : fetch_initial_delay
 
-task uvme_cv32e40s_fetch_toggle_seq_c::fetch_random_toggle();
+task uvme_cv32e40x_fetch_toggle_seq_c::fetch_random_toggle();
 
   while (1) begin
     int unsigned fetch_assert_cycles;
@@ -118,4 +118,4 @@ task uvme_cv32e40s_fetch_toggle_seq_c::fetch_random_toggle();
 
 endtask : fetch_random_toggle
 
-`endif // __UVME_CV32E40S_FETCH_TOGGLE_SEQ_C__
+`endif // __UVME_CV32E40X_FETCH_TOGGLE_SEQ_C__

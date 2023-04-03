@@ -19,9 +19,9 @@
 `default_nettype  none
 
 
-module  uvmt_cv32e40s_umode_assert
-  import cv32e40s_pkg::*;
-  import cv32e40s_rvfi_pkg::*;
+module  uvmt_cv32e40x_umode_assert
+  import cv32e40x_pkg::*;
+  import cv32e40x_rvfi_pkg::*;
   import uvm_pkg::*;
 #(
   parameter bit  CLIC
@@ -68,7 +68,7 @@ module  uvmt_cv32e40s_umode_assert
   default clocking @(posedge clk_i); endclocking
   default disable iff !rst_ni;
 
-  string info_tag = "CV32E40S_UMODE_ASSERT";
+  string info_tag = "CV32E40X_UMODE_ASSERT";
 
   localparam int MISA_U_POS = 20;
   localparam int MISA_S_POS = 18;
@@ -935,14 +935,14 @@ module  uvmt_cv32e40s_umode_assert
     rvfi_valid
     |->
     (rvfi_if.instr_prot[2:1] == rvfi_if.rvfi_mode)  ||
-    (rvfi_if.rvfi_trap.exception_cause == cv32e40s_pkg::EXC_CAUSE_INSTR_FAULT)  ||
+    (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_INSTR_FAULT)  ||
     (rvfi_trap.debug_cause == DBG_CAUSE_TRIGGER)
     //Note: Triggers can overshadow access faults
   ) else `uvm_error(info_tag, "the prot on fetch must match the mode on retirement");
 
   a_instr_prot_legal: assert property (
     rvfi_valid  &&
-    (rvfi_if.rvfi_trap.exception_cause != cv32e40s_pkg::EXC_CAUSE_INSTR_FAULT)
+    (rvfi_if.rvfi_trap.exception_cause != cv32e40x_pkg::EXC_CAUSE_INSTR_FAULT)
     |->
     (rvfi_if.instr_prot[2:0] inside {3'b 000, 3'b 110})
   ) else `uvm_error(info_tag, "instr_prot illegal value");
@@ -963,7 +963,7 @@ module  uvmt_cv32e40s_umode_assert
 
   a_data_prot_legal: assert property (
     rvfi_valid  &&
-    (rvfi_if.rvfi_trap.exception_cause != cv32e40s_pkg::EXC_CAUSE_INSTR_FAULT)
+    (rvfi_if.rvfi_trap.exception_cause != cv32e40x_pkg::EXC_CAUSE_INSTR_FAULT)
     |->
     (rvfi_if.mem_prot[2:0] inside {3'b 001, 3'b 111})
   ) else `uvm_error(info_tag, "data_prot illegal value");
@@ -1006,7 +1006,7 @@ module  uvmt_cv32e40s_umode_assert
     rvfi_if.rvfi_dbg_mode
     |->
     (rvfi_if.instr_prot[2:1] == MODE_M)  ||
-    (rvfi_if.rvfi_trap.exception_cause == cv32e40s_pkg::EXC_CAUSE_INSTR_FAULT)
+    (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_INSTR_FAULT)
   ) else `uvm_error(info_tag, "dmode should fetch as mmode");
 
   a_dbg_prot_dside: assert property (
@@ -1018,7 +1018,7 @@ module  uvmt_cv32e40s_umode_assert
   ) else `uvm_error(info_tag, "dmode should fetch as effective mode");
 
 
-endmodule : uvmt_cv32e40s_umode_assert
+endmodule : uvmt_cv32e40x_umode_assert
 
 
 `default_nettype  wire

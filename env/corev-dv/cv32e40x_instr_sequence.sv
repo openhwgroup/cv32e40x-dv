@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------------------
 //
-// CV32E40S instruction sequence, this override prevents hint/illegal instructions from
+// CV32E40X instruction sequence, this override prevents hint/illegal instructions from
 // overwriting atomic instruction sequences.
 //
 // TODO: Ideally we would like to only do this for the important instructions in the zcmt
@@ -24,8 +24,8 @@
 // necessary information to identify these instructions are lost.
 //
 //-----------------------------------------------------------------------------------------
-class cv32e40s_instr_sequence extends riscv_instr_sequence;
-  `uvm_object_utils(cv32e40s_instr_sequence)
+class cv32e40x_instr_sequence extends riscv_instr_sequence;
+  `uvm_object_utils(cv32e40x_instr_sequence)
 
   function new (string name = "");
     super.new(name);
@@ -118,4 +118,4 @@ class cv32e40s_instr_sequence extends riscv_instr_sequence;
     end
   endfunction
 
-endclass : cv32e40s_instr_sequence
+endclass : cv32e40x_instr_sequence

@@ -15,9 +15,9 @@
 // limitations under the License.
 //
 
-module uvmt_cv32e40s_clic_interrupt_assert
+module uvmt_cv32e40x_clic_interrupt_assert
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   import uvma_rvfi_pkg::*;
   #(
     parameter int   CLIC            = 0,
@@ -251,7 +251,7 @@ module uvmt_cv32e40s_clic_interrupt_assert
   typedef enum logic [1:0] {
     M_MODE = 2'b11,
     I_MODE = 2'b10, // Illegal, reserved
-    S_MODE = 2'b01, // Not used in 40S/X
+    S_MODE = 2'b01, // Not used in 40X/X
     U_MODE = 2'b00
   } priv_mode_t;
 
@@ -649,7 +649,7 @@ module uvmt_cv32e40s_clic_interrupt_assert
   assign is_valid_mnxti_read  = is_mnxti_access_instr && is_csr_read  && rvfi_valid;
 
   // TODO replace with non-poking signal
-  assign is_interrupt_allowed = dut_wrap.cv32e40s_wrapper_i.core_i.controller_i.controller_fsm_i.interrupt_allowed;
+  assign is_interrupt_allowed = dut_wrap.cv32e40x_wrapper_i.core_i.controller_i.controller_fsm_i.interrupt_allowed;
 
   function logic fun_is_csr_write(csr_instr_t instr);
     if (instr.opcode == SYSTEM
@@ -2996,5 +2996,5 @@ module uvmt_cv32e40s_clic_interrupt_assert
   end
 
   endgenerate
-endmodule : uvmt_cv32e40s_clic_interrupt_assert
+endmodule : uvmt_cv32e40x_clic_interrupt_assert
 

@@ -1,5 +1,5 @@
 name: no_bitmanip
-description: Default configuration for CV32E40S simulations
+description: Default configuration for CV32E40X simulations
 plusargs: >
     +fix_sp=1
     +fix_ra=1

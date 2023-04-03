@@ -15,14 +15,14 @@
 //
 //
 
-`ifndef __UVMT_CV32E40S_ISS_WRAP_SV__
-`define __UVMT_CV32E40S_ISS_WRAP_SV__
+`ifndef __UVMT_CV32E40X_ISS_WRAP_SV__
+`define __UVMT_CV32E40X_ISS_WRAP_SV__
 
 /**
  * Module wrapper for Imperas OVP.
  * Instanitates "CPU", the OVP wrapper, and "RAM" a spare memory model.
  */
-module uvmt_cv32e40s_iss_wrap
+module uvmt_cv32e40x_iss_wrap
   import uvm_pkg::*;
   #(
     parameter int ROM_START_ADDR = 'h00000000,
@@ -45,7 +45,7 @@ module uvmt_cv32e40s_iss_wrap
                 .ROM_BYTE_SIZE(ROM_BYTE_SIZE),
                 .RAM_BYTE_SIZE(RAM_BYTE_SIZE)) ram(bus);
 
-   CPU #(.ID(ID), .VARIANT("CV32E40S_DEV")) cpu(bus, io);
+   CPU #(.ID(ID), .VARIANT("CV32E40X_DEV")) cpu(bus, io);
 
    bit use_iss = 0;
 
@@ -65,7 +65,7 @@ module uvmt_cv32e40s_iss_wrap
       clknrst_if.start_clk();
    end
 
-endmodule : uvmt_cv32e40s_iss_wrap
+endmodule : uvmt_cv32e40x_iss_wrap
 
-`endif // __UVMT_CV32E40S_ISS_WRAP_SV__
+`endif // __UVMT_CV32E40X_ISS_WRAP_SV__
 

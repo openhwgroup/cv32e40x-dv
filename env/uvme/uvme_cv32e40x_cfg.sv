@@ -15,20 +15,20 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_CFG_SV__
-`define __UVME_CV32E40S_CFG_SV__
+`ifndef __UVME_CV32E40X_CFG_SV__
+`define __UVME_CV32E40X_CFG_SV__
 
 
-import cv32e40s_pkg::*;
+import cv32e40x_pkg::*;
 /**
  * Object encapsulating all parameters for creating, connecting and running
- * CV32E40S environment (uvme_cv32e40s_env_c) components.
+ * CV32E40X environment (uvme_cv32e40x_env_c) components.
  */
-class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
+class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
 
    // Integrals
    rand int unsigned                sys_clk_period;
-   cv32e40s_pkg::b_ext_e            b_ext;
+   cv32e40x_pkg::b_ext_e            b_ext;
    bit                              obi_memory_instr_random_err_enabled   = 0;
    bit                              obi_memory_instr_one_shot_err_enabled = 0;
    bit                              obi_memory_data_random_err_enabled    = 0;
@@ -49,14 +49,14 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
    rand uvma_rvfi_cfg_c#(ILEN,XLEN) rvfi_cfg;
    rand uvma_pma_cfg_c#(ILEN,XLEN)  pma_cfg;
 
-   `uvm_object_utils_begin(uvme_cv32e40s_cfg_c)
+   `uvm_object_utils_begin(uvme_cv32e40x_cfg_c)
       `uvm_field_int (                         enabled                     , UVM_DEFAULT          )
       `uvm_field_enum(uvm_active_passive_enum, is_active                   , UVM_DEFAULT          )
       `uvm_field_int (                         cov_model_enabled           , UVM_DEFAULT          )
       `uvm_field_int (                         trn_log_enabled             , UVM_DEFAULT          )
       `uvm_field_int (                         buserr_scoreboarding_enabled, UVM_DEFAULT          )
       `uvm_field_int (                         sys_clk_period              , UVM_DEFAULT | UVM_DEC)
-      `uvm_field_enum (cv32e40s_pkg::b_ext_e,  b_ext                       , UVM_DEFAULT          )
+      `uvm_field_enum (cv32e40x_pkg::b_ext_e,  b_ext                       , UVM_DEFAULT          )
       `uvm_field_int (                         obi_memory_instr_random_err_enabled,   UVM_DEFAULT  )
       `uvm_field_int (                         obi_memory_instr_one_shot_err_enabled, UVM_DEFAULT  )
       `uvm_field_int (                         obi_memory_data_random_err_enabled,    UVM_DEFAULT  )
@@ -83,12 +83,12 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
       soft scoreboarding_enabled        == 1;
       soft cov_model_enabled            == 1;
       soft trn_log_enabled              == 1;
-      soft sys_clk_period               == uvme_cv32e40s_sys_default_clk_period; // see uvme_cv32e40s_constants.sv
+      soft sys_clk_period               == uvme_cv32e40x_sys_default_clk_period; // see uvme_cv32e40x_constants.sv
       soft buserr_scoreboarding_enabled == 1;
       soft fetch_toggle_initial_delay inside {[50:200]};
    }
 
-   constraint cv32e40s_riscv_cons {
+   constraint cv32e40x_riscv_cons {
       xlen == uvma_core_cntrl_pkg::MXL_32;
       ilen == 32;
 
@@ -108,17 +108,17 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
       ext_zcmp_supported      == 1;
       ext_zcmt_supported      == 1;
 
-      if (b_ext == cv32e40s_pkg::B_NONE) {
+      if (b_ext == cv32e40x_pkg::B_NONE) {
          ext_zba_supported == 0;
          ext_zbb_supported == 0;
          ext_zbc_supported == 0;
          ext_zbs_supported == 0;
-      } else if (b_ext == cv32e40s_pkg::ZBA_ZBB_ZBS) {
+      } else if (b_ext == cv32e40x_pkg::ZBA_ZBB_ZBS) {
          ext_zba_supported == 1;
          ext_zbb_supported == 1;
          ext_zbc_supported == 0;
          ext_zbs_supported == 1;
-      } else if (b_ext == cv32e40s_pkg::ZBA_ZBB_ZBC_ZBS) {
+      } else if (b_ext == cv32e40x_pkg::ZBA_ZBB_ZBC_ZBS) {
          ext_zba_supported == 1;
          ext_zbb_supported == 1;
          ext_zbc_supported == 1;
@@ -152,7 +152,7 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
       nmi_addr_valid          == 1;
    }
 
-   constraint default_cv32e40s_boot_cons {
+   constraint default_cv32e40x_boot_cons {
       (!mhartid_plusarg_valid)           -> (mhartid           == 'h0000_0000);
       (!mimpid_patch_plusarg_valid)      -> (mimpid_patch      == 'h0        );
       (!mimpid_plusarg_valid)            -> (mimpid            == {12'b0, MIMPID_MAJOR, 4'b0, MIMPID_MINOR, 4'b0, mimpid_patch[3:0]});
@@ -185,7 +185,7 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
 
       obi_memory_instr_cfg.version       == UVMA_OBI_MEMORY_VERSION_1P2;
       obi_memory_instr_cfg.drv_mode      == UVMA_OBI_MEMORY_MODE_SLV;
-      obi_memory_instr_cfg.chk_scheme    == UVMA_OBI_MEMORY_CHK_CV32E40S;
+      obi_memory_instr_cfg.chk_scheme    == UVMA_OBI_MEMORY_CHK_CV32E40X;
       obi_memory_instr_cfg.write_enabled == 0;
       obi_memory_instr_cfg.addr_width    == XLEN;
       obi_memory_instr_cfg.data_width    == XLEN;
@@ -202,7 +202,7 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
 
       obi_memory_data_cfg.version        == UVMA_OBI_MEMORY_VERSION_1P2;
       obi_memory_data_cfg.drv_mode       == UVMA_OBI_MEMORY_MODE_SLV;
-      obi_memory_data_cfg.chk_scheme     == UVMA_OBI_MEMORY_CHK_CV32E40S;
+      obi_memory_data_cfg.chk_scheme     == UVMA_OBI_MEMORY_CHK_CV32E40X;
       obi_memory_data_cfg.addr_width     == XLEN;
       obi_memory_data_cfg.data_width     == XLEN;
       obi_memory_data_cfg.id_width       == 0;
@@ -224,13 +224,13 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
       isacov_cfg.reg_crosses_enabled        == 0;
       isacov_cfg.reg_hazards_enabled        == 1;
 
-      rvfi_cfg.nret == uvme_cv32e40s_pkg::RVFI_NRET;
+      rvfi_cfg.nret == uvme_cv32e40x_pkg::RVFI_NRET;
       rvfi_cfg.nmi_load_fault_enabled      == 1;
-      rvfi_cfg.nmi_load_fault_cause        == cv32e40s_pkg::INT_CAUSE_LSU_LOAD_FAULT;
+      rvfi_cfg.nmi_load_fault_cause        == cv32e40x_pkg::INT_CAUSE_LSU_LOAD_FAULT;
       rvfi_cfg.nmi_store_fault_enabled     == 1;
-      rvfi_cfg.nmi_store_fault_cause       == cv32e40s_pkg::INT_CAUSE_LSU_STORE_FAULT;
+      rvfi_cfg.nmi_store_fault_cause       == cv32e40x_pkg::INT_CAUSE_LSU_STORE_FAULT;
       rvfi_cfg.insn_bus_fault_enabled      == 1;
-      rvfi_cfg.insn_bus_fault_cause        == cv32e40s_pkg::EXC_CAUSE_INSTR_BUS_FAULT;
+      rvfi_cfg.insn_bus_fault_cause        == cv32e40x_pkg::EXC_CAUSE_INSTR_BUS_FAULT;
 
       if (is_active == UVM_ACTIVE) {
          isacov_cfg.is_active           == UVM_PASSIVE;
@@ -306,7 +306,7 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
    /**
     * Creates sub-configuration objects.
     */
-   extern function new(string name="uvme_cv32e40s_cfg");
+   extern function new(string name="uvme_cv32e40x_cfg");
 
    /**
     * Run before randomizing this class
@@ -338,13 +338,13 @@ class uvme_cv32e40s_cfg_c extends uvma_core_cntrl_cfg_c;
     */
    extern virtual function void set_unsupported_csr_mask();
 
-endclass : uvme_cv32e40s_cfg_c
+endclass : uvme_cv32e40x_cfg_c
 
-function uvme_cv32e40s_cfg_c::new(string name="uvme_cv32e40s_cfg");
+function uvme_cv32e40x_cfg_c::new(string name="uvme_cv32e40x_cfg");
 
    super.new(name);
 
-   core_name = "CV32E40S";
+   core_name = "CV32E40X";
 
    if ($test$plusargs("USE_ISS"))
       use_iss = 1;
@@ -391,13 +391,13 @@ function uvme_cv32e40s_cfg_c::new(string name="uvme_cv32e40s_cfg");
 
 endfunction : new
 
-function void uvme_cv32e40s_cfg_c::pre_randomize();
+function void uvme_cv32e40x_cfg_c::pre_randomize();
 
    `uvm_info("CFG", $sformatf("Pre-randomize num_mhpmcounters = %0d", num_mhpmcounters), UVM_LOW);
 
 endfunction : pre_randomize
 
-function void uvme_cv32e40s_cfg_c::post_randomize();
+function void uvme_cv32e40x_cfg_c::post_randomize();
 
    super.post_randomize();
 
@@ -408,26 +408,26 @@ function void uvme_cv32e40s_cfg_c::post_randomize();
 
 endfunction : post_randomize
 
-function void uvme_cv32e40s_cfg_c::sample_parameters(uvma_core_cntrl_cntxt_c cntxt);
+function void uvme_cv32e40x_cfg_c::sample_parameters(uvma_core_cntrl_cntxt_c cntxt);
 
-   uvma_cv32e40s_core_cntrl_cntxt_c e40s_cntxt;
+   uvma_cv32e40x_core_cntrl_cntxt_c e40x_cntxt;
 
-   if (!$cast(e40s_cntxt, cntxt)) begin
-      `uvm_fatal("SAMPLECNTXT", "Could not cast cntxt to uvma_cv32e40s_core_cntrl_cntxt_c");
+   if (!$cast(e40x_cntxt, cntxt)) begin
+      `uvm_fatal("SAMPLECNTXT", "Could not cast cntxt to uvma_cv32e40x_core_cntrl_cntxt_c");
    end
 
-   num_mhpmcounters = e40s_cntxt.core_cntrl_vif.num_mhpmcounters;
-   pma_regions      = new[e40s_cntxt.core_cntrl_vif.pma_cfg.size()];
-   b_ext            = e40s_cntxt.core_cntrl_vif.b_ext;
+   num_mhpmcounters = e40x_cntxt.core_cntrl_vif.num_mhpmcounters;
+   pma_regions      = new[e40x_cntxt.core_cntrl_vif.pma_cfg.size()];
+   b_ext            = e40x_cntxt.core_cntrl_vif.b_ext;
 
    foreach (pma_regions[i]) begin
       pma_regions[i] = uvma_core_cntrl_pma_region_c::type_id::create($sformatf("pma_region%0d", i));
-      pma_regions[i].word_addr_low  = e40s_cntxt.core_cntrl_vif.pma_cfg[i].word_addr_low;
-      pma_regions[i].word_addr_high = e40s_cntxt.core_cntrl_vif.pma_cfg[i].word_addr_high;
-      pma_regions[i].main           = e40s_cntxt.core_cntrl_vif.pma_cfg[i].main;
-      pma_regions[i].bufferable     = e40s_cntxt.core_cntrl_vif.pma_cfg[i].bufferable;
-      pma_regions[i].cacheable      = e40s_cntxt.core_cntrl_vif.pma_cfg[i].cacheable;
-      pma_regions[i].integrity      = e40s_cntxt.core_cntrl_vif.pma_cfg[i].integrity;
+      pma_regions[i].word_addr_low  = e40x_cntxt.core_cntrl_vif.pma_cfg[i].word_addr_low;
+      pma_regions[i].word_addr_high = e40x_cntxt.core_cntrl_vif.pma_cfg[i].word_addr_high;
+      pma_regions[i].main           = e40x_cntxt.core_cntrl_vif.pma_cfg[i].main;
+      pma_regions[i].bufferable     = e40x_cntxt.core_cntrl_vif.pma_cfg[i].bufferable;
+      pma_regions[i].cacheable      = e40x_cntxt.core_cntrl_vif.pma_cfg[i].cacheable;
+      pma_regions[i].integrity      = e40x_cntxt.core_cntrl_vif.pma_cfg[i].integrity;
    end
 
    // Copy to the pma_configuration
@@ -437,18 +437,18 @@ function void uvme_cv32e40s_cfg_c::sample_parameters(uvma_core_cntrl_cntxt_c cnt
 
 endfunction : sample_parameters
 
-function bit uvme_cv32e40s_cfg_c::is_csr_check_disabled(string name);
+function bit uvme_cv32e40x_cfg_c::is_csr_check_disabled(string name);
 
    // Fatal error if passed a CSR check which is non-existent
    if (!csr_name2addr.exists(name)) begin
-      `uvm_fatal("CV32E40SCFG", $sformatf("CSR [%s] does not exist", name));
+      `uvm_fatal("CV32E40XCFG", $sformatf("CSR [%s] does not exist", name));
    end
 
    return disable_csr_check_mask[csr_name2addr[name]];
 
 endfunction : is_csr_check_disabled
 
-function void uvme_cv32e40s_cfg_c::configure_disable_csr_checks();
+function void uvme_cv32e40x_cfg_c::configure_disable_csr_checks();
 
    // TODO: remove when fixed in ISS
    disable_csr_check("misa");
@@ -471,9 +471,9 @@ function void uvme_cv32e40s_cfg_c::configure_disable_csr_checks();
    end
 endfunction : configure_disable_csr_checks
 
-function void uvme_cv32e40s_cfg_c::set_unsupported_csr_mask();
+function void uvme_cv32e40x_cfg_c::set_unsupported_csr_mask();
 
-   // FIXME:STRICHMO:When user mode CSRs are implemented on the e40s then remove this hack
+   // FIXME:STRICHMO:When user mode CSRs are implemented on the e40x then remove this hack
 
    super.set_unsupported_csr_mask();
 
@@ -494,7 +494,7 @@ function void uvme_cv32e40s_cfg_c::set_unsupported_csr_mask();
    unsupported_csr_mask[uvma_core_cntrl_pkg::INSTRETH] = 1;
    unsupported_csr_mask[uvma_core_cntrl_pkg::SCOUNTEREN] = 1;
 
-   // TODO:ropeders re-evaluate this when 40s is more stable
+   // TODO:ropeders re-evaluate this when 40x is more stable
    unsupported_csr_mask[uvma_core_cntrl_pkg::TCONTROL] = 1;
 
    unsupported_csr_mask[uvma_core_cntrl_pkg::MCONTEXT] = 1;
@@ -507,6 +507,6 @@ function void uvme_cv32e40s_cfg_c::set_unsupported_csr_mask();
 
 endfunction : set_unsupported_csr_mask
 
-`endif // __UVME_CV32E40S_CFG_SV__
+`endif // __UVME_CV32E40X_CFG_SV__
 
 

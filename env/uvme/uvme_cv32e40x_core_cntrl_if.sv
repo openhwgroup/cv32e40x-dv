@@ -1,9 +1,9 @@
 /**
  * Quasi-static core control signals.
  */
-interface uvme_cv32e40s_core_cntrl_if
+interface uvme_cv32e40x_core_cntrl_if
     import uvm_pkg::*;
-    import cv32e40s_pkg::*;
+    import cv32e40x_pkg::*;
     ();
 
     logic        clk;
@@ -20,7 +20,7 @@ interface uvme_cv32e40s_core_cntrl_if
 
     logic [31:0] num_mhpmcounters;
     pma_cfg_t pma_cfg[];
-    cv32e40s_pkg::b_ext_e b_ext;
+    cv32e40x_pkg::b_ext_e b_ext;
 
     // Testcase asserts this to load memory (not really a core control signal)
     logic        load_instr_mem;
@@ -29,4 +29,4 @@ interface uvme_cv32e40s_core_cntrl_if
     output fetch_en;
   endclocking : drv_cb
 
-endinterface : uvme_cv32e40s_core_cntrl_if
+endinterface : uvme_cv32e40x_core_cntrl_if

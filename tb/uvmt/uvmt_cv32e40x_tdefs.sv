@@ -16,8 +16,8 @@
 //
 
 
-`ifndef __UVMT_CV32E40S_TDEFS_SV__
-`define __UVMT_CV32E40S_TDEFS_SV__
+`ifndef __UVMT_CV32E40X_TDEFS_SV__
+`define __UVMT_CV32E40X_TDEFS_SV__
 
 
 /**
@@ -104,4 +104,4 @@ typedef struct {
 } match_status_t;
 
 
-`endif // __UVMT_CV32E40S_TDEFS_SV__
+`endif // __UVMT_CV32E40X_TDEFS_SV__

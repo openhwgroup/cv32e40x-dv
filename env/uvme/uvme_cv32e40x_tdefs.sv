@@ -17,8 +17,8 @@
 //
 
 
-`ifndef __UVME_CV32E40S_TDEFS_SV__
-`define __UVME_CV32E40S_TDEFS_SV__
+`ifndef __UVME_CV32E40X_TDEFS_SV__
+`define __UVME_CV32E40X_TDEFS_SV__
 
 
 typedef enum {
@@ -27,4 +27,4 @@ typedef enum {
     FETCH_RANDOM_TOGGLE
 } fetch_toggle_t;
 
-`endif // __UVME_CV32E40S_TDEFS_SV__
+`endif // __UVME_CV32E40X_TDEFS_SV__

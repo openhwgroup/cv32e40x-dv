@@ -8,14 +8,14 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
-// Wrapper for a CV32E40S testbench, containing CV32E40S, Memory and stdout peripheral
+// Wrapper for a CV32E40X testbench, containing CV32E40X, Memory and stdout peripheral
 // Contributor: Robert Balas <balasr@student.ethz.ch>
-// Module renamed from riscv_wrapper to cv32e40s_tb_wrapper because (1) the
-// name of the core changed, and (2) the design has a cv32e40s_wrapper module.
+// Module renamed from riscv_wrapper to cv32e40x_tb_wrapper because (1) the
+// name of the core changed, and (2) the design has a cv32e40x_wrapper module.
 //
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-0.51
 
-module cv32e40s_tb_wrapper
+module cv32e40x_tb_wrapper
     #(parameter // Parameters used by TB
                 INSTR_RDATA_WIDTH = 32,
                 RAM_ADDR_WIDTH    = 20,
@@ -64,23 +64,23 @@ module cv32e40s_tb_wrapper
     assign irq_sec     = '0;
 
 //    // core log reports parameter usage and illegal instructions to the logfile
-//    // MIKET: commenting out as the cv32e40s RTL wrapper does this as well.
-//    cv32e40s_core_log
+//    // MIKET: commenting out as the cv32e40x RTL wrapper does this as well.
+//    cv32e40x_core_log
 //     #(
 //          .PULP_XPULP            ( PULP_XPULP            ),
 //          .PULP_CLUSTER          ( PULP_CLUSTER          ),
 //          .FPU                   ( FPU                   ),
 //          .PULP_ZFINX            ( PULP_ZFINX            ))
 //    core_log_i(
-//          .clk_i              ( cv32e40s_core_i.id_stage_i.clk              ),
-//          .is_decoding_i      ( cv32e40s_core_i.id_stage_i.is_decoding_o    ),
-//          .illegal_insn_dec_i ( cv32e40s_core_i.id_stage_i.illegal_insn_dec ),
-//          .mhartid_i          ( cv32e40s_core_i.mhartid_i                   ),
-//          .pc_id_i            ( cv32e40s_core_i.pc_id                       )
+//          .clk_i              ( cv32e40x_core_i.id_stage_i.clk              ),
+//          .is_decoding_i      ( cv32e40x_core_i.id_stage_i.is_decoding_o    ),
+//          .illegal_insn_dec_i ( cv32e40x_core_i.id_stage_i.illegal_insn_dec ),
+//          .mhartid_i          ( cv32e40x_core_i.mhartid_i                   ),
+//          .pc_id_i            ( cv32e40x_core_i.pc_id                       )
 //      );
 
     // instantiate the core
-    cv32e40s_core cv32e40s_core_i
+    cv32e40x_core cv32e40x_core_i
         (
          .clk_i                  ( clk_i                 ),
          .rst_ni                 ( rst_ni                ),
@@ -150,11 +150,11 @@ module cv32e40s_tb_wrapper
 
          .debug_req_o    ( debug_req                                 ),
 
-         .pc_core_id_i   ( cv32e40s_core_i.if_id_pipe.pc             ),
+         .pc_core_id_i   ( cv32e40x_core_i.if_id_pipe.pc             ),
 
          .tests_passed_o ( tests_passed_o                            ),
          .tests_failed_o ( tests_failed_o                            ),
          .exit_valid_o   ( exit_valid_o                              ),
          .exit_value_o   ( exit_value_o                              ));
 
-endmodule // cv32e40s_tb_wrapper
+endmodule // cv32e40x_tb_wrapper

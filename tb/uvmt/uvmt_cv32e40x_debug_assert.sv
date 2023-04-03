@@ -15,10 +15,10 @@
 // limitations under the License.
 //
 
-module uvmt_cv32e40s_debug_assert
+module uvmt_cv32e40x_debug_assert
   import uvm_pkg::*;
   import uvma_rvfi_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   (
       uvma_rvfi_instr_if rvfi,
       uvma_rvfi_csr_if csr_dcsr,
@@ -34,8 +34,8 @@ module uvmt_cv32e40s_debug_assert
       uvma_rvfi_csr_if csr_tdata2,
       uvma_obi_memory_if instr_obi,
       uvma_obi_memory_if data_obi,
-      uvmt_cv32e40s_debug_cov_assert_if cov_assert_if,
-      uvmt_cv32e40s_support_logic_for_assert_coverage_modules_if.slave_mp support_if
+      uvmt_cv32e40x_debug_cov_assert_if cov_assert_if,
+      uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if.slave_mp support_if
   );
 
   // ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ module uvmt_cv32e40s_debug_assert
   // ---------------------------------------------------------------------------
   // Local variables
   // ---------------------------------------------------------------------------
-  string        info_tag = "CV32E40S_DEBUG_ASSERT";
+  string        info_tag = "CV32E40X_DEBUG_ASSERT";
   logic [31:0]  pc_at_dbg_req; // Capture PC when debug_req_i or ebreak is active
   logic [31:0]  dpc_dbg_ebreak;
   logic [31:0]  dpc_dbg_trg;
@@ -174,7 +174,7 @@ module uvmt_cv32e40s_debug_assert
 
     // Breaking down the above assert in to debug causes, to improve runtime
     property p_dpc_dbg_ebreak;
-        $rose(support_if.first_debug_ins) && rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_EBREAK
+        $rose(support_if.first_debug_ins) && rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_EBREAK
         |->
         csr_dpc.rvfi_csr_rdata == dpc_dbg_ebreak;
     endproperty
@@ -183,7 +183,7 @@ module uvmt_cv32e40s_debug_assert
         else `uvm_error(info_tag, $sformatf("DPC csr does not match expected on an ebreak, dpc==%08x", csr_dpc.rvfi_csr_rdata));
 
     property p_dpc_dbg_trigger;
-        $rose(support_if.first_debug_ins) && rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_TRIGGER
+        $rose(support_if.first_debug_ins) && rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_TRIGGER
         |->
         csr_dpc.rvfi_csr_rdata == dpc_dbg_trg;
     endproperty
@@ -194,7 +194,7 @@ module uvmt_cv32e40s_debug_assert
     //TODO:MT Fully covered by those below, remove?
      property p_dpc_dbg_step;
         $rose(support_if.first_debug_ins) &&
-        rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_STEP &&
+        rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_STEP &&
         // ignore CLIC, checked in clic asserts
         !(rvfi.rvfi_intr.intr && rvfi.rvfi_intr.interrupt && (csr_mtvec.rvfi_csr_rdata[1:0] == 3))
         |->
@@ -211,7 +211,7 @@ module uvmt_cv32e40s_debug_assert
     property p_dpc_dbg_step_notrap;
         $rose(support_if.first_debug_ins) &&
         !rvfi.rvfi_intr.intr &&
-        rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_STEP
+        rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_STEP
         |->
         (csr_dpc.rvfi_csr_rdata == dpc_dbg_step_notrap);
     endproperty
@@ -223,7 +223,7 @@ module uvmt_cv32e40s_debug_assert
     property p_dpc_dbg_step_nmi;
         $rose(support_if.first_debug_ins) &&
         rvfi.is_nmi &&
-        (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_STEP)
+        (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_STEP)
         |=>
         dpc_rdata_q == dpc_dbg_step_nmi;
     endproperty
@@ -237,13 +237,13 @@ module uvmt_cv32e40s_debug_assert
         rvfi.rvfi_intr.intr &&
         rvfi.rvfi_intr.interrupt &&
         !rvfi.is_nmi &&
-        (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_STEP)
+        (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_STEP)
         |=>
         dpc_rdata_q == dpc_dbg_step_irq;
     endproperty
 
     generate // ignore CLIC, checked in clic asserts
-        if (uvmt_cv32e40s_pkg::CORE_PARAM_CLIC==0) begin
+        if (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC==0) begin
             a_dpc_dbg_step_irq: assert property(p_dpc_dbg_step_irq)
                 else `uvm_error(info_tag, $sformatf("DPC csr does not match expected on a step, dpc==%08x", csr_dpc.rvfi_csr_rdata));
         end
@@ -252,7 +252,7 @@ module uvmt_cv32e40s_debug_assert
     //TODO:MT Fully covered by those below, remove?
     property p_dpc_dbg_haltreq;
         $rose(support_if.first_debug_ins) &&
-        (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ) &&
+        (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ) &&
         // ignore CLIC, checked in clic asserts
         !(rvfi.rvfi_intr.intr && rvfi.rvfi_intr.interrupt && (csr_mtvec.rvfi_csr_rdata[1:0] == 3))
         |->
@@ -268,7 +268,7 @@ module uvmt_cv32e40s_debug_assert
     property p_dpc_dbg_haltreq_notrap;
         $rose(support_if.first_debug_ins) &&
         !rvfi.rvfi_intr.intr &&
-        rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ
+        rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ
         |->
         (csr_dpc.rvfi_csr_rdata == dpc_dbg_haltreq_notrap);
     endproperty
@@ -280,7 +280,7 @@ module uvmt_cv32e40s_debug_assert
     property p_dpc_dbg_haltreq_nmi;
         $rose(support_if.first_debug_ins) &&
         rvfi.is_nmi &&
-        (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ)
+        (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ)
         |=>
         dpc_rdata_q == dpc_dbg_haltreq_nmi;
     endproperty
@@ -294,13 +294,13 @@ module uvmt_cv32e40s_debug_assert
         rvfi.rvfi_intr.intr &&
         rvfi.rvfi_intr.interrupt &&
         !rvfi.is_nmi &&
-        (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ)
+        (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ)
         |=>
         dpc_rdata_q == dpc_dbg_haltreq_irq;
     endproperty
 
     generate // ignore CLIC, checked in clic asserts
-        if (uvmt_cv32e40s_pkg::CORE_PARAM_CLIC==0) begin
+        if (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC==0) begin
             a_dpc_dbg_haltreq_irq: assert property(p_dpc_dbg_haltreq_irq)
                 else `uvm_error(info_tag, $sformatf("DPC csr does not match expected on a haltreq, dpc==%08x", csr_dpc.rvfi_csr_rdata));
         end
@@ -312,7 +312,7 @@ module uvmt_cv32e40s_debug_assert
         |->
         (rvfi.rvfi_dbg == debug_cause_pri)
         or
-        (support_if.recorded_dbg_req && (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ));
+        (support_if.recorded_dbg_req && (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ));
     endproperty
 
     a_dcsr_cause: assert property(p_dcsr_cause)
@@ -333,7 +333,7 @@ module uvmt_cv32e40s_debug_assert
         !csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKM_POS]
         |-> rvfi.rvfi_trap.trap && rvfi.rvfi_trap.exception
             or
-            rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40s_pkg::DBG_CAUSE_EBREAK);
+            rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_EBREAK);
     endproperty
 
     property p_ebreak_umode_exception;
@@ -343,7 +343,7 @@ module uvmt_cv32e40s_debug_assert
         !csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKU_POS]
         |-> rvfi.rvfi_trap.trap && rvfi.rvfi_trap.exception
             or
-            rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40s_pkg::DBG_CAUSE_EBREAK);
+            rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_EBREAK);
     endproperty
 
     a_ebreak_mmode_exception: assert property(p_ebreak_mmode_exception)
@@ -356,7 +356,7 @@ module uvmt_cv32e40s_debug_assert
     // ebreak and cebreak during debug mode results in relaunch
     property p_ebreak_during_debug_mode;
         rvfi.is_ebreak &&
-        rvfi.rvfi_trap.debug_cause == cv32e40s_pkg::DBG_CAUSE_EBREAK && //The ebreak is actually taken
+        rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_EBREAK && //The ebreak is actually taken
         rvfi.rvfi_dbg_mode
         ##1 rvfi.rvfi_valid[->1]
         |->
@@ -445,7 +445,7 @@ module uvmt_cv32e40s_debug_assert
         ##0(cov_assert_if.debug_req_i throughout cov_assert_if.debug_halted[->1])
         ##0 rvfi.rvfi_valid[->1]
         |->
-        rvfi.rvfi_dbg_mode && rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ;
+        rvfi.rvfi_dbg_mode && rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ;
     endproperty
 
     a_sleep_debug_req : assert property(p_sleep_debug_req)
@@ -459,9 +459,9 @@ module uvmt_cv32e40s_debug_assert
         |->
         // instruction traps either as illegal or trigger
         rvfi.rvfi_trap.trap && (
-        (rvfi.rvfi_trap.exception && (rvfi.rvfi_trap.exception_cause == cv32e40s_pkg::EXC_CAUSE_ILLEGAL_INSN) && (csr_wmask == 0))
+        (rvfi.rvfi_trap.exception && (rvfi.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_ILLEGAL_INSN) && (csr_wmask == 0))
         ||
-        (rvfi.rvfi_trap.debug && (rvfi.rvfi_trap.debug_cause == cv32e40s_pkg::DBG_CAUSE_TRIGGER))
+        (rvfi.rvfi_trap.debug && (rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_TRIGGER))
         );
     endproperty
 
@@ -503,8 +503,8 @@ module uvmt_cv32e40s_debug_assert
         csr_dcsr.rvfi_csr_rdata[DCSR_STEP_POS]
         ##1 rvfi.rvfi_valid[->1]
         |->
-        rvfi.rvfi_dbg_mode && ((rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_TRIGGER) ||
-        (support_if.recorded_dbg_req && (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_HALTREQ)));
+        rvfi.rvfi_dbg_mode && ((rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_TRIGGER) ||
+        (support_if.recorded_dbg_req && (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_HALTREQ)));
     endproperty
 
     a_single_step_trigger : assert property (p_single_step_trigger)
@@ -567,7 +567,7 @@ module uvmt_cv32e40s_debug_assert
 
 
     // dret in D-mode will place dpc in mepc if re-entry is interrupted (excluding nmi)
-    //TODO:MT fails due to irregular behaviour in RVFI. Await 40S bug issue 414 before changing
+    //TODO:MT fails due to irregular behaviour in RVFI. Await 40X bug issue 414 before changing
     property p_dmode_dret_pc_int;
         int dpc;
         (rvfi.is_dret && rvfi.rvfi_dbg_mode,
@@ -658,7 +658,7 @@ module uvmt_cv32e40s_debug_assert
     // debug_req at reset should result in debug mode and no instructions executed
 
     property p_debug_at_reset;
-        (cov_assert_if.ctrl_fsm_cs == cv32e40s_pkg::RESET) && cov_assert_if.debug_req_i
+        (cov_assert_if.ctrl_fsm_cs == cv32e40x_pkg::RESET) && cov_assert_if.debug_req_i
         ##0 (cov_assert_if.debug_req_i throughout !cov_assert_if.debug_havereset[->1])
         ##0 rvfi.rvfi_valid[->1]
         |->
@@ -723,7 +723,7 @@ module uvmt_cv32e40s_debug_assert
         csr_dcsr.rvfi_csr_rdata[DCSR_STEP_POS] &&
         csr_dcsr.rvfi_csr_rdata[DCSR_STEPIE_POS])
         ##1 rvfi.rvfi_valid[->1]
-        ##0 rvfi.rvfi_dbg_mode && (rvfi.rvfi_dbg == cv32e40s_pkg::DBG_CAUSE_STEP)
+        ##0 rvfi.rvfi_dbg_mode && (rvfi.rvfi_dbg == cv32e40x_pkg::DBG_CAUSE_STEP)
         |->
         rvfi.rvfi_intr.intr;
     endproperty
@@ -1045,11 +1045,11 @@ module uvmt_cv32e40s_debug_assert
             debug_cause_pri <= 3'b000;
         end else begin  //TODO:MT placeholder for new trigger support logic, this only works with 1 trigger.
             if (rvfi.is_dbg_trg || exception_trigger_hit) begin
-                debug_cause_pri <= cv32e40s_pkg::DBG_CAUSE_TRIGGER;
+                debug_cause_pri <= cv32e40x_pkg::DBG_CAUSE_TRIGGER;
             end else if(rvfi.is_ebreak && ebreak_allowed) begin
-                debug_cause_pri <= cv32e40s_pkg::DBG_CAUSE_EBREAK;
+                debug_cause_pri <= cv32e40x_pkg::DBG_CAUSE_EBREAK;
             end else if(rvfi.rvfi_valid && csr_dcsr.rvfi_csr_rdata[DCSR_STEP_POS]) begin  // "step"
-                debug_cause_pri <= cv32e40s_pkg::DBG_CAUSE_STEP;
+                debug_cause_pri <= cv32e40x_pkg::DBG_CAUSE_STEP;
             end else if(rvfi.is_dret && !csr_dcsr.rvfi_csr_rdata[DCSR_STEP_POS]) begin
                 debug_cause_pri <= 3'b000;  // (not a cause)
             end
@@ -1077,4 +1077,4 @@ module uvmt_cv32e40s_debug_assert
         end
     end
 
-endmodule : uvmt_cv32e40s_debug_assert
+endmodule : uvmt_cv32e40x_debug_assert

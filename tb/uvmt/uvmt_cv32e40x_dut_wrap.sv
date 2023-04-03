@@ -32,15 +32,15 @@
 //
 
 
-`ifndef __UVMT_CV32E40S_DUT_WRAP_SV__
-`define __UVMT_CV32E40S_DUT_WRAP_SV__
+`ifndef __UVMT_CV32E40X_DUT_WRAP_SV__
+`define __UVMT_CV32E40X_DUT_WRAP_SV__
 
 
 /**
- * Module wrapper for CV32E40S RTL DUT.
+ * Module wrapper for CV32E40X RTL DUT.
  */
-module uvmt_cv32e40s_dut_wrap
-  import cv32e40s_pkg::*;
+module uvmt_cv32e40x_dut_wrap
+  import cv32e40x_pkg::*;
 #(
     // DUT (riscv_core) parameters.
     parameter logic [31:0]           DM_REGION_START                     = 32'hF0000000,
@@ -50,7 +50,7 @@ module uvmt_cv32e40s_dut_wrap
     parameter lfsr_cfg_t             LFSR2_CFG                           = LFSR_CFG_DEFAULT,
     parameter m_ext_e                M_EXT                               = M,
     parameter mseccfg_t              PMP_MSECCFG_RV                      = MSECCFG_DEFAULT,
-    parameter cv32e40s_pkg::b_ext_e  B_EXT                               = cv32e40s_pkg::B_NONE,
+    parameter cv32e40x_pkg::b_ext_e  B_EXT                               = cv32e40x_pkg::B_NONE,
     parameter int                    PMA_NUM_REGIONS                     =  0,
     parameter pma_cfg_t              PMA_CFG[PMA_NUM_REGIONS-1 : 0]      = '{default:PMA_R_DEFAULT},
     parameter int                    PMP_NUM_REGIONS                     = 0,
@@ -72,9 +72,9 @@ module uvmt_cv32e40s_dut_wrap
     uvma_clknrst_if              clknrst_if,
     uvma_interrupt_if            interrupt_if,
     uvma_clic_if                 clic_if,
-    uvmt_cv32e40s_vp_status_if   vp_status_if,
-    uvme_cv32e40s_core_cntrl_if  core_cntrl_if,
-    uvmt_cv32e40s_core_status_if core_status_if,
+    uvmt_cv32e40x_vp_status_if   vp_status_if,
+    uvme_cv32e40x_core_cntrl_if  core_cntrl_if,
+    uvmt_cv32e40x_core_status_if core_status_if,
     uvma_obi_memory_if           obi_instr_if_i,
     uvma_obi_memory_if           obi_data_if_i,
     uvma_fencei_if               fencei_if_i
@@ -132,13 +132,13 @@ module uvmt_cv32e40s_dut_wrap
     // Connect to uvma_interrupt_if
     assign interrupt_if.clk         = clknrst_if.clk;
     assign interrupt_if.reset_n     = clknrst_if.reset_n;
-    assign interrupt_if.irq_id      = cv32e40s_wrapper_i.core_i.irq_id;
-    assign interrupt_if.irq_ack     = cv32e40s_wrapper_i.core_i.irq_ack;
+    assign interrupt_if.irq_id      = cv32e40x_wrapper_i.core_i.irq_id;
+    assign interrupt_if.irq_ack     = cv32e40x_wrapper_i.core_i.irq_ack;
 
     // --------------------------------------------
     assign clic_if.clk              = clknrst_if.clk;
     assign clic_if.reset_n          = clknrst_if.reset_n;
-    assign clic_if.irq_ack          = cv32e40s_wrapper_i.core_i.irq_ack;
+    assign clic_if.irq_ack          = cv32e40x_wrapper_i.core_i.irq_ack;
 
     // --------------------------------------------
     // Connect to core_cntrl_if
@@ -161,7 +161,7 @@ module uvmt_cv32e40s_dut_wrap
 
     // --------------------------------------------
     // instantiate the core
-    cv32e40s_wrapper #(
+    cv32e40x_wrapper #(
                       .B_EXT                (B_EXT),
                       .DBG_NUM_TRIGGERS     (DBG_NUM_TRIGGERS),
                       .DM_REGION_END        (DM_REGION_END),
@@ -182,7 +182,7 @@ module uvmt_cv32e40s_dut_wrap
                       .CLIC_ID_WIDTH        (CLIC_ID_WIDTH),
                       .CLIC_INTTHRESHBITS   (CLIC_INTTHRESHBITS)
                       )
-    cv32e40s_wrapper_i
+    cv32e40x_wrapper_i
         (
          .clk_i                  ( clknrst_if.clk                 ),
          .rst_ni                 ( clknrst_if.reset_n             ),
@@ -255,6 +255,6 @@ module uvmt_cv32e40s_dut_wrap
          .core_sleep_o           ( core_status_if.core_busy       )
         );
 
-endmodule : uvmt_cv32e40s_dut_wrap
+endmodule : uvmt_cv32e40x_dut_wrap
 
-`endif // __UVMT_CV32E40S_DUT_WRAP_SV__
+`endif // __UVMT_CV32E40X_DUT_WRAP_SV__

@@ -19,11 +19,11 @@
 `default_nettype  none
 
 
-module uvmt_cv32e40s_rvfi_assert
-  import cv32e40s_pkg::*;
+module uvmt_cv32e40x_rvfi_assert
+  import cv32e40x_pkg::*;
   import uvm_pkg::*;
   import uvma_rvfi_pkg::*;
-  import uvme_cv32e40s_pkg::*;
+  import uvme_cv32e40x_pkg::*;
 #(
   parameter logic  CLIC,
   parameter int    CLIC_ID_WIDTH
@@ -54,7 +54,7 @@ module uvmt_cv32e40s_rvfi_assert
   default clocking @(posedge clk_i); endclocking
   default disable iff !rst_ni;
 
-  string info_tag = "CV32E40S_RVFI_ASSERT";
+  string info_tag = "CV32E40X_RVFI_ASSERT";
 
 
   // Helper signals
@@ -268,7 +268,7 @@ module uvmt_cv32e40s_rvfi_assert
   end
 
 
-endmodule : uvmt_cv32e40s_rvfi_assert
+endmodule : uvmt_cv32e40x_rvfi_assert
 
 
 `default_nettype  wire

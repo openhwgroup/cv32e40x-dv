@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cv32e40s_instr_test_pkg;
+package cv32e40x_instr_test_pkg;
 
   import uvm_pkg::*;
   import riscv_instr_pkg::*;
@@ -22,31 +22,31 @@ package cv32e40s_instr_test_pkg;
   import riscv_signature_pkg::*;
   import corev_instr_test_pkg::*;
 
-  import cv32e40s_pkg::pma_cfg_t;
+  import cv32e40x_pkg::pma_cfg_t;
 
-  `include "uvmt_cv32e40s_constants.sv"
+  `include "uvmt_cv32e40x_constants.sv"
   `include "pma_adapted_mem_region_gen.sv"
-  `include "cv32e40s_ldgen.sv"
+  `include "cv32e40x_ldgen.sv"
 
-  // Instruction streams specific to CV32E40S
+  // Instruction streams specific to CV32E40X
 
   // RISCV-DV class override definitions
-  `include "cv32e40s_instr_sequence.sv"
-  `include "cv32e40s_pma_cfg.sv"
-  `include "cv32e40s_compressed_instr.sv"
-  `include "cv32e40s_privil_reg.sv"
-  `include "cv32e40s_privileged_common_seq.sv"
-  `include "cv32e40s_instr_gen_config.sv"
-  `include "cv32e40s_debug_rom_gen.sv"
-  `include "cv32e40s_asm_program_gen.sv"
-  `include "cv32e40s_instr_base_test.sv"
-  `include "cv32e40s_pma_instr_lib.sv"
-  `include "cv32e40s_fencei_instr_lib.sv"
-  `include "cv32e40s_zcmp_instr_lib.sv"
-  `include "cv32e40s_zcmt_instr_lib.sv"
+  `include "cv32e40x_instr_sequence.sv"
+  `include "cv32e40x_pma_cfg.sv"
+  `include "cv32e40x_compressed_instr.sv"
+  `include "cv32e40x_privil_reg.sv"
+  `include "cv32e40x_privileged_common_seq.sv"
+  `include "cv32e40x_instr_gen_config.sv"
+  `include "cv32e40x_debug_rom_gen.sv"
+  `include "cv32e40x_asm_program_gen.sv"
+  `include "cv32e40x_instr_base_test.sv"
+  `include "cv32e40x_pma_instr_lib.sv"
+  `include "cv32e40x_fencei_instr_lib.sv"
+  `include "cv32e40x_zcmp_instr_lib.sv"
+  `include "cv32e40x_zcmt_instr_lib.sv"
 
   // Push general purpose register to the debugger stack
-  function automatic void push_gpr_to_debugger_stack(cv32e40s_instr_gen_config cfg_corev,
+  function automatic void push_gpr_to_debugger_stack(cv32e40x_instr_gen_config cfg_corev,
                                                      ref string instr[$]);
     string store_instr = (XLEN == 32) ? "sw" : "sd";
     // Reserve space from kernel stack to save all 32 GPR except for x0
@@ -61,7 +61,7 @@ package cv32e40s_instr_test_pkg;
   endfunction : push_gpr_to_debugger_stack
 
     // Pop general purpose register from debugger stack
-  function automatic void pop_gpr_from_debugger_stack(cv32e40s_instr_gen_config cfg_corev,
+  function automatic void pop_gpr_from_debugger_stack(cv32e40x_instr_gen_config cfg_corev,
                                                       ref string instr[$]);
     string load_instr = (XLEN == 32) ? "lw" : "ld";
     // Pop user mode GPRs from kernel stack
@@ -75,4 +75,4 @@ package cv32e40s_instr_test_pkg;
     instr.push_back($sformatf("addi x%0d, x%0d, %0d", cfg_corev.dp, cfg_corev.dp, 31 * (XLEN/8)));
   endfunction : pop_gpr_from_debugger_stack
 
-endpackage : cv32e40s_instr_test_pkg;
+endpackage : cv32e40x_instr_test_pkg;

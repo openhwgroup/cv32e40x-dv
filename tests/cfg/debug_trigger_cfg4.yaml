@@ -1,5 +1,5 @@
 name: debug_trigger_cfg4
-description: Configuration for 4 triggers in CV32E40S simulations
+description: Configuration for 4 triggers in CV32E40X simulations
 compile_flags: >
     +define+PMP_ENABLE_64
     +define+DBG_NUM_TRIG_4

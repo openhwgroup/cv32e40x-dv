@@ -14,50 +14,50 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_BASE_VSEQ_SV__
-`define __UVME_CV32E40S_BASE_VSEQ_SV__
+`ifndef __UVME_CV32E40X_BASE_VSEQ_SV__
+`define __UVME_CV32E40X_BASE_VSEQ_SV__
 
 
 /**
- * Abstract object from which all other CV32E40S virtual sequences extend.
+ * Abstract object from which all other CV32E40X virtual sequences extend.
  * Does not generate any sequence items of its own. Subclasses must be run on
- * CV32E40S Virtual Sequencer (uvme_cv32e40s_vsqr_c) instance.
+ * CV32E40X Virtual Sequencer (uvme_cv32e40x_vsqr_c) instance.
  */
-class uvme_cv32e40s_base_vseq_c extends uvm_sequence#(
+class uvme_cv32e40x_base_vseq_c extends uvm_sequence#(
    .REQ(uvm_sequence_item),
    .RSP(uvm_sequence_item)
 );
 
    // Environment handles
-   uvme_cv32e40s_cfg_c    cfg;
-   uvme_cv32e40s_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c    cfg;
+   uvme_cv32e40x_cntxt_c  cntxt;
 
 
-   `uvm_object_utils(uvme_cv32e40s_base_vseq_c)
-   `uvm_declare_p_sequencer(uvme_cv32e40s_vsqr_c)
+   `uvm_object_utils(uvme_cv32e40x_base_vseq_c)
+   `uvm_declare_p_sequencer(uvme_cv32e40x_vsqr_c)
 
 
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_base_vseq");
+   extern function new(string name="uvme_cv32e40x_base_vseq");
 
    /**
     * Retrieve cfg and cntxt handles from p_sequencer.
     */
    extern virtual task pre_start();
 
-endclass : uvme_cv32e40s_base_vseq_c
+endclass : uvme_cv32e40x_base_vseq_c
 
 
-function uvme_cv32e40s_base_vseq_c::new(string name="uvme_cv32e40s_base_vseq");
+function uvme_cv32e40x_base_vseq_c::new(string name="uvme_cv32e40x_base_vseq");
 
    super.new(name);
 
 endfunction : new
 
 
-task uvme_cv32e40s_base_vseq_c::pre_start();
+task uvme_cv32e40x_base_vseq_c::pre_start();
 
    cfg   = p_sequencer.cfg  ;
    cntxt = p_sequencer.cntxt;
@@ -65,4 +65,4 @@ task uvme_cv32e40s_base_vseq_c::pre_start();
 endtask : pre_start
 
 
-`endif // __UVME_CV32E40S_BASE_VSEQ_SV__
+`endif // __UVME_CV32E40X_BASE_VSEQ_SV__

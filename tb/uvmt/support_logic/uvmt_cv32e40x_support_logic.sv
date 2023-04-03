@@ -15,14 +15,14 @@
 // limitations under the License.
 //
 
-module uvmt_cv32e40s_support_logic
+module uvmt_cv32e40x_support_logic
   import uvm_pkg::*;
   import uvma_rvfi_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   (
     uvma_rvfi_instr_if rvfi,
-    uvmt_cv32e40s_input_to_support_logic_module_if.driver_mp in_support_if,
-    uvmt_cv32e40s_support_logic_for_assert_coverage_modules_if.master_mp out_support_if
+    uvmt_cv32e40x_input_to_support_logic_module_if.driver_mp in_support_if,
+    uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if.master_mp out_support_if
   );
 
   // ---------------------------------------------------------------------------
@@ -155,7 +155,7 @@ module uvmt_cv32e40s_support_logic
   // Support logic for obi interfaces:
 
   //obi data bus:
-  uvmt_cv32e40s_sl_obi_phases_monitor data_bus_obi_phases_monitor (
+  uvmt_cv32e40x_sl_obi_phases_monitor data_bus_obi_phases_monitor (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
@@ -169,7 +169,7 @@ module uvmt_cv32e40s_support_logic
   );
 
   //obi instr bus:
-  uvmt_cv32e40s_sl_obi_phases_monitor instr_bus_obi_phases_monitor (
+  uvmt_cv32e40x_sl_obi_phases_monitor instr_bus_obi_phases_monitor (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
@@ -183,7 +183,7 @@ module uvmt_cv32e40s_support_logic
   );
 
   //obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) (=> abiim)
-  uvmt_cv32e40s_sl_obi_phases_monitor abiim_bus_obi_phases_monitor (
+  uvmt_cv32e40x_sl_obi_phases_monitor abiim_bus_obi_phases_monitor (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
@@ -197,7 +197,7 @@ module uvmt_cv32e40s_support_logic
   );
 
   //obi protocol between LSU (l) MPU (m) and LSU (l) (=> lml)
-  uvmt_cv32e40s_sl_obi_phases_monitor lml_bus_obi_phases_monitor (
+  uvmt_cv32e40x_sl_obi_phases_monitor lml_bus_obi_phases_monitor (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
@@ -211,7 +211,7 @@ module uvmt_cv32e40s_support_logic
   );
 
   //obi protocol between LSU (l) respons (r) filter (f) and the OBI (o) data (d) interface (i) (=> lrfodi)
-  uvmt_cv32e40s_sl_obi_phases_monitor lrfodi_bus_obi_phases_monitor (
+  uvmt_cv32e40x_sl_obi_phases_monitor lrfodi_bus_obi_phases_monitor (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
@@ -227,7 +227,7 @@ module uvmt_cv32e40s_support_logic
   //The submodule instance under will tell if the
   //the response's request required a store operation.
 
-  uvmt_cv32e40s_sl_req_attribute_fifo req_was_store_i
+  uvmt_cv32e40x_sl_req_attribute_fifo req_was_store_i
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
@@ -244,7 +244,7 @@ module uvmt_cv32e40s_support_logic
   //the response's request had integrity
   //in the transfere of instructions on the OBI instruction bus.
 
-  uvmt_cv32e40s_sl_req_attribute_fifo instr_req_had_integrity_i
+  uvmt_cv32e40x_sl_req_attribute_fifo instr_req_had_integrity_i
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
@@ -261,7 +261,7 @@ module uvmt_cv32e40s_support_logic
   //the response's request had integrity
   //in the transfere of data on the OBI data bus.
 
-  uvmt_cv32e40s_sl_req_attribute_fifo data_req_had_integrity_i
+  uvmt_cv32e40x_sl_req_attribute_fifo data_req_had_integrity_i
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
@@ -307,7 +307,7 @@ module uvmt_cv32e40s_support_logic
     end
   end
 
-  uvmt_cv32e40s_sl_req_attribute_fifo sl_req_gntpar_error_in_resp_instr_i
+  uvmt_cv32e40x_sl_req_attribute_fifo sl_req_gntpar_error_in_resp_instr_i
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
@@ -324,7 +324,7 @@ module uvmt_cv32e40s_support_logic
   //the response's request had a gntpar error
   //in the transfere of data on the OBI data bus.
 
-  uvmt_cv32e40s_sl_req_attribute_fifo sl_req_gntpar_error_in_resp_data_i
+  uvmt_cv32e40x_sl_req_attribute_fifo sl_req_gntpar_error_in_resp_data_i
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
@@ -337,5 +337,5 @@ module uvmt_cv32e40s_support_logic
     .is_req_attribute_in_response_o (out_support_if.gntpar_error_in_response_data)
   );
 
-endmodule : uvmt_cv32e40s_support_logic
+endmodule : uvmt_cv32e40x_support_logic
 

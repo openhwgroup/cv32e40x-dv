@@ -22,7 +22,7 @@
 // The base test Uses the factory to replace riscv_privil_reg with corev_privil_reg
 //------------------------------------------------------------------------------
 
-class cv32e40s_C_LUI_instr extends riscv_C_LUI_instr;
+class cv32e40x_C_LUI_instr extends riscv_C_LUI_instr;
 
   // Fix an issue with constraints nzimm6 for C_LUI instructions
   // The original definition is in riscv_compressed_instr.sv
@@ -43,7 +43,7 @@ class cv32e40s_C_LUI_instr extends riscv_C_LUI_instr;
     }
   }
 
-  `uvm_object_utils(cv32e40s_C_LUI_instr)
+  `uvm_object_utils(cv32e40x_C_LUI_instr)
 
   function new(string name="");
     super.new(name);
@@ -73,4 +73,4 @@ class cv32e40s_C_LUI_instr extends riscv_C_LUI_instr;
     end
   endfunction : update_imm_str
 
-endclass : cv32e40s_C_LUI_instr
+endclass : cv32e40x_C_LUI_instr

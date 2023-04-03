@@ -22,13 +22,13 @@
 // The base test Uses the factory to replace riscv_instr_gen_config with corev_instr_gen_config
 //------------------------------------------------------------------------------
 
-class cv32e40s_instr_gen_config extends riscv_instr_gen_config;
+class cv32e40x_instr_gen_config extends riscv_instr_gen_config;
 
   // External config control (plusarg) to enable/disable fast_interrupt handlers
   bit enable_fast_interrupt_handler;
   bit enable_pma;
   bit exit_on_debug_exception;
-  cv32e40s_pma_cfg pma_cfg;
+  cv32e40x_pma_cfg pma_cfg;
 
   // Knob to set zero fast interrupt handler
   // Knob is needed because FIXED MTVEC mode won't work with fast interrupt handlers
@@ -54,7 +54,7 @@ class cv32e40s_instr_gen_config extends riscv_instr_gen_config;
     }
   }
 
-  // CV32E40S requires the MTVEC table to be aligned to 256KB boundaries
+  // CV32E40X requires the MTVEC table to be aligned to 256KB boundaries
   constraint mtvec_c {
     tvec_alignment == 8;
   }
@@ -84,7 +84,7 @@ class cv32e40s_instr_gen_config extends riscv_instr_gen_config;
     }
   }
 
-  `uvm_object_utils_begin(cv32e40s_instr_gen_config)
+  `uvm_object_utils_begin(cv32e40x_instr_gen_config)
     `uvm_field_enum(mtvec_mode_t, mtvec_mode,     UVM_DEFAULT)
     `uvm_field_enum(riscv_reg_t, dp,              UVM_DEFAULT)
     `uvm_field_enum(riscv_reg_t, scratch_reg,     UVM_DEFAULT)
@@ -103,7 +103,7 @@ class cv32e40s_instr_gen_config extends riscv_instr_gen_config;
     get_bool_arg_value("+exit_on_debug_exception=", exit_on_debug_exception);
 
     if (enable_pma) begin
-      pma_cfg = cv32e40s_pma_cfg::type_id::create("pma_cfg");
+      pma_cfg = cv32e40x_pma_cfg::type_id::create("pma_cfg");
       foreach (pma_cfg.regions[i]) begin
         if (pma_cfg.regions[i].main) begin
           int size;
@@ -138,4 +138,4 @@ class cv32e40s_instr_gen_config extends riscv_instr_gen_config;
     end
   endfunction : post_randomize
 
-endclass : cv32e40s_instr_gen_config
+endclass : cv32e40x_instr_gen_config

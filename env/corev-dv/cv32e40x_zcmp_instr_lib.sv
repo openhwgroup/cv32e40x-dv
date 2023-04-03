@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------------------
 //
-// CV32E40S random zcmp instruction stream
+// CV32E40X random zcmp instruction stream
 //
 //-----------------------------------------------------------------------------------------
 class corev_zcmp_pushpop_base_stream extends riscv_directed_instr_stream;

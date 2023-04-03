@@ -20,10 +20,10 @@
 `default_nettype none
 
 
-module uvmt_cv32e40s_pmp_assert
+module uvmt_cv32e40x_pmp_assert
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
-  import uvmt_cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
+  import uvmt_cv32e40x_pkg::*;
   #(
     parameter int        PMP_GRANULARITY,
     parameter int        PMP_NUM_REGIONS,
@@ -58,7 +58,7 @@ module uvmt_cv32e40s_pmp_assert
   );
 
 
-  string info_tag = "CV32E40S_PMP_ASSERT";
+  string info_tag = "CV32E40X_PMP_ASSERT";
 
 
   // Defaults
@@ -70,11 +70,11 @@ module uvmt_cv32e40s_pmp_assert
   // Helper logic
 
   match_status_t  match_status;
-  uvmt_cv32e40s_pmp_model #(
+  uvmt_cv32e40x_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END)
   ) model_i (
     .debug_mode     (bus_trans_dbg),
     .match_status_o (match_status),
@@ -533,7 +533,7 @@ module uvmt_cv32e40s_pmp_assert
   end
 
 
-endmodule : uvmt_cv32e40s_pmp_assert
+endmodule : uvmt_cv32e40x_pmp_assert
 
 
 `default_nettype wire

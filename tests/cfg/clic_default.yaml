@@ -1,5 +1,5 @@
 name: clic_default
-description: Default clic configuration for CV32E40S simulations
+description: Default clic configuration for CV32E40X simulations
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN

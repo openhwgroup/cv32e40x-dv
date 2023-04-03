@@ -17,37 +17,37 @@
 
 
 
-`ifndef __UVMT_CV32E40S_BASE_TEST_SV__
-`define __UVMT_CV32E40S_BASE_TEST_SV__
+`ifndef __UVMT_CV32E40X_BASE_TEST_SV__
+`define __UVMT_CV32E40X_BASE_TEST_SV__
 
 
 /**
- * Abstract component from which all other CV32E40S test cases must
+ * Abstract component from which all other CV32E40X test cases must
  * ultimately extend.
  * Subclasses must provide stimulus via the virtual sequencer by implementing
  * UVM runtime phases.
  */
-class uvmt_cv32e40s_base_test_c extends uvm_test;
+class uvmt_cv32e40x_base_test_c extends uvm_test;
 
    // Objects
-   rand uvmt_cv32e40s_test_cfg_c   test_cfg ;
-   rand uvme_cv32e40s_cfg_c        env_cfg  ;
-   rand uvme_cv32e40s_cntxt_c      env_cntxt;
+   rand uvmt_cv32e40x_test_cfg_c   test_cfg ;
+   rand uvme_cv32e40x_cfg_c        env_cfg  ;
+   rand uvme_cv32e40x_cntxt_c      env_cntxt;
    uvml_logs_rs_text_c             rs       ;
    uvml_logs_reg_logger_cbs_c      reg_cbs  ;
 
    // Components
-   uvme_cv32e40s_env_c   env       ;
-   uvme_cv32e40s_vsqr_c  vsequencer;
+   uvme_cv32e40x_env_c   env       ;
+   uvme_cv32e40x_vsqr_c  vsequencer;
 
    // Handles testbench interfaces
-   virtual uvmt_cv32e40s_vp_status_if    vp_status_vif;  // virtual peripheral status
+   virtual uvmt_cv32e40x_vp_status_if    vp_status_vif;  // virtual peripheral status
 
    // Default sequences
-   rand uvme_cv32e40s_reset_vseq_c  reset_vseq;
+   rand uvme_cv32e40x_reset_vseq_c  reset_vseq;
 
 
-   `uvm_component_utils_begin(uvmt_cv32e40s_base_test_c)
+   `uvm_component_utils_begin(uvmt_cv32e40x_base_test_c)
       `uvm_field_object(test_cfg , UVM_DEFAULT)
       `uvm_field_object(env_cfg  , UVM_DEFAULT)
       `uvm_field_object(env_cntxt, UVM_DEFAULT)
@@ -69,14 +69,14 @@ class uvmt_cv32e40s_base_test_c extends uvm_test;
    }
 
    // Additional, temporary constraints to get around known design bugs/constraints
-   `include "uvmt_cv32e40s_base_test_workarounds.sv"
+   `include "uvmt_cv32e40x_base_test_workarounds.sv"
 
 
    /**
     * 1. Replaces default report server with rs.
     * 2. Creates reset_vseq.
     */
-   extern function new(string name="uvmt_cv32e40s_base_test", uvm_component parent=null);
+   extern function new(string name="uvmt_cv32e40x_base_test", uvm_component parent=null);
 
    /**
     * 1. Builds test_cfg & env_cfg via create_cfg()
@@ -124,7 +124,7 @@ class uvmt_cv32e40s_base_test_c extends uvm_test;
    extern virtual function void phase_started(uvm_phase phase);
 
    /**
-    * Indicates to the test bench (uvmt_cv32e40s_tb) that the test has completed.
+    * Indicates to the test bench (uvmt_cv32e40x_tb) that the test has completed.
     * This is done by checking the properties of the phase argument.
     */
    extern virtual function void phase_ended(uvm_phase phase);
@@ -197,26 +197,26 @@ class uvmt_cv32e40s_base_test_c extends uvm_test;
     */
    extern virtual task watchdog_timer();
 
-endclass : uvmt_cv32e40s_base_test_c
+endclass : uvmt_cv32e40x_base_test_c
 
 
-function uvmt_cv32e40s_base_test_c::new(string name="uvmt_cv32e40s_base_test", uvm_component parent=null);
+function uvmt_cv32e40x_base_test_c::new(string name="uvmt_cv32e40x_base_test", uvm_component parent=null);
 
    super.new(name, parent);
 
    // Replaces default report server
    // Gives you short-and-sweet looger messages like this:
-   //        UVM_INFO @ 9.750 ns : uvmt_cv32e40s_dut_wrap.sv(79) reporter [DUT_WRAP] load_instr_mem asserted!
+   //        UVM_INFO @ 9.750 ns : uvmt_cv32e40x_dut_wrap.sv(79) reporter [DUT_WRAP] load_instr_mem asserted!
    rs = new("rs");
 
 
    // Terminate simulation after a "reasonable" number of errors
    uvm_report_server::set_server(rs);
-   reset_vseq = uvme_cv32e40s_reset_vseq_c::type_id::create("reset_vseq");
+   reset_vseq = uvme_cv32e40x_reset_vseq_c::type_id::create("reset_vseq");
 endfunction : new
 
 
-function void uvmt_cv32e40s_base_test_c::build_phase(uvm_phase phase);
+function void uvmt_cv32e40x_base_test_c::build_phase(uvm_phase phase);
 
    super.build_phase(phase);
 
@@ -236,7 +236,7 @@ function void uvmt_cv32e40s_base_test_c::build_phase(uvm_phase phase);
 endfunction : build_phase
 
 
-function void uvmt_cv32e40s_base_test_c::connect_phase(uvm_phase phase);
+function void uvmt_cv32e40x_base_test_c::connect_phase(uvm_phase phase);
 
    super.connect_phase(phase);
 
@@ -245,7 +245,7 @@ function void uvmt_cv32e40s_base_test_c::connect_phase(uvm_phase phase);
 
 endfunction : connect_phase
 
-function void uvmt_cv32e40s_base_test_c::end_of_elaboration_phase(uvm_phase phase);
+function void uvmt_cv32e40x_base_test_c::end_of_elaboration_phase(uvm_phase phase);
 
    super.end_of_elaboration_phase(phase);
 
@@ -255,7 +255,7 @@ function void uvmt_cv32e40s_base_test_c::end_of_elaboration_phase(uvm_phase phas
 endfunction : end_of_elaboration_phase
 
 
-task uvmt_cv32e40s_base_test_c::run_phase(uvm_phase phase);
+task uvmt_cv32e40x_base_test_c::run_phase(uvm_phase phase);
 
    super.run_phase(phase);
 
@@ -264,13 +264,13 @@ task uvmt_cv32e40s_base_test_c::run_phase(uvm_phase phase);
 endtask : run_phase
 
 
-task uvmt_cv32e40s_base_test_c::reset_phase(uvm_phase phase);
+task uvmt_cv32e40x_base_test_c::reset_phase(uvm_phase phase);
 
    super.reset_phase(phase);
 
    phase.raise_objection(this);
 
-   env_cntxt.core_cntrl_cntxt.core_cntrl_vif.load_instr_mem = 1'bX; // Using 'X to signal uvmt_cv32e40s_dut_wrap.sv to wait...
+   env_cntxt.core_cntrl_cntxt.core_cntrl_vif.load_instr_mem = 1'bX; // Using 'X to signal uvmt_cv32e40x_dut_wrap.sv to wait...
 
    `uvm_info("BASE TEST", $sformatf("Starting reset virtual sequence:\n%s", reset_vseq.sprint()), UVM_NONE)
    reset_vseq.start(vsequencer);
@@ -281,10 +281,10 @@ task uvmt_cv32e40s_base_test_c::reset_phase(uvm_phase phase);
 endtask : reset_phase
 
 
-task uvmt_cv32e40s_base_test_c::configure_phase(uvm_phase phase);
+task uvmt_cv32e40x_base_test_c::configure_phase(uvm_phase phase);
 
    // Control the loading of the pre-compiled firmware
-   // Actual loading done in uvmt_cv32e40s_dut_wrap.sv to avoid XMRs across packages.
+   // Actual loading done in uvmt_cv32e40x_dut_wrap.sv to avoid XMRs across packages.
    if (test_cfg.tpt == NO_TEST_PROGRAM) begin
      env_cntxt.core_cntrl_cntxt.core_cntrl_vif.load_instr_mem = 1'b0;
      `uvm_info("BASE TEST", "clear load_instr_mem", UVM_NONE)
@@ -301,7 +301,7 @@ task uvmt_cv32e40s_base_test_c::configure_phase(uvm_phase phase);
 endtask : configure_phase
 
 
-function void uvmt_cv32e40s_base_test_c::phase_started(uvm_phase phase);
+function void uvmt_cv32e40x_base_test_c::phase_started(uvm_phase phase);
 
    string  phase_name = phase.get_name();
 
@@ -312,9 +312,9 @@ function void uvmt_cv32e40s_base_test_c::phase_started(uvm_phase phase);
 endfunction : phase_started
 
 
-function void uvmt_cv32e40s_base_test_c::phase_ended(uvm_phase phase);
+function void uvmt_cv32e40x_base_test_c::phase_ended(uvm_phase phase);
 
-   // Local vars for test status outputs from Virtual Peripheral in uvmt_cv32e40s_tb.dut_wrap.mem_i
+   // Local vars for test status outputs from Virtual Peripheral in uvmt_cv32e40x_tb.dut_wrap.mem_i
    bit        tp;
    bit        tf;
    bit        evalid;
@@ -355,22 +355,22 @@ function void uvmt_cv32e40s_base_test_c::phase_ended(uvm_phase phase);
 
 endfunction : phase_ended
 
-function void uvmt_cv32e40s_base_test_c::post_randomize();
+function void uvmt_cv32e40x_base_test_c::post_randomize();
 
 
 endfunction : post_randomize
 
 
-function void uvmt_cv32e40s_base_test_c::retrieve_vifs();
+function void uvmt_cv32e40x_base_test_c::retrieve_vifs();
 
-   if (!uvm_config_db#(virtual uvmt_cv32e40s_vp_status_if)::get(this, "", "vp_status_vif", vp_status_vif)) begin
+   if (!uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if)::get(this, "", "vp_status_vif", vp_status_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vp_status_vif handle of type %s in uvm_config_db", $typename(vp_status_vif)))
    end
    else begin
       `uvm_info("VIF", $sformatf("Found vp_status_vif handle of type %s in uvm_config_db", $typename(vp_status_vif)), UVM_DEBUG)
    end
 
-   if (!uvm_config_db#(virtual uvme_cv32e40s_core_cntrl_if)::get(this, "", "core_cntrl_vif", env_cntxt.core_cntrl_cntxt.core_cntrl_vif)) begin
+   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if)::get(this, "", "core_cntrl_vif", env_cntxt.core_cntrl_cntxt.core_cntrl_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find core_cntrl_vif handle of type %s in uvm_config_db", $typename(env_cntxt.core_cntrl_cntxt.core_cntrl_vif)))
    end
    else begin
@@ -380,15 +380,15 @@ function void uvmt_cv32e40s_base_test_c::retrieve_vifs();
 endfunction : retrieve_vifs
 
 
-function void uvmt_cv32e40s_base_test_c::create_cfg();
+function void uvmt_cv32e40x_base_test_c::create_cfg();
 
-   test_cfg = uvmt_cv32e40s_test_cfg_c::type_id::create("test_cfg");
-   env_cfg  = uvme_cv32e40s_cfg_c     ::type_id::create("env_cfg" );
+   test_cfg = uvmt_cv32e40x_test_cfg_c::type_id::create("test_cfg");
+   env_cfg  = uvme_cv32e40x_cfg_c     ::type_id::create("env_cfg" );
 
 endfunction : create_cfg
 
 
-function void uvmt_cv32e40s_base_test_c::randomize_test();
+function void uvmt_cv32e40x_base_test_c::randomize_test();
 
    test_cfg.process_cli_args();
    `uvm_info("TEST", "randomize test", UVM_LOW);
@@ -399,7 +399,7 @@ function void uvmt_cv32e40s_base_test_c::randomize_test();
 endfunction : randomize_test
 
 
-function void uvmt_cv32e40s_base_test_c::cfg_hrtbt_monitor();
+function void uvmt_cv32e40x_base_test_c::cfg_hrtbt_monitor();
 
    uvml_default_hrtbt.enabled = test_cfg.heartbeat_mon_enabled;
    //`uvml_hrtbt_set_cfg(startup_timeout , test_cfg.startup_timeout)
@@ -410,49 +410,49 @@ function void uvmt_cv32e40s_base_test_c::cfg_hrtbt_monitor();
 endfunction : cfg_hrtbt_monitor
 
 
-function void uvmt_cv32e40s_base_test_c::assign_cfg();
+function void uvmt_cv32e40x_base_test_c::assign_cfg();
 
-   uvm_config_db#(uvme_cv32e40s_cfg_c)::set(this, "env", "cfg", env_cfg);
+   uvm_config_db#(uvme_cv32e40x_cfg_c)::set(this, "env", "cfg", env_cfg);
 
 endfunction : assign_cfg
 
 
-function void uvmt_cv32e40s_base_test_c::create_cntxt();
+function void uvmt_cv32e40x_base_test_c::create_cntxt();
 
-   env_cntxt = uvme_cv32e40s_cntxt_c::type_id::create("env_cntxt");
+   env_cntxt = uvme_cv32e40x_cntxt_c::type_id::create("env_cntxt");
 
 endfunction : create_cntxt
 
 
-function void uvmt_cv32e40s_base_test_c::assign_cntxt();
+function void uvmt_cv32e40x_base_test_c::assign_cntxt();
 
-   uvm_config_db#(uvme_cv32e40s_cntxt_c)::set(this, "env", "cntxt", env_cntxt);
+   uvm_config_db#(uvme_cv32e40x_cntxt_c)::set(this, "env", "cntxt", env_cntxt);
 
 endfunction : assign_cntxt
 
 
-function void uvmt_cv32e40s_base_test_c::sample_core_parameters();
+function void uvmt_cv32e40x_base_test_c::sample_core_parameters();
 
    env_cfg.sample_parameters(env_cntxt.core_cntrl_cntxt);
 
 endfunction : sample_core_parameters
 
 
-function void uvmt_cv32e40s_base_test_c::create_env();
+function void uvmt_cv32e40x_base_test_c::create_env();
 
-   env = uvme_cv32e40s_env_c::type_id::create("env", this);
+   env = uvme_cv32e40x_env_c::type_id::create("env", this);
 
 endfunction : create_env
 
 
-function void uvmt_cv32e40s_base_test_c::create_components();
+function void uvmt_cv32e40x_base_test_c::create_components();
 
    reg_cbs = uvml_logs_reg_logger_cbs_c::type_id::create("reg_cbs");
 
 endfunction : create_components
 
 
-function void uvmt_cv32e40s_base_test_c::print_banner(string text);
+function void uvmt_cv32e40x_base_test_c::print_banner(string text);
 
   if (test_cfg != null) begin
     if (test_cfg.print_uvm_runflow_banner) begin
@@ -469,7 +469,7 @@ function void uvmt_cv32e40s_base_test_c::print_banner(string text);
 endfunction : print_banner
 
 
-task uvmt_cv32e40s_base_test_c::watchdog_timer();
+task uvmt_cv32e40x_base_test_c::watchdog_timer();
 
    fork
       begin
@@ -481,4 +481,4 @@ task uvmt_cv32e40s_base_test_c::watchdog_timer();
 endtask : watchdog_timer
 
 
-`endif // __UVMT_CV32E40S_BASE_TEST_SV__
+`endif // __UVMT_CV32E40X_BASE_TEST_SV__

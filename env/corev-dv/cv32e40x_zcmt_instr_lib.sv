@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------------------
 //
-// CV32E40S random table jump instruction stream
+// CV32E40X random table jump instruction stream
 //
 //-----------------------------------------------------------------------------------------
 class corev_zcmt_base_stream extends riscv_directed_instr_stream;

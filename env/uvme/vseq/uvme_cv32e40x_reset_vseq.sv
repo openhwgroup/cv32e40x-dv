@@ -14,22 +14,22 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_RESET_VSEQ_SV__
-`define __UVME_CV32E40S_RESET_VSEQ_SV__
+`ifndef __UVME_CV32E40X_RESET_VSEQ_SV__
+`define __UVME_CV32E40X_RESET_VSEQ_SV__
 
 
 /**
  * Virtual sequence responsible for starting the system clock and issuing
  * the initial reset pulse to the DUT.
  */
-class uvme_cv32e40s_reset_vseq_c extends uvme_cv32e40s_base_vseq_c;
+class uvme_cv32e40x_reset_vseq_c extends uvme_cv32e40x_base_vseq_c;
 
    rand int unsigned  num_clk_before_reset; ///< Number of clock cylces between start of clock and resert assert
    rand int unsigned  rst_deassert_period ; ///< Time delta between resert assert and de-assert, measured in picoseconds (ps)
    rand int unsigned  post_rst_wait       ; ///< Time delta between resert de-assert and end of virtual sequence, measured in picoseconds (ps)
 
 
-   `uvm_object_utils_begin(uvme_cv32e40s_reset_vseq_c)
+   `uvm_object_utils_begin(uvme_cv32e40x_reset_vseq_c)
       `uvm_field_int(num_clk_before_reset, UVM_DEFAULT + UVM_DEC)
       `uvm_field_int(rst_deassert_period , UVM_DEFAULT + UVM_DEC)
       `uvm_field_int(post_rst_wait       , UVM_DEFAULT + UVM_DEC)
@@ -46,24 +46,24 @@ class uvme_cv32e40s_reset_vseq_c extends uvme_cv32e40s_base_vseq_c;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_reset_vseq");
+   extern function new(string name="uvme_cv32e40x_reset_vseq");
 
    /**
     * Starts the clock, waits, then resets the DUT.
     */
    extern virtual task body();
 
-endclass : uvme_cv32e40s_reset_vseq_c
+endclass : uvme_cv32e40x_reset_vseq_c
 
 
-function uvme_cv32e40s_reset_vseq_c::new(string name="uvme_cv32e40s_reset_vseq");
+function uvme_cv32e40x_reset_vseq_c::new(string name="uvme_cv32e40x_reset_vseq");
 
    super.new(name);
 
 endfunction : new
 
 
-task uvme_cv32e40s_reset_vseq_c::body();
+task uvme_cv32e40x_reset_vseq_c::body();
 
    uvma_clknrst_seq_item_c  clk_start_req;
    uvma_clknrst_seq_item_c  reset_assrt_req;
@@ -89,10 +89,10 @@ task uvme_cv32e40s_reset_vseq_c::body();
       initial_value == UVMA_CLKNRST_SEQ_ITEM_INITIAL_VALUE_0;
       //clk_period    == local::cfg.sys_clk_period;
       clk_period    == cfg.sys_clk_period;
-      //clk_period    == uvme_cv32e40s_sys_default_clk_period;
+      //clk_period    == uvme_cv32e40x_sys_default_clk_period;
    })
 
 endtask : body
 
 
-`endif // __UVME_CV32E40S_RESET_VSEQ_SV__
+`endif // __UVME_CV32E40X_RESET_VSEQ_SV__

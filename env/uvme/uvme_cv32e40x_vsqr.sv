@@ -15,21 +15,21 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_VSQR_SV__
-`define __UVME_CV32E40S_VSQR_SV__
+`ifndef __UVME_CV32E40X_VSQR_SV__
+`define __UVME_CV32E40X_VSQR_SV__
 
 
 /**
- * Component on which all CV32E40S virtual sequences are run.
+ * Component on which all CV32E40X virtual sequences are run.
  */
-class uvme_cv32e40s_vsqr_c extends uvm_sequencer#(
+class uvme_cv32e40x_vsqr_c extends uvm_sequencer#(
    .REQ(uvm_sequence_item),
    .RSP(uvm_sequence_item)
 );
 
    // Objects
-   uvme_cv32e40s_cfg_c    cfg;
-   uvme_cv32e40s_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c    cfg;
+   uvme_cv32e40x_cntxt_c  cntxt;
 
    // Sequencer handles
    uvma_clknrst_sqr_c    clknrst_sequencer;
@@ -57,7 +57,7 @@ class uvme_cv32e40s_vsqr_c extends uvm_sequencer#(
      .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
    ) obi_memory_data_sequencer ;
 
-   `uvm_component_utils_begin(uvme_cv32e40s_vsqr_c)
+   `uvm_component_utils_begin(uvme_cv32e40x_vsqr_c)
       `uvm_field_object(cfg  , UVM_DEFAULT)
       `uvm_field_object(cntxt, UVM_DEFAULT)
    `uvm_component_utils_end
@@ -65,33 +65,33 @@ class uvme_cv32e40s_vsqr_c extends uvm_sequencer#(
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_sqr", uvm_component parent=null);
+   extern function new(string name="uvme_cv32e40x_sqr", uvm_component parent=null);
 
    /**
     * Ensures cfg & cntxt handles are not null.
     */
    extern virtual function void build_phase(uvm_phase phase);
 
-endclass : uvme_cv32e40s_vsqr_c
+endclass : uvme_cv32e40x_vsqr_c
 
 
-function uvme_cv32e40s_vsqr_c::new(string name="uvme_cv32e40s_sqr", uvm_component parent=null);
+function uvme_cv32e40x_vsqr_c::new(string name="uvme_cv32e40x_sqr", uvm_component parent=null);
 
    super.new(name, parent);
 
 endfunction : new
 
 
-function void uvme_cv32e40s_vsqr_c::build_phase(uvm_phase phase);
+function void uvme_cv32e40x_vsqr_c::build_phase(uvm_phase phase);
 
    super.build_phase(phase);
 
-   void'(uvm_config_db#(uvme_cv32e40s_cfg_c)::get(this, "", "cfg", cfg));
+   void'(uvm_config_db#(uvme_cv32e40x_cfg_c)::get(this, "", "cfg", cfg));
    if (!cfg) begin
       `uvm_fatal("CFG", "Configuration handle is null")
    end
 
-   void'(uvm_config_db#(uvme_cv32e40s_cntxt_c)::get(this, "", "cntxt", cntxt));
+   void'(uvm_config_db#(uvme_cv32e40x_cntxt_c)::get(this, "", "cntxt", cntxt));
    if (!cntxt) begin
       `uvm_fatal("CNTXT", "Context handle is null")
    end
@@ -99,4 +99,4 @@ function void uvme_cv32e40s_vsqr_c::build_phase(uvm_phase phase);
 endfunction : build_phase
 
 
-`endif // __UVME_CV32E40S_VSQR_SV__
+`endif // __UVME_CV32E40X_VSQR_SV__

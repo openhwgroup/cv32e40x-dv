@@ -29,7 +29,7 @@
 // Directed test to generate random load instruction to random pma_region
 // -----------------------------------------------------------------------------
 virtual class corev_load_store_pma_base_stream extends riscv_load_store_rand_instr_stream;
-  cv32e40s_pma_cfg pma_cfg;
+  cv32e40x_pma_cfg pma_cfg;
   rand int unsigned load_cnt;
   rand int unsigned store_cnt;
   rand riscv_reg_t protected_reg[];
@@ -77,7 +77,7 @@ virtual class corev_load_store_pma_base_stream extends riscv_load_store_rand_ins
 
   function new(string name = "");
     super.new(name);
-    pma_cfg = cv32e40s_pma_cfg::type_id::create("pma_cfg");
+    pma_cfg = cv32e40x_pma_cfg::type_id::create("pma_cfg");
   endfunction : new
 
 
@@ -421,7 +421,7 @@ endclass : corev_load_store_pma_misaligned_instr_stream
 //
 // -----------------------------------------------------------------------------
 class corev_jalr_pma_instr extends riscv_jal_instr;
-  cv32e40s_pma_cfg pma_cfg;
+  cv32e40x_pma_cfg pma_cfg;
   rand riscv_reg_t fwd_addr_reg;
   rand bit use_compressed;
   rand bit [31:0] fwd_addr;
@@ -466,7 +466,7 @@ class corev_jalr_pma_instr extends riscv_jal_instr;
 
   function new(string name = "");
     super.new(name);
-    pma_cfg = cv32e40s_pma_cfg::type_id::create("pma_cfg");
+    pma_cfg = cv32e40x_pma_cfg::type_id::create("pma_cfg");
     // find region containing RAM
     foreach (pma_cfg.regions[i]) begin
       if (pma_cfg.regions[i].main == 1) begin

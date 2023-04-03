@@ -16,25 +16,25 @@
 //
 
 
-`ifndef __UVMT_CV32E40S_DUT_CHK_SV__
-`define __UVMT_CV32E40S_DUT_CHK_SV__
+`ifndef __UVMT_CV32E40X_DUT_CHK_SV__
+`define __UVMT_CV32E40X_DUT_CHK_SV__
 
 
 /**
- * Module encapsulating assertions for CV32E40S RTL DUT wrapper.
+ * Module encapsulating assertions for CV32E40X RTL DUT wrapper.
  * All ports are SV interfaces.
  */
-module uvmt_cv32e40s_dut_chk(
+module uvmt_cv32e40x_dut_chk(
    uvma_debug_if  debug_if
 );
 
    `pragma protect begin
 
-   // TODO Add assertions to uvmt_cv32e40s_dut_chk
+   // TODO Add assertions to uvmt_cv32e40x_dut_chk
 
    `pragma protect end
 
-endmodule : uvmt_cv32e40s_dut_chk
+endmodule : uvmt_cv32e40x_dut_chk
 
 
-`endif // __UVMT_CV32E40S_DUT_CHK_SV__
+`endif // __UVMT_CV32E40X_DUT_CHK_SV__

@@ -16,8 +16,8 @@
 //
 
 
-`ifndef __UVMT_CV32E40S_UVM_MACROS_INC_SV__
-`define __UVMT_CV32E40S_UVM_MACROS_INC_SV__
+`ifndef __UVMT_CV32E40X_UVM_MACROS_INC_SV__
+`define __UVMT_CV32E40X_UVM_MACROS_INC_SV__
 
 // Simple inclusion of the uvm_macros.svh file into compilation scope.
 // This should only be used in Xcelium where automatic load of UVM does not

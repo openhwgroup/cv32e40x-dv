@@ -49,7 +49,7 @@ CORE_V_VERIF   = $(abspath $(MAKE_PATH)/../../..)
 DATE           = $(shell date +%F)
 WAVES          = 0
 
-CV_CORE       ?= CV32E40S
+CV_CORE       ?= CV32E40X
 CV_CORE_LC     = $(shell echo $(CV_CORE) | tr A-Z a-z)
 CV_CORE_UC     = $(shell echo $(CV_CORE) | tr a-z A-Z)
 
@@ -103,7 +103,7 @@ SIMV                    = ./simv
 # dsim is the Metrics Technologies SystemVerilog simulator  (https://metrics.ca/)
 DSIM                    = dsim
 DSIM_HOME               = /tools/Metrics/dsim
-DSIM_CMP_FLAGS          = +define+CORE_TB+COREV_ASSERT_OFF -timescale 1ns/1ps $(SV_CMP_FLAGS) -suppress MultiBlockWrite +define+CV32E40S_APU_TRACE
+DSIM_CMP_FLAGS          = +define+CORE_TB+COREV_ASSERT_OFF -timescale 1ns/1ps $(SV_CMP_FLAGS) -suppress MultiBlockWrite +define+CV32E40X_APU_TRACE
 DSIM_RUN_FLAGS          = -write-sql
 DSIM_UVM_ARGS           = +incdir+$(UVM_HOME)/src $(UVM_HOME)/src/uvm_pkg.sv
 DSIM_RESULTS           ?= $(PWD)/dsim_results
@@ -118,7 +118,7 @@ endif
 
 # xrun is the Cadence xcelium SystemVerilog simulator (https://cadence.com/)
 XRUN              = xrun
-XRUN_FLAGS        = -clean -smartorder -sv -top worklib.tb_top -timescale 1ns/1ps +define+CV32E40S_APU_TRACE -uvmhome CDNS-1.2-ML
+XRUN_FLAGS        = -clean -smartorder -sv -top worklib.tb_top -timescale 1ns/1ps +define+CV32E40X_APU_TRACE -uvmhome CDNS-1.2-ML
 XRUN_DIR          = xcelium.d
 
 # verilator configuration
@@ -153,7 +153,7 @@ TBSRC_TOP   := $(TBSRC_HOME)/core/tb_top.sv
 TBSRC_CORE  := $(TBSRC_HOME)/core
 TBSRC_PKG   := $(TBSRC_CORE)/tb_riscv/include/perturbation_defines.sv
 TBSRC       := $(TBSRC_CORE)/tb_top.sv \
-               $(TBSRC_CORE)/cv32e40s_tb_wrapper.sv \
+               $(TBSRC_CORE)/cv32e40x_tb_wrapper.sv \
                $(TBSRC_CORE)/mm_ram.sv \
                $(TBSRC_CORE)/dp_ram.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_random_stall.sv \
@@ -167,7 +167,7 @@ RTLSRC_VLOG_TB_TOP	:= $(basename $(notdir $(TBSRC_TOP)))
 RTLSRC_VOPT_TB_TOP	:= $(addsuffix _vopt, $(RTLSRC_VLOG_TB_TOP))
 
 TBSRC_VERI  := $(TBSRC_CORE)/tb_top_verilator.sv \
-               $(TBSRC_CORE)/cv32e40s_tb_wrapper.sv \
+               $(TBSRC_CORE)/cv32e40x_tb_wrapper.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_rvalid_stall.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_gnt_stall.sv \
                $(TBSRC_CORE)/mm_ram.sv \
@@ -187,7 +187,7 @@ CV_CORE_RTLSRC  := $(filter-out $(CV_CORE_PKG)/rtl/$(CV_CORE_LC)_register_file_l
 # FIXME: temporarily using a local manifest for the core.
 #        This is BAD PRACTICE and will be fixed with
 #        https://github.com/openhwgroup/CV_CORE/pull/421 is resolved.
-CV_CORE_MANIFEST    := $(CV_CORE_PKG)/cv32e40s_manifest.flist
+CV_CORE_MANIFEST    := $(CV_CORE_PKG)/cv32e40x_manifest.flist
 export DESIGN_RTL_DIR = $(CV_CORE_PKG)/rtl
 
 # Shorthand rules for convience
@@ -455,7 +455,7 @@ sanity-veri-run:
 
 testbench_verilator: CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
 	@echo "$(BANNER)"
-	@echo "* Compiling CORE TB and CV32E40S with Verilator"
+	@echo "* Compiling CORE TB and CV32E40X with Verilator"
 	@echo "$(BANNER)"
 	$(VERILATOR) --cc --sv --exe \
 		$(VERI_TRACE) \
@@ -631,7 +631,7 @@ riviera-clean:
 
 clone_$(CV_CORE_LC)_rtl:
 	@echo "$(BANNER)"
-	@echo "* Cloning CV32E40S RTL model"
+	@echo "* Cloning CV32E40X RTL model"
 	@echo "$(BANNER)"
 	$(CLONE_CV_CORE_CMD)
 

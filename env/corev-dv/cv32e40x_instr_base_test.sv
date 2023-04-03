@@ -21,12 +21,12 @@
 //
 //------------------------------------------------------------------------------
 
-class cv32e40s_instr_base_test extends corev_instr_base_test;
+class cv32e40x_instr_base_test extends corev_instr_base_test;
 
-  cv32e40s_pma_cfg pma_cfg;
+  cv32e40x_pma_cfg pma_cfg;
   bit enable_pma;
 
-  `uvm_component_utils(cv32e40s_instr_base_test)
+  `uvm_component_utils(cv32e40x_instr_base_test)
 
 
   function new(string name="", uvm_component parent=null);
@@ -34,7 +34,7 @@ class cv32e40s_instr_base_test extends corev_instr_base_test;
   endfunction
 
   virtual function void build_phase(uvm_phase phase);
-    cv32e40s_ldgen_c linker_generator;
+    cv32e40x_ldgen_c linker_generator;
     override_asm_program_gen();
     override_gen_config();
     override_compressed_instr();
@@ -49,40 +49,40 @@ class cv32e40s_instr_base_test extends corev_instr_base_test;
 
   virtual function void override_asm_program_gen();
     uvm_factory::get().set_type_override_by_type(corev_asm_program_gen::get_type(),
-                                                 cv32e40s_asm_program_gen::get_type());
+                                                 cv32e40x_asm_program_gen::get_type());
   endfunction
 
   virtual function void override_gen_config();
     uvm_factory::get().set_type_override_by_type(riscv_instr_gen_config::get_type(),
-                                                 cv32e40s_instr_gen_config::get_type());
+                                                 cv32e40x_instr_gen_config::get_type());
   endfunction
 
   virtual function void override_compressed_instr();
     uvm_factory::get().set_type_override_by_type(riscv_C_LUI_instr::get_type(),
-                                                 cv32e40s_C_LUI_instr::get_type());
+                                                 cv32e40x_C_LUI_instr::get_type());
   endfunction
 
   virtual function void override_privil_reg();
     uvm_factory::get().set_type_override_by_type(riscv_privil_reg::get_type(),
-                                                 cv32e40s_privil_reg::get_type());
+                                                 cv32e40x_privil_reg::get_type());
   endfunction
 
   virtual function void override_privil_common_seq();
     uvm_factory::get().set_type_override_by_type(riscv_privileged_common_seq::get_type(),
-                                                 cv32e40s_privileged_common_seq::get_type());
+                                                 cv32e40x_privileged_common_seq::get_type());
   endfunction
 
   virtual function void override_debug_rom_gen();
     uvm_factory::get().set_type_override_by_type(riscv_debug_rom_gen::get_type(),
-                                                 cv32e40s_debug_rom_gen::get_type());
+                                                 cv32e40x_debug_rom_gen::get_type());
   endfunction
 
   virtual function void override_instr_sequence();
     uvm_factory::get().set_type_override_by_type(riscv_instr_sequence::get_type(),
-                                                 cv32e40s_instr_sequence::get_type());
+                                                 cv32e40x_instr_sequence::get_type());
   endfunction :  override_instr_sequence
 
   virtual function void apply_directed_instr();
   endfunction
 
-endclass : cv32e40s_instr_base_test
+endclass : cv32e40x_instr_base_test

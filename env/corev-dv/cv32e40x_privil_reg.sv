@@ -22,9 +22,9 @@
 // The base test Uses the factory to replace riscv_privil_reg with corev_privil_reg
 //------------------------------------------------------------------------------
 
-class cv32e40s_privil_reg extends riscv_privil_reg;
+class cv32e40x_privil_reg extends riscv_privil_reg;
 
-  `uvm_object_utils(cv32e40s_privil_reg);
+  `uvm_object_utils(cv32e40x_privil_reg);
 
   function new(string name="");
     super.new(name);
@@ -79,4 +79,4 @@ class cv32e40s_privil_reg extends riscv_privil_reg;
     endcase
   endfunction : init_reg
 
-endclass : cv32e40s_privil_reg
+endclass : cv32e40x_privil_reg

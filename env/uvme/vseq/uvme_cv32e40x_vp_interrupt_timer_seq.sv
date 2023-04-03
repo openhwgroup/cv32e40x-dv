@@ -16,13 +16,13 @@
 // under the License.
 //
 
-`ifndef __UVME_CV32E40S_VP_INTERRUPT_TIMER_SEQ_SV__
-`define __UVME_CV32E40S_VP_INTERRUPT_TIMER_SEQ_SV__
+`ifndef __UVME_CV32E40X_VP_INTERRUPT_TIMER_SEQ_SV__
+`define __UVME_CV32E40X_VP_INTERRUPT_TIMER_SEQ_SV__
 
 /**
  * Sequence implementing the virtual status flags decoding
  */
-class uvme_cv32e40s_vp_interrupt_timer_seq_c#(
+class uvme_cv32e40x_vp_interrupt_timer_seq_c#(
    parameter AUSER_WIDTH = `UVMA_OBI_MEMORY_AUSER_DEFAULT_WIDTH, ///< Width of the auser signal. RI5CY, Ibex, CV32E40* do not have the auser signal.
    parameter WUSER_WIDTH = `UVMA_OBI_MEMORY_WUSER_DEFAULT_WIDTH, ///< Width of the wuser signal. RI5CY, Ibex, CV32E40* do not have the wuser signal.
    parameter RUSER_WIDTH = `UVMA_OBI_MEMORY_RUSER_DEFAULT_WIDTH, ///< Width of the ruser signal. RI5CY, Ibex, CV32E40* do not have the ruser signal.
@@ -42,9 +42,9 @@ class uvme_cv32e40s_vp_interrupt_timer_seq_c#(
    .RCHK_WIDTH(RCHK_WIDTH)
 );
 
-   uvme_cv32e40s_cntxt_c cv32e40s_cntxt;
+   uvme_cv32e40x_cntxt_c cv32e40x_cntxt;
 
-   `uvm_object_utils_begin(uvme_cv32e40s_vp_interrupt_timer_seq_c#(
+   `uvm_object_utils_begin(uvme_cv32e40x_vp_interrupt_timer_seq_c#(
      .AUSER_WIDTH(AUSER_WIDTH),
      .WUSER_WIDTH(WUSER_WIDTH),
      .RUSER_WIDTH(RUSER_WIDTH),
@@ -59,34 +59,34 @@ class uvme_cv32e40s_vp_interrupt_timer_seq_c#(
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_vp_interrupt_timer_seq_c");
+   extern function new(string name="uvme_cv32e40x_vp_interrupt_timer_seq_c");
 
    /**
     * Asserts the actual interrupt wires
     */
    extern virtual task set_interrupt();
 
-endclass : uvme_cv32e40s_vp_interrupt_timer_seq_c
+endclass : uvme_cv32e40x_vp_interrupt_timer_seq_c
 
-function uvme_cv32e40s_vp_interrupt_timer_seq_c::new(string name="uvme_cv32e40s_vp_interrupt_timer_seq_c");
+function uvme_cv32e40x_vp_interrupt_timer_seq_c::new(string name="uvme_cv32e40x_vp_interrupt_timer_seq_c");
 
    super.new(name);
 
 endfunction : new
 
-task uvme_cv32e40s_vp_interrupt_timer_seq_c::set_interrupt();
+task uvme_cv32e40x_vp_interrupt_timer_seq_c::set_interrupt();
 
    if (cfg.clic_interrupts_enabled) begin
-     cv32e40s_cntxt.clic_cntxt.vif.drv_cb.clic_irq_drv       <= clic_value.irq;
-     cv32e40s_cntxt.clic_cntxt.vif.drv_cb.clic_irq_id_drv    <= clic_value.id;
-     cv32e40s_cntxt.clic_cntxt.vif.drv_cb.clic_irq_level_drv <= clic_value.level;
-     cv32e40s_cntxt.clic_cntxt.vif.drv_cb.clic_irq_priv_drv  <= clic_value.priv;
-     cv32e40s_cntxt.clic_cntxt.vif.drv_cb.clic_irq_shv_drv   <= clic_value.shv;
+     cv32e40x_cntxt.clic_cntxt.vif.drv_cb.clic_irq_drv       <= clic_value.irq;
+     cv32e40x_cntxt.clic_cntxt.vif.drv_cb.clic_irq_id_drv    <= clic_value.id;
+     cv32e40x_cntxt.clic_cntxt.vif.drv_cb.clic_irq_level_drv <= clic_value.level;
+     cv32e40x_cntxt.clic_cntxt.vif.drv_cb.clic_irq_priv_drv  <= clic_value.priv;
+     cv32e40x_cntxt.clic_cntxt.vif.drv_cb.clic_irq_shv_drv   <= clic_value.shv;
    end
    else if (cfg.basic_interrupts_enabled) begin
-     cv32e40s_cntxt.interrupt_cntxt.vif.drv_cb.irq_drv <= interrupt_value;
+     cv32e40x_cntxt.interrupt_cntxt.vif.drv_cb.irq_drv <= interrupt_value;
    end
 
 endtask : set_interrupt
 
-`endif // __UVME_CV32E40S_VP_INTERRUPT_TIMER_SEQ_SV__
+`endif // __UVME_CV32E40X_VP_INTERRUPT_TIMER_SEQ_SV__

@@ -39,7 +39,7 @@ typedef struct {
     Uns64 resethaltreq;
     Uns64 terminate;
 
-    // E40S
+    // E40X
     Uns64 LoadBusFaultNMI;
     Uns64 StoreBusFaultNMI;
     Uns64 InstructionBusFault;

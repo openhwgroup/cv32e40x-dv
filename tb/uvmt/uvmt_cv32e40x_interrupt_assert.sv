@@ -19,9 +19,9 @@
 `default_nettype none
 
 
-module uvmt_cv32e40s_interrupt_assert
+module uvmt_cv32e40x_interrupt_assert
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   (
 
     input wire clk,   // Gated clock
@@ -95,7 +95,7 @@ module uvmt_cv32e40s_interrupt_assert
     input wire  pending_nmi,
 
     // Support Interface
-    uvmt_cv32e40s_support_logic_for_assert_coverage_modules_if.slave_mp  support_if
+    uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if.slave_mp  support_if
   );
 
   // ---------------------------------------------------------------------------
@@ -113,7 +113,7 @@ module uvmt_cv32e40s_interrupt_assert
   // ---------------------------------------------------------------------------
   // Local variables
   // ---------------------------------------------------------------------------
-  string info_tag = "CV32E40S_IRQ_ASSERT";
+  string info_tag = "CV32E40X_IRQ_ASSERT";
 
   wire [31:0] pending_enabled_irq;
   wire [31:0] pending_enabled_irq_q;
@@ -758,7 +758,7 @@ module uvmt_cv32e40s_interrupt_assert
   endgenerate
 
 
-endmodule : uvmt_cv32e40s_interrupt_assert
+endmodule : uvmt_cv32e40x_interrupt_assert
 
 
 `default_nettype wire

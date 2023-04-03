@@ -14,27 +14,27 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_SB_SV__
-`define __UVME_CV32E40S_SB_SV__
+`ifndef __UVME_CV32E40X_SB_SV__
+`define __UVME_CV32E40X_SB_SV__
 
 
 /**
- * Component encapsulating scoreboards which compare CV32E40S
+ * Component encapsulating scoreboards which compare CV32E40X
  * DUT's expected (from predictor) vs. actual (monitored) transactions.
  */
-class uvme_cv32e40s_sb_c extends uvm_scoreboard;
+class uvme_cv32e40x_sb_c extends uvm_scoreboard;
 
    // Objects
-   uvme_cv32e40s_cfg_c    cfg;
-   uvme_cv32e40s_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c    cfg;
+   uvme_cv32e40x_cntxt_c  cntxt;
 
    // Components
    // TODO Add sub-scoreboards
-   //      Ex: uvme_cv32e40s_sb_simplex_c  egress_sb;
-   //          uvme_cv32e40s_sb_simplex_c  ingress_sb;
+   //      Ex: uvme_cv32e40x_sb_simplex_c  egress_sb;
+   //          uvme_cv32e40x_sb_simplex_c  ingress_sb;
 
 
-   `uvm_component_utils_begin(uvme_cv32e40s_sb_c)
+   `uvm_component_utils_begin(uvme_cv32e40x_sb_c)
       `uvm_field_object(cfg  , UVM_DEFAULT)
       `uvm_field_object(cntxt, UVM_DEFAULT)
 
@@ -47,7 +47,7 @@ class uvme_cv32e40s_sb_c extends uvm_scoreboard;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_sb", uvm_component parent=null);
+   extern function new(string name="uvme_cv32e40x_sb", uvm_component parent=null);
 
    /**
     * Create and configures sub-scoreboards via:
@@ -72,26 +72,26 @@ class uvme_cv32e40s_sb_c extends uvm_scoreboard;
     */
    extern virtual function void create_sbs();
 
-endclass : uvme_cv32e40s_sb_c
+endclass : uvme_cv32e40x_sb_c
 
 
-function uvme_cv32e40s_sb_c::new(string name="uvme_cv32e40s_sb", uvm_component parent=null);
+function uvme_cv32e40x_sb_c::new(string name="uvme_cv32e40x_sb", uvm_component parent=null);
 
    super.new(name, parent);
 
 endfunction : new
 
 
-function void uvme_cv32e40s_sb_c::build_phase(uvm_phase phase);
+function void uvme_cv32e40x_sb_c::build_phase(uvm_phase phase);
 
    super.build_phase(phase);
 
-   void'(uvm_config_db#(uvme_cv32e40s_cfg_c)::get(this, "", "cfg", cfg));
+   void'(uvm_config_db#(uvme_cv32e40x_cfg_c)::get(this, "", "cfg", cfg));
    if (!cfg) begin
       `uvm_fatal("CFG", "Configuration handle is null")
    end
 
-   void'(uvm_config_db#(uvme_cv32e40s_cntxt_c)::get(this, "", "cntxt", cntxt));
+   void'(uvm_config_db#(uvme_cv32e40x_cntxt_c)::get(this, "", "cntxt", cntxt));
    if (!cntxt) begin
       `uvm_fatal("CNTXT", "Context handle is null")
    end
@@ -103,31 +103,31 @@ function void uvme_cv32e40s_sb_c::build_phase(uvm_phase phase);
 endfunction : build_phase
 
 
-function void uvme_cv32e40s_sb_c::assign_cfg();
+function void uvme_cv32e40x_sb_c::assign_cfg();
 
-   // TODO Implement uvme_cv32e40s_sb_c::assign_cfg()
+   // TODO Implement uvme_cv32e40x_sb_c::assign_cfg()
    //      Ex: uvm_config_db#(uvm_sb_cfg_c)::set(this, "egress_sb" , "cfg", cfg.sb_egress_cfg );
    //          uvm_config_db#(uvm_sb_cfg_c)::set(this, "ingress_sb", "cfg", cfg.sb_ingress_cfg);
 
 endfunction : assign_cfg
 
 
-function void uvme_cv32e40s_sb_c::assign_cntxt();
+function void uvme_cv32e40x_sb_c::assign_cntxt();
 
-   // TODO Implement uvme_cv32e40s_sb_c::assign_cntxt()
-   //      Ex: uvm_config_db#(uvme_cv32e40s_sb_cntxt_c)::set(this, "egress_sb" , "cntxt", cntxt.sb_egress_cntxt );
-   //          uvm_config_db#(uvme_cv32e40s_sb_cntxt_c)::set(this, "ingress_sb", "cntxt", cntxt.sb_ingress_cntxt);
+   // TODO Implement uvme_cv32e40x_sb_c::assign_cntxt()
+   //      Ex: uvm_config_db#(uvme_cv32e40x_sb_cntxt_c)::set(this, "egress_sb" , "cntxt", cntxt.sb_egress_cntxt );
+   //          uvm_config_db#(uvme_cv32e40x_sb_cntxt_c)::set(this, "ingress_sb", "cntxt", cntxt.sb_ingress_cntxt);
 
 endfunction : assign_cntxt
 
 
-function void uvme_cv32e40s_sb_c::create_sbs();
+function void uvme_cv32e40x_sb_c::create_sbs();
 
-   // TODO Implement uvme_cv32e40s_sb_c::create_sbs()
-   //      Ex: egress_sb  = uvme_cv32e40s_sb_simplex_c::type_id::create("egress_sb" , this);
-   //          ingress_sb = uvme_cv32e40s_sb_simplex_c::type_id::create("ingress_sb", this);
+   // TODO Implement uvme_cv32e40x_sb_c::create_sbs()
+   //      Ex: egress_sb  = uvme_cv32e40x_sb_simplex_c::type_id::create("egress_sb" , this);
+   //          ingress_sb = uvme_cv32e40x_sb_simplex_c::type_id::create("ingress_sb", this);
 
 endfunction : create_sbs
 
 
-`endif // __UVME_CV32E40S_SB_SV__
+`endif // __UVME_CV32E40X_SB_SV__

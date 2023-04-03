@@ -16,10 +16,10 @@
 //limitations under the License.
 //
 //
-class cv32e40s_debug_rom_gen extends riscv_debug_rom_gen;
+class cv32e40x_debug_rom_gen extends riscv_debug_rom_gen;
     string debug_dret[$];
 
-    `uvm_object_utils(cv32e40s_debug_rom_gen)
+    `uvm_object_utils(cv32e40x_debug_rom_gen)
 
     function new (string name = "");
         super.new(name);
@@ -27,7 +27,7 @@ class cv32e40s_debug_rom_gen extends riscv_debug_rom_gen;
 
     virtual function void gen_program();
         string sub_program_name[$] = {};
-        cv32e40s_instr_gen_config cfg_corev;
+        cv32e40x_instr_gen_config cfg_corev;
 
         // CORE-V Addition
         // Insert section info so linker can place
@@ -149,7 +149,7 @@ class cv32e40s_debug_rom_gen extends riscv_debug_rom_gen;
 
     virtual function void gen_debug_exception_handler();
 
-        cv32e40s_instr_gen_config cfg_corev;
+        cv32e40x_instr_gen_config cfg_corev;
 
         // CORE-V Addition
         // Cast CORE-V derived handle to enable fetching core-v config fields
@@ -173,5 +173,5 @@ class cv32e40s_debug_rom_gen extends riscv_debug_rom_gen;
         instr_stream.push_back(".section text");
     endfunction : gen_debug_exception_handler
 
-endclass : cv32e40s_debug_rom_gen
+endclass : cv32e40x_debug_rom_gen
 

@@ -14,39 +14,39 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_VSEQ_LIB_SV__
-`define __UVME_CV32E40S_VSEQ_LIB_SV__
+`ifndef __UVME_CV32E40X_VSEQ_LIB_SV__
+`define __UVME_CV32E40X_VSEQ_LIB_SV__
 
 
 /**
- * Virtual sequence library for CV32E40S environment.
+ * Virtual sequence library for CV32E40X environment.
  */
-class uvme_cv32e40s_vseq_lib_c extends uvm_sequence_library#(
+class uvme_cv32e40x_vseq_lib_c extends uvm_sequence_library#(
    .REQ(uvm_sequence_item),
    .RSP(uvm_sequence_item)
 );
 
-   `uvm_object_utils          (uvme_cv32e40s_vseq_lib_c)
-   `uvm_sequence_library_utils(uvme_cv32e40s_vseq_lib_c)
+   `uvm_object_utils          (uvme_cv32e40x_vseq_lib_c)
+   `uvm_sequence_library_utils(uvme_cv32e40x_vseq_lib_c)
 
 
    /**
     * Initializes sequence library.
     */
-   extern function new(string name="uvme_cv32e40s_vseq_lib");
+   extern function new(string name="uvme_cv32e40x_vseq_lib");
 
-endclass : uvme_cv32e40s_vseq_lib_c
+endclass : uvme_cv32e40x_vseq_lib_c
 
 
-function uvme_cv32e40s_vseq_lib_c::new(string name="uvme_cv32e40s_vseq_lib");
+function uvme_cv32e40x_vseq_lib_c::new(string name="uvme_cv32e40x_vseq_lib");
 
    super.new(name);
    init_sequence_library();
 
-   // TODO Add sequences to uvme_cv32e40s_vseq_lib_c
-   //      Ex: add_sequence(uvme_cv32e40s_abc_vseq_c::get_type());
+   // TODO Add sequences to uvme_cv32e40x_vseq_lib_c
+   //      Ex: add_sequence(uvme_cv32e40x_abc_vseq_c::get_type());
 
 endfunction : new
 
 
-`endif // __UVME_CV32E40S_VSEQ_LIB_SV__
+`endif // __UVME_CV32E40X_VSEQ_LIB_SV__

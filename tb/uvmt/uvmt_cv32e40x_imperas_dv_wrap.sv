@@ -17,10 +17,10 @@
 //
 
 
-`ifndef __UVMT_CV32E40S_IMPERAS_DV_WRAP_SV__
-`define __UVMT_CV32E40S_IMPERAS_DV_WRAP_SV__
+`ifndef __UVMT_CV32E40X_IMPERAS_DV_WRAP_SV__
+`define __UVMT_CV32E40X_IMPERAS_DV_WRAP_SV__
 
-`define DUT_PATH dut_wrap.cv32e40s_wrapper_i
+`define DUT_PATH dut_wrap.cv32e40x_wrapper_i
 `define RVFI_IF  `DUT_PATH.rvfi_instr_if_0_i
 
 `define STRINGIFY(x) `"x`"
@@ -303,11 +303,11 @@
 
 `include "rvvi/imperasDV.svh" // located in $IMPERAS_HOME/ImpProprietary/include/host
 
-module uvmt_cv32e40s_imperas_dv_wrap
+module uvmt_cv32e40x_imperas_dv_wrap
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
-  import uvme_cv32e40s_pkg::*;
-  import uvmt_cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
+  import uvme_cv32e40x_pkg::*;
+  import uvmt_cv32e40x_pkg::*;
   import rvviApiPkg::*;
   #(
    )
@@ -332,11 +332,11 @@ module uvmt_cv32e40s_imperas_dv_wrap
    string info_tag = "ImperasDV_wrap";
 
    // Make the UVM environment configuration available to the Reference Model as needed.
-   uvme_cv32e40s_cfg_c  uvm_env_cfg;
+   uvme_cv32e40x_cfg_c  uvm_env_cfg;
 
    initial begin
      @(rvvi.clk);
-     void'(uvm_config_db#(uvme_cv32e40s_cfg_c)::get(null, "uvm_test_top.env", "cfg", uvm_env_cfg));
+     void'(uvm_config_db#(uvme_cv32e40x_cfg_c)::get(null, "uvm_test_top.env", "cfg", uvm_env_cfg));
      if (!uvm_env_cfg) begin
       `uvm_fatal(info_tag, "Configuration handle is null")
      end
@@ -347,7 +347,7 @@ module uvmt_cv32e40s_imperas_dv_wrap
 
    ////////////////////////////////////////////////////////////////////////////
    // Adopted from:
-   // ImperasDV/examples/openhwgroup_cv32e40s/systemverilog/cv32e40s_testbench.sv
+   // ImperasDV/examples/openhwgroup_cv32e40x/systemverilog/cv32e40x_testbench.sv
    //
    // InstrunctionBusFault(48) is in fact a TRAP which is derived externally
    // This is strange as other program TRAPS are derived by the model, for now
@@ -820,7 +820,7 @@ module uvmt_cv32e40s_imperas_dv_wrap
     if ($value$plusargs("elf_file=%s", test_program_elf)) begin
       `uvm_info(info_tag, $sformatf("ImperasDV loading test_program %0s", test_program_elf), UVM_LOW)
       void'(rvviRefConfigSetString(IDV_CONFIG_MODEL_VENDOR,  "openhwgroup.ovpworld.org"));
-      void'(rvviRefConfigSetString(IDV_CONFIG_MODEL_VARIANT, "CV32E40S_DEV"));
+      void'(rvviRefConfigSetString(IDV_CONFIG_MODEL_VARIANT, "CV32E40X_DEV"));
       if (!rvviRefInit(test_program_elf)) begin
         `uvm_fatal(info_tag, "rvviRefInit failed")
       end
@@ -990,13 +990,13 @@ module uvmt_cv32e40s_imperas_dv_wrap
     `uvm_info(info_tag, "ref_init() complete", UVM_LOW)
   endtask // ref_init
 
-endmodule : uvmt_cv32e40s_imperas_dv_wrap
+endmodule : uvmt_cv32e40x_imperas_dv_wrap
 
 `else // ! USE_IMPERASDV
 
-    module uvmt_cv32e40s_imperas_dv_wrap
+    module uvmt_cv32e40x_imperas_dv_wrap
       import uvm_pkg::*;
-      import uvme_cv32e40s_pkg::*;
+      import uvme_cv32e40x_pkg::*;
       #(
        )
 
@@ -1006,9 +1006,9 @@ endmodule : uvmt_cv32e40s_imperas_dv_wrap
 
        task ref_init;
        endtask
-endmodule : uvmt_cv32e40s_imperas_dv_wrap
+endmodule : uvmt_cv32e40x_imperas_dv_wrap
 
 `endif  // USE_IMPERASDV
 
-`endif // __UVMT_CV32E40S_IMPERAS_DV_WRAP_SV__
+`endif // __UVMT_CV32E40X_IMPERAS_DV_WRAP_SV__
 

@@ -250,7 +250,7 @@ class corev_vp_fencei_exec_instr_stream extends riscv_load_store_rand_instr_stre
   localparam CV_VP_REGISTER_BASE = 32'h 00800000;
   localparam CV_VP_FENCEI_TAMPER_OFFSET = 32'h 00000100;
   localparam CV_VP_FENCEI_TAMPER_BASE = (CV_VP_REGISTER_BASE + CV_VP_FENCEI_TAMPER_OFFSET);
-  // Note: Would preferably be from uvme_cv32e40s_pkg, which is seemingly not easily available in core-v compilation
+  // Note: Would preferably be from uvme_cv32e40x_pkg, which is seemingly not easily available in core-v compilation
 
   constraint dont_overwrite_regs {
     vp_reg != tmp_reg;  // Don't overwrite the data that is to be written

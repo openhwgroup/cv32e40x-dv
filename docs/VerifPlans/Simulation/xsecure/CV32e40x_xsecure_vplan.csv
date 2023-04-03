@@ -1,5 +1,5 @@
 Requirement Location,Feature,Sub Feature,Feature Description,Verification Goal,Pass/Fail Criteria,Test Type,Coverage Method,Link to Coverage
-"CV32E40S User manual, 0.4.0",Security Alerts,alert_major_o ,"The alert_major_o signal shall be 1 for every cycle that the following critical security issues occur and persist:
+"CV32E40X User manual, 0.4.0",Security Alerts,alert_major_o ,"The alert_major_o signal shall be 1 for every cycle that the following critical security issues occur and persist:
 register file ECC error
 Hardened PC error
 Hardened CSR error
@@ -75,7 +75,7 @@ NOTE: this is set up as a directed simulation test, as that seems the easiest wa
 Jumps and branches are covered, reset, exceptions, interrupt and debug entry is not","Drive a forced error in the IF stage PC and verify that the alert_major_o is driven.
 
 NOTE: this is set up as a directed simulation test, as that seems the easiest way to verify. Assertion based should be considered before starting verification, as this would be preferrable if time allows.",Self Checking Test,Directed Self-Checking,Testcase,
-,,Disabled/enabled via cpuctrl.pcharden,"(CV32E40S, SECURE = 1) If cpuctrl.pcharden = 1, then the PC hardening feature shall be enabled.","Disable the control bit, rerun tests above, verify no alert",Self Checking Test,Directed Self-Checking,Testcase,
+,,Disabled/enabled via cpuctrl.pcharden,"(CV32E40X, SECURE = 1) If cpuctrl.pcharden = 1, then the PC hardening feature shall be enabled.","Disable the control bit, rerun tests above, verify no alert",Self Checking Test,Directed Self-Checking,Testcase,
 ,Hardened CSR,Shadow registers to ensure integrity of important CSR's,"If a CSR is not equal to the bit-wise complement of its shadow CSR an alert shall be raised on alert_major_o.
 
 Hardened CSR's are listed In the User Manual ","Assert that a mismatch between CSR and shadow register results in a alert_major_o for all hardened CSRs.
@@ -97,7 +97,7 @@ some checksum signals will be redefined to even parity",Utilise asserts from obi
 some checksum signals will be redefined to even parity",Assert that any checksum mismatch causes an alert_major_o,Assertion Check,"ENV capability, not specific test",Assertion Coverage,
 ,,Instruction parity/checksum faults causes exception,"Instruction parity/checksum faults shall pass together with the instruction data itself through the fetch stage and shall result in an instruction parity/checksum exception (i.e.exception code 0x31) only if the instruction is (attempted to be) executed.
 
-Exception codes will change https://github.com/openhwgroup/cv32e40s/issues/235",Verify by making sure that parity/checksum errors are simulated and check against RM,Check against RM,Constrained-Random,Functional Coverage,
+Exception codes will change https://github.com/openhwgroup/cv32e40x/issues/235",Verify by making sure that parity/checksum errors are simulated and check against RM,Check against RM,Constrained-Random,Functional Coverage,
 ,,Load/store parity/checksum error causes NMI,Load/store parity/checksum faults shall be handled as load/store parity/checksum fault NMIs.,Verify by making sure that parity/checksum errors are simulated and check against RM,Check against RM,Constrained-Random,Functional Coverage,
 ,Bus Protocol Hardening,OBI protocol violation causes alert,Violations of the OBI address-before-response protocal shall result in an alert_major_o,Assert that breaches to the protocol results in an alert. A high rvalid without a preceding address phase shall cause an alert. Support logic from the OBI assertion set should be repurposed here.,Assertion Check,"ENV capability, not specific test",Assertion Coverage,
 ,Reduction of profiling infrastructure,CSRs to decode as illegal,"The following CSRs shall decode as illegal:

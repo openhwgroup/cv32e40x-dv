@@ -18,7 +18,7 @@
 ###############################################################################
 #
 # Generic Exception Test: this directed, manually written test-program covers
-#                         many, but not all Exceptions listed in the CV32E40S
+#                         many, but not all Exceptions listed in the CV32E40X
 #                         exceptions verfication plan plus a number of others
 #                         intended to fill holes identified by code coverage.
 #
@@ -48,7 +48,7 @@ test_results:
 # main test
 main:
     li x15, 0x00001800
-    csrrw x0, mstatus, x15  # redundant in cv32e40s: hardwired PoR value
+    csrrw x0, mstatus, x15  # redundant in cv32e40x: hardwired PoR value
     li x0, 0xf21ee7dc
     li x1, 0x80000000
     li x3, 0xccda4374
@@ -330,7 +330,7 @@ added_by_mike:
 #
     .word(0x4b724b57) # PULP VECOP instruction - will only cause an IIE if XPULP=0
 ###############################################################################
-# Target specific code cov holes in the cv32e40s_decoder.
+# Target specific code cov holes in the cv32e40x_decoder.
 #
 # For OPCODE_SYSTEM (instr_rdata[6:0]=='h73), instr_rdata[31:20] must be one of:
 #     12'h000 (ecall), 12'h001 (ebreak),

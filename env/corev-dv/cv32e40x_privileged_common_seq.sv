@@ -1,6 +1,6 @@
-class cv32e40s_privileged_common_seq extends riscv_privileged_common_seq;
+class cv32e40x_privileged_common_seq extends riscv_privileged_common_seq;
 
-  `uvm_object_utils(cv32e40s_privileged_common_seq)
+  `uvm_object_utils(cv32e40x_privileged_common_seq)
 
   function new(string name = "", uvm_component parent = null);
     super.new(name);
@@ -41,4 +41,4 @@ class cv32e40s_privileged_common_seq extends riscv_privileged_common_seq;
       regs.push_back(mie);
     end
   endfunction
-endclass : cv32e40s_privileged_common_seq
+endclass : cv32e40x_privileged_common_seq

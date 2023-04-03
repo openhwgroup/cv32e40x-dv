@@ -18,21 +18,21 @@
 
 
 
-`ifndef __UVMT_CV32E40S_FIRMWARE_TEST_SV__
-`define __UVMT_CV32E40S_FIRMWARE_TEST_SV__
+`ifndef __UVMT_CV32E40X_FIRMWARE_TEST_SV__
+`define __UVMT_CV32E40X_FIRMWARE_TEST_SV__
 
 
 /**
- *  CV32E40S "firmware" test.
+ *  CV32E40X "firmware" test.
  *  This class relies on a pre-existing "firmware" file written in C and/or
  *  RISC-V assembly code.  This class will invoke the riscv-gcc-toolchain to
- *  translate the firmware into a "hexfile" that is read into the CV32E40S
+ *  translate the firmware into a "hexfile" that is read into the CV32E40X
  *  instruction memory in the testbench module.
  *
  *  This class doesn't care what the firmware does, it mearly compiles it.
  *
  */
-class uvmt_cv32e40s_firmware_test_c extends uvmt_cv32e40s_base_test_c;
+class uvmt_cv32e40x_firmware_test_c extends uvmt_cv32e40x_base_test_c;
 
    constraint env_cfg_cons {
       env_cfg.enabled         == 1;
@@ -45,11 +45,11 @@ class uvmt_cv32e40s_firmware_test_c extends uvmt_cv32e40s_base_test_c;
    }
 
 
-   `uvm_component_utils(uvmt_cv32e40s_firmware_test_c)
+   `uvm_component_utils(uvmt_cv32e40x_firmware_test_c)
 
    /**
     */
-   extern function new(string name="uvmt_cv32e40s_firmware_test", uvm_component parent=null);
+   extern function new(string name="uvmt_cv32e40x_firmware_test", uvm_component parent=null);
 
    /**
     * Runs reset_vseq.
@@ -84,10 +84,10 @@ class uvmt_cv32e40s_firmware_test_c extends uvmt_cv32e40s_base_test_c;
     */
    extern virtual task clic_noise();
 
-endclass : uvmt_cv32e40s_firmware_test_c
+endclass : uvmt_cv32e40x_firmware_test_c
 
 
-function uvmt_cv32e40s_firmware_test_c::new(string name="uvmt_cv32e40s_firmware_test", uvm_component parent=null);
+function uvmt_cv32e40x_firmware_test_c::new(string name="uvmt_cv32e40x_firmware_test", uvm_component parent=null);
 
    super.new(name, parent);
    `uvm_info("TEST", "This is the FIRMWARE TEST", UVM_NONE)
@@ -95,20 +95,20 @@ function uvmt_cv32e40s_firmware_test_c::new(string name="uvmt_cv32e40s_firmware_
 endfunction : new
 
 
-task uvmt_cv32e40s_firmware_test_c::reset_phase(uvm_phase phase);
+task uvmt_cv32e40x_firmware_test_c::reset_phase(uvm_phase phase);
    super.reset_phase(phase);
 
 endtask : reset_phase
 
 
-task uvmt_cv32e40s_firmware_test_c::configure_phase(uvm_phase phase);
+task uvmt_cv32e40x_firmware_test_c::configure_phase(uvm_phase phase);
 
    super.configure_phase(phase);
 
 endtask : configure_phase
 
 
-task uvmt_cv32e40s_firmware_test_c::run_phase(uvm_phase phase);
+task uvmt_cv32e40x_firmware_test_c::run_phase(uvm_phase phase);
 
    // start_clk() and watchdog_timer() are called in the base_test
    super.run_phase(phase);
@@ -154,9 +154,9 @@ task uvmt_cv32e40s_firmware_test_c::run_phase(uvm_phase phase);
 
 endtask : run_phase
 
-task uvmt_cv32e40s_firmware_test_c::reset_debug();
-    uvme_cv32e40s_random_debug_reset_c debug_vseq;
-    debug_vseq = uvme_cv32e40s_random_debug_reset_c::type_id::create("random_debug_reset_vseqr");
+task uvmt_cv32e40x_firmware_test_c::reset_debug();
+    uvme_cv32e40x_random_debug_reset_c debug_vseq;
+    debug_vseq = uvme_cv32e40x_random_debug_reset_c::type_id::create("random_debug_reset_vseqr");
     `uvm_info("TEST", "Applying debug_req_i at reset", UVM_NONE);
     @(negedge env_cntxt.clknrst_cntxt.vif.reset_n);
 
@@ -165,9 +165,9 @@ task uvmt_cv32e40s_firmware_test_c::reset_debug();
 
 endtask
 
-task uvmt_cv32e40s_firmware_test_c::bootset_debug();
-    uvme_cv32e40s_random_debug_bootset_c debug_vseq;
-    debug_vseq = uvme_cv32e40s_random_debug_bootset_c::type_id::create("random_debug_bootset_vseqr");
+task uvmt_cv32e40x_firmware_test_c::bootset_debug();
+    uvme_cv32e40x_random_debug_bootset_c debug_vseq;
+    debug_vseq = uvme_cv32e40x_random_debug_bootset_c::type_id::create("random_debug_bootset_vseqr");
     `uvm_info("TEST", "Applying single cycle debug_req after reset", UVM_NONE);
     @(negedge env_cntxt.clknrst_cntxt.vif.reset_n);
 
@@ -179,25 +179,25 @@ task uvmt_cv32e40s_firmware_test_c::bootset_debug();
 
 endtask
 
-task uvmt_cv32e40s_firmware_test_c::random_debug();
+task uvmt_cv32e40x_firmware_test_c::random_debug();
     `uvm_info("TEST", "Starting random debug in thread UVM test", UVM_NONE);
 
     while (1) begin
-        uvme_cv32e40s_random_debug_c debug_vseq;
+        uvme_cv32e40x_random_debug_c debug_vseq;
         repeat (100) @(env_cntxt.debug_cntxt.vif.mon_cb);
-        debug_vseq = uvme_cv32e40s_random_debug_c::type_id::create("random_debug_vseqr");
+        debug_vseq = uvme_cv32e40x_random_debug_c::type_id::create("random_debug_vseqr");
         void'(debug_vseq.randomize());
         debug_vseq.start(vsequencer);
         break;
     end
 endtask : random_debug
 
-task uvmt_cv32e40s_firmware_test_c::irq_noise();
+task uvmt_cv32e40x_firmware_test_c::irq_noise();
   `uvm_info("TEST", "Starting IRQ Noise thread in UVM test", UVM_NONE);
   while (1) begin
-    uvme_cv32e40s_interrupt_noise_c interrupt_noise_vseq;
+    uvme_cv32e40x_interrupt_noise_c interrupt_noise_vseq;
 
-    interrupt_noise_vseq = uvme_cv32e40s_interrupt_noise_c::type_id::create("interrupt_noise_vseqr");
+    interrupt_noise_vseq = uvme_cv32e40x_interrupt_noise_c::type_id::create("interrupt_noise_vseqr");
     assert(interrupt_noise_vseq.randomize() with {
       reserved_irq_mask == 32'h0;
     });
@@ -206,12 +206,12 @@ task uvmt_cv32e40s_firmware_test_c::irq_noise();
   end
 endtask : irq_noise
 
-task uvmt_cv32e40s_firmware_test_c::clic_noise();
+task uvmt_cv32e40x_firmware_test_c::clic_noise();
   `uvm_info("TEST", "Starting CLIC Noise thread in UVM test", UVM_NONE);
   while (1) begin
-    uvme_cv32e40s_clic_noise_c clic_noise_vseq;
+    uvme_cv32e40x_clic_noise_c clic_noise_vseq;
 
-    clic_noise_vseq = uvme_cv32e40s_clic_noise_c::type_id::create("clic_noise_vseqr");
+    clic_noise_vseq = uvme_cv32e40x_clic_noise_c::type_id::create("clic_noise_vseqr");
 
     assert(clic_noise_vseq.randomize() with { });
     clic_noise_vseq.start(vsequencer);
@@ -219,4 +219,4 @@ task uvmt_cv32e40s_firmware_test_c::clic_noise();
   end
 
 endtask : clic_noise
-`endif // __UVMT_CV32E40S_FIRMWARE_TEST_SV__
+`endif // __UVMT_CV32E40X_FIRMWARE_TEST_SV__

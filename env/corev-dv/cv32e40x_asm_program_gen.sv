@@ -17,14 +17,14 @@
  */
 
 //-----------------------------------------------------------------------------------------
-// CV32E40S CORE-V assembly program generator - extension of the RISC-V assembly program generator.
+// CV32E40X CORE-V assembly program generator - extension of the RISC-V assembly program generator.
 //
 // Overrides gen_program_header() and gen_test_done()
 //-----------------------------------------------------------------------------------------
 
-class cv32e40s_asm_program_gen extends corev_asm_program_gen;
+class cv32e40x_asm_program_gen extends corev_asm_program_gen;
 
-  `uvm_object_utils(cv32e40s_asm_program_gen)
+  `uvm_object_utils(cv32e40x_asm_program_gen)
 
   function new (string name = "");
     super.new(name);
@@ -226,7 +226,7 @@ class cv32e40s_asm_program_gen extends corev_asm_program_gen;
     // software interrupts, are vectored to the same location as synchronous exceptions. This
     // ambiguity does not arise in practice, since user-mode software interrupts are either
     // disabled or delegated
-    cv32e40s_instr_gen_config corev_cfg;
+    cv32e40x_instr_gen_config corev_cfg;
     `DV_CHECK_FATAL($cast(corev_cfg, cfg), "Could not cast cfg into corev_cfg")
 
     instr = {instr, ".option push",
@@ -249,7 +249,7 @@ class cv32e40s_asm_program_gen extends corev_asm_program_gen;
       string intr_handler[$];
 
       if (corev_cfg.use_fast_intr_handler[i]) begin
-        // Emit fast interrupt handler since cv32e40s has hardware interrupt ack
+        // Emit fast interrupt handler since cv32e40x has hardware interrupt ack
         // If WFIs allow, randomly insert wfi as well
         if (!cfg.no_wfi) begin
             randcase
@@ -438,7 +438,7 @@ class cv32e40s_asm_program_gen extends corev_asm_program_gen;
     // Restore user mode GPR value from kernel stack before return
     pop_gpr_from_kernel_stack(status, scratch, cfg.mstatus_mprv,
                               cfg.sp, cfg.tp, interrupt_handler_instr);
-                                      // Emit fast interrupt handler since cv32e40s has hardware interrupt ack
+                                      // Emit fast interrupt handler since cv32e40x has hardware interrupt ack
 
     interrupt_handler_instr = {interrupt_handler_instr,
                                $sformatf("%0sret;", mode_prefix)
@@ -479,7 +479,7 @@ class cv32e40s_asm_program_gen extends corev_asm_program_gen;
   virtual function void init_gpr();
     string str;
     bit [DATA_WIDTH-1:0] reg_val;
-    cv32e40s_instr_gen_config cfg_corev;
+    cv32e40x_instr_gen_config cfg_corev;
 
     `DV_CHECK($cast(cfg_corev, cfg))
     // Init general purpose registers with random values
@@ -550,4 +550,4 @@ class cv32e40s_asm_program_gen extends corev_asm_program_gen;
     instr_stream.push_back("");
   endfunction : gen_section
 
-endclass : cv32e40s_asm_program_gen
+endclass : cv32e40x_asm_program_gen

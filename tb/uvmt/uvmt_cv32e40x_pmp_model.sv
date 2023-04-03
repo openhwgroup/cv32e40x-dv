@@ -1,9 +1,9 @@
 `default_nettype none
 
-module uvmt_cv32e40s_pmp_model
-  import cv32e40s_pkg::*;
+module uvmt_cv32e40x_pmp_model
+  import cv32e40x_pkg::*;
   import uvm_pkg::*;
-  import uvmt_cv32e40s_pkg::*;
+  import uvmt_cv32e40x_pkg::*;
   #(
     parameter int           PMP_GRANULARITY,
     parameter int           PMP_NUM_REGIONS,
@@ -428,6 +428,6 @@ module uvmt_cv32e40s_pmp_model
     return mask;
   endfunction
 
-endmodule : uvmt_cv32e40s_pmp_model
+endmodule : uvmt_cv32e40x_pmp_model
 
 `default_nettype wire

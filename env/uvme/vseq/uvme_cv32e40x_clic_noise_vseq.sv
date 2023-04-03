@@ -14,14 +14,14 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_CLIC_NOISE_SV__
-`define __UVME_CV32E40S_CLIC_NOISE_SV__
+`ifndef __UVME_CV32E40X_CLIC_NOISE_SV__
+`define __UVME_CV32E40X_CLIC_NOISE_SV__
 
 /**
  * Virtual sequence responsible for starting the system clock and issuing
  * the initial reset pulse to the DUT.
  */
-class uvme_cv32e40s_clic_noise_c extends uvme_cv32e40s_base_vseq_c;
+class uvme_cv32e40x_clic_noise_c extends uvme_cv32e40x_base_vseq_c;
 
    rand int unsigned short_delay_wgt;
    rand int unsigned med_delay_wgt;
@@ -32,7 +32,7 @@ class uvme_cv32e40s_clic_noise_c extends uvme_cv32e40s_base_vseq_c;
 
    rand bit [31:0]   reserved_irq_mask;
 
-   `uvm_object_utils_begin(uvme_cv32e40s_clic_noise_c)
+   `uvm_object_utils_begin(uvme_cv32e40x_clic_noise_c)
    `uvm_object_utils_end
 
    constraint default_delay_c {
@@ -66,22 +66,22 @@ class uvme_cv32e40s_clic_noise_c extends uvme_cv32e40s_base_vseq_c;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_clic_noise");
+   extern function new(string name="uvme_cv32e40x_clic_noise");
 
    /**
     * Starts the clock, waits, then resets the DUT.
     */
    extern virtual task body();
    extern virtual task rand_delay();
-endclass : uvme_cv32e40s_clic_noise_c
+endclass : uvme_cv32e40x_clic_noise_c
 
-function uvme_cv32e40s_clic_noise_c::new(string name="uvme_cv32e40s_clic_noise");
+function uvme_cv32e40x_clic_noise_c::new(string name="uvme_cv32e40x_clic_noise");
 
    super.new(name);
 
 endfunction : new
 
-task uvme_cv32e40s_clic_noise_c::rand_delay();
+task uvme_cv32e40x_clic_noise_c::rand_delay();
   randcase
     short_delay_wgt: repeat($urandom_range(100,1)) @(cntxt.clic_cntxt.vif.drv_cb);
     med_delay_wgt: repeat($urandom_range(500,100)) @(cntxt.clic_cntxt.vif.drv_cb);
@@ -89,7 +89,7 @@ task uvme_cv32e40s_clic_noise_c::rand_delay();
   endcase
 endtask : rand_delay
 
-task uvme_cv32e40s_clic_noise_c::body();
+task uvme_cv32e40x_clic_noise_c::body();
 
   fork
     begin : gen_assert_until_ack

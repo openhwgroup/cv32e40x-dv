@@ -1,5 +1,5 @@
 
-# *Note that this is copied from the CV32E40P.  It has not been ported to CV32E40S as of yet*
+# *Note that this is copied from the CV32E40P.  It has not been ported to CV32E40X as of yet*
 
 ## Functional verification of CSRs in a RISC-V core
 The Controll and Status Registers in a RISC-V core are distinct from CSRs in

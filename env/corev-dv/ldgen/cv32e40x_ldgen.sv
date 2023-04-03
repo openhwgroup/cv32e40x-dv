@@ -20,9 +20,9 @@
 /*
  * provide UVM environment entry and exit points.
  */
-import cv32e40s_pkg::pma_cfg_t;
+import cv32e40x_pkg::pma_cfg_t;
 
-  class cv32e40s_ldgen_c;
+  class cv32e40x_ldgen_c;
 
     // Output file names
     parameter string MEMORY_LAYOUT_FILE   = "linkcmds.memory";
@@ -154,11 +154,11 @@ import cv32e40s_pkg::pma_cfg_t;
 
     endfunction : new
 
-endclass : cv32e40s_ldgen_c
+endclass : cv32e40x_ldgen_c
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::display_fatal(string text);
+function void cv32e40x_ldgen_c::display_fatal(string text);
   `ifdef uvm_fatal
     `uvm_fatal(info_tag, text)
   `else
@@ -168,7 +168,7 @@ endfunction : display_fatal
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::display_message(string text);
+function void cv32e40x_ldgen_c::display_message(string text);
   `ifdef uvm_info
     `uvm_info(info_tag, text, UVM_LOW)
   `else
@@ -178,7 +178,7 @@ endfunction : display_message
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::gen_pma_linker_scripts();
+function void cv32e40x_ldgen_c::gen_pma_linker_scripts();
 
   // If no ldfiles path was configured then emit files to simulation run directory
   if (ldfiles_path == "") begin
@@ -219,7 +219,7 @@ endfunction : gen_pma_linker_scripts
 
 //--------------------------------------------------------------------------------
 
-function string cv32e40s_ldgen_c::indent(int num_indent);
+function string cv32e40x_ldgen_c::indent(int num_indent);
   string indent_val;
   indent_val.itoa(num_indent);
   return $sformatf( { "%-", indent_val , "s" } , " " );
@@ -227,7 +227,7 @@ endfunction : indent
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::create_memory_layout_file(string filepath);
+function void cv32e40x_ldgen_c::create_memory_layout_file(string filepath);
   automatic int nmi_region = -1;
   automatic int boot_region = -1;
 
@@ -322,7 +322,7 @@ endfunction : create_memory_layout_file
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::create_pma_section_file(string filepath);
+function void cv32e40x_ldgen_c::create_pma_section_file(string filepath);
 
   fhandle_pma = $fopen(filepath, "w");
   if (!fhandle_pma) begin
@@ -361,7 +361,7 @@ endfunction : create_pma_section_file
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::create_dbg_section_file(string filepath);
+function void cv32e40x_ldgen_c::create_dbg_section_file(string filepath);
   int dbg_exception_addr_region = -1;
   int dbg_origin_addr_region = -1;
 
@@ -423,7 +423,7 @@ endfunction
 
 //--------------------------------------------------------------------------------
 
-function void cv32e40s_ldgen_c::create_fixed_addr_section_file(string filepath);
+function void cv32e40x_ldgen_c::create_fixed_addr_section_file(string filepath);
   automatic int nmi_region   = -1;
   automatic int boot_region  = -1;
   automatic int mtvec_region = -1;

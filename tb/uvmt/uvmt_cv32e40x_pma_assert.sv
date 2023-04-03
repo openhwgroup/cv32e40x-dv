@@ -27,8 +27,8 @@
 `default_nettype none
 
 
-module  uvmt_cv32e40s_pma_assert
-  import cv32e40s_pkg::*;
+module  uvmt_cv32e40x_pma_assert
+  import cv32e40x_pkg::*;
   import uvm_pkg::*;
 #(
   parameter type          CORE_REQ_TYPE,
@@ -67,7 +67,7 @@ module  uvmt_cv32e40s_pma_assert
   default clocking @(posedge clk); endclocking
   default disable iff !rst_n;
 
-  string info_tag = "CV32E40S_PMA_ASSERT";
+  string info_tag = "CV32E40X_PMA_ASSERT";
 
   enum {BIT_IDX_BUFFERABLE=0} memtype_bit_idx_e;
 
@@ -201,7 +201,7 @@ module  uvmt_cv32e40s_pma_assert
   end : gen_attr_instr
 
 
-endmodule : uvmt_cv32e40s_pma_assert
+endmodule : uvmt_cv32e40x_pma_assert
 
 
 `default_nettype wire

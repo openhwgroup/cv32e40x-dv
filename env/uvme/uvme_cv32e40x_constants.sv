@@ -14,12 +14,12 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_CONSTANTS_SV__
-`define __UVME_CV32E40S_CONSTANTS_SV__
+`ifndef __UVME_CV32E40X_CONSTANTS_SV__
+`define __UVME_CV32E40X_CONSTANTS_SV__
 
 
-parameter uvme_cv32e40s_sys_default_clk_period   =  1_500; // 10ns
-parameter uvme_cv32e40s_debug_default_clk_period = 10_000; // 10ns
+parameter uvme_cv32e40x_sys_default_clk_period   =  1_500; // 10ns
+parameter uvme_cv32e40x_debug_default_clk_period = 10_000; // 10ns
 
 // For RVFI/RVVI
 parameter ILEN = 32;
@@ -73,7 +73,7 @@ parameter CV_VP_OBI_SLV_RESP_BASE      = CV_VP_REGISTER_BASE + CV_VP_OBI_SLV_RES
 parameter CV_VP_SIG_WRITER_BASE        = CV_VP_REGISTER_BASE + CV_VP_SIG_WRITER_OFFSET;
 parameter CV_VP_FENCEI_TAMPER_BASE     = CV_VP_REGISTER_BASE + CV_VP_FENCEI_TAMPER_OFFSET;
 
-`endif // __UVME_CV32E40S_CONSTANTS_SV__
+`endif // __UVME_CV32E40X_CONSTANTS_SV__
 
 
 

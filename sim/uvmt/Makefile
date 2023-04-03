@@ -18,7 +18,7 @@
 #
 ###############################################################################
 #
-# Makefile for the CV32E40S "uvmt_cv32" testbench.  Substantially modified
+# Makefile for the CV32E40X "uvmt_cv32" testbench.  Substantially modified
 # from the original Makefile for the RI5CY testbench.
 #
 ###############################################################################
@@ -46,7 +46,7 @@
 MAKE                  = make
 MAKE_PATH            := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 export CORE_V_VERIF   = $(abspath $(MAKE_PATH)/../../..)
-export CV_CORE       ?= cv32e40s
+export CV_CORE       ?= cv32e40x
 
 include ../ExternalRepos.mk
 include $(CORE_V_VERIF)/mk/uvmt/uvmt.mk

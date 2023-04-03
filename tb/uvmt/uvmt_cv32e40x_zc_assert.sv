@@ -15,13 +15,13 @@
 // limitations under the License.
 //
 
-module uvmt_cv32e40s_zc_assert
+module uvmt_cv32e40x_zc_assert
   import uvm_pkg::*;
   import uvma_rvfi_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   (
       uvma_rvfi_instr_if rvfi,
-      uvmt_cv32e40s_support_logic_for_assert_coverage_modules_if.slave_mp support_if
+      uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if.slave_mp support_if
   );
 
 
@@ -60,7 +60,7 @@ module uvmt_cv32e40s_zc_assert
   // ---------------------------------------------------------------------------
   // Local variables
   // ---------------------------------------------------------------------------
-  string info_tag = "CV32E40S_ZC_ASSERT";
+  string info_tag = "CV32E40X_ZC_ASSERT";
 
 
   // ---------------------------------------------------------------------------
@@ -106,4 +106,4 @@ module uvmt_cv32e40s_zc_assert
 
 
 
-endmodule : uvmt_cv32e40s_zc_assert
+endmodule : uvmt_cv32e40x_zc_assert

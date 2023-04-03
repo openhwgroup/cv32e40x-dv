@@ -1,11 +1,11 @@
 `default_nettype none
 
 
-module uvmt_cv32e40s_pmprvfi_assert
-  import cv32e40s_pkg::*;
-  import cv32e40s_rvfi_pkg::*;
+module uvmt_cv32e40x_pmprvfi_assert
+  import cv32e40x_pkg::*;
+  import cv32e40x_rvfi_pkg::*;
   import uvm_pkg::*;
-  import uvmt_cv32e40s_pkg::*;
+  import uvmt_cv32e40x_pkg::*;
 #(
   parameter int  PMP_GRANULARITY = 0,
   parameter int  PMP_NUM_REGIONS = 0
@@ -56,7 +56,7 @@ module uvmt_cv32e40s_pmprvfi_assert
 
   `define  max(a,b)  ((a) > (b) ? (a) : (b))
 
-  string info_tag = "CV32E40S_PMPRVFI_ASSERT";
+  string info_tag = "CV32E40X_PMPRVFI_ASSERT";
 
   localparam logic [1:0] MODE_U = 2'b 00;
   localparam logic [1:0] MODE_M = 2'b 11;
@@ -188,11 +188,11 @@ module uvmt_cv32e40s_pmprvfi_assert
   match_status_t  match_status_upperinstr;
   match_status_t  match_status_upperdata;
 
-  uvmt_cv32e40s_pmp_model #(
+  uvmt_cv32e40x_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END)
   ) model_instr_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -209,11 +209,11 @@ module uvmt_cv32e40s_pmprvfi_assert
     .*
   );
 
-  uvmt_cv32e40s_pmp_model #(
+  uvmt_cv32e40x_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END)
   ) model_data_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -230,11 +230,11 @@ module uvmt_cv32e40s_pmprvfi_assert
     .*
   );
 
-  uvmt_cv32e40s_pmp_model #(
+  uvmt_cv32e40x_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END)
   ) model_upperinstr_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -251,11 +251,11 @@ module uvmt_cv32e40s_pmprvfi_assert
     .*
   );
 
-  uvmt_cv32e40s_pmp_model #(
+  uvmt_cv32e40x_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END)
   ) model_upperdata_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -868,7 +868,7 @@ module uvmt_cv32e40s_pmprvfi_assert
   endfunction : rectify_cfg_write
 
 
-endmodule : uvmt_cv32e40s_pmprvfi_assert
+endmodule : uvmt_cv32e40x_pmprvfi_assert
 
 
 `default_nettype wire

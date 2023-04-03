@@ -150,7 +150,7 @@ void run_debug_mode(void) {
   glb_debug_status = 0;
 }
 
-int main(void){// TODO: test will failed until issue #278 in core-v-verif/cv32e40s is fixed
+int main(void){// TODO: test will failed until issue #278 in core-v-verif/cv32e40x is fixed
   setup_pmp();
 
 

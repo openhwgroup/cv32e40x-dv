@@ -20,4 +20,4 @@
 +incdir+${DV_UVME_PATH}/vseq
 
 // Files
-${DV_UVME_PATH}/uvme_cv32e40s_pkg.sv
+${DV_UVME_PATH}/uvme_cv32e40x_pkg.sv

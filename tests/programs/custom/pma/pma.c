@@ -296,7 +296,7 @@ int main(void) {
   // TODO:INFO:silabs-robin  how to programmatically confirm that these region settings match as intended?
 
 
-/* A-ext not for 40s
+/* A-ext not for 40x
   printf("pma: 6. Atomics should work only where it is allowed\n");
 
   printf("pma: Sanity check that atomic ops (lr/sc) to allowed regions is ok\n");

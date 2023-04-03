@@ -16,9 +16,9 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.0
 
 
-module uvmt_cv32e40s_xsecure_assert
+module uvmt_cv32e40x_xsecure_assert
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
   #(
     parameter int       SECURE   = 1,
     parameter logic     CLIC = 0,
@@ -28,9 +28,9 @@ module uvmt_cv32e40s_xsecure_assert
     parameter int PMP_ADDR_WIDTH = 6
   )
   (
-   //uvmt_cv32e40s_xsecure_if xsecure_if,
+   //uvmt_cv32e40x_xsecure_if xsecure_if,
    uvma_rvfi_instr_if rvfi_if,
-   uvmt_cv32e40s_support_logic_for_assert_coverage_modules_if.slave_mp support_if,
+   uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if.slave_mp support_if,
    input rst_ni,
    input clk_i
   );
@@ -153,8 +153,8 @@ module uvmt_cv32e40s_xsecure_assert
   // Default settings:
   default clocking @(posedge clk_i); endclocking
   default disable iff (!(rst_ni) | !(SECURE));
-  string info_tag = "CV32E40S_XSECURE_ASSERT_COVERPOINTS";
-  string info_tag_glitch = "CV32E40S_XSECURE_ASSERT_COVERPOINTS (GLITCH BEHAVIOR)";
+  string info_tag = "CV32E40X_XSECURE_ASSERT_COVERPOINTS";
+  string info_tag_glitch = "CV32E40X_XSECURE_ASSERT_COVERPOINTS (GLITCH BEHAVIOR)";
 
 
   // Functions:
@@ -604,7 +604,7 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mseccfg: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_pmp_mseccfg_q,
-          xsecure_if.uvmt_cv32e40s_tb_pmp_mseccfg_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_pmp_mseccfg_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MSECCFG is not shadowed.\n");
 
     end
@@ -617,14 +617,14 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_pmpncfg: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_pmpncfg_q[n],
-          xsecure_if.uvmt_cv32e40s_tb_pmpncfg_q_shadow_q[n])
+          xsecure_if.uvmt_cv32e40x_tb_pmpncfg_q_shadow_q[n])
       ) else `uvm_error(info_tag, $sformatf("The CSR PMP%0dCFG is not shadowed.\n", n));
 
       //PMPADDR
       a_xsecure_hardened_csr_pmpaddr: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_pmp_addr_q[n],
-          xsecure_if.uvmt_cv32e40s_tb_pmp_addr_q_shadow_q[n])
+          xsecure_if.uvmt_cv32e40x_tb_pmp_addr_q_shadow_q[n])
       ) else `uvm_error(info_tag, $sformatf("The CSR PMPADDR[%0d] is not shadowed.\n", n));
 
     end
@@ -637,28 +637,28 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mtvt: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mtvt_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvt_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvt_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MTVT is not shadowed.\n");
 
       //MTVEC
       a_xsecure_hardened_csr_mtvec: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mtvec_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvec_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvec_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MTVEC is not shadowed.\n");
 
       //MINTSTATUS
       a_xsecure_hardened_csr_mintstatus: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mintstatus_q,
-          xsecure_if.uvmt_cv32e40s_tb_mintstatus_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mintstatus_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MINTSTATUS is not shadowed.\n");
 
       //MINTTHRESH
       a_xsecure_hardened_csr_mintthresh: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mintthresh_q,
-          xsecure_if.uvmt_cv32e40s_tb_mintthresh_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mintthresh_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MINTTHRESH is not shadowed.\n");
 
     end else begin
@@ -667,14 +667,14 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mtvec: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mtvec_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvec_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvec_q_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MTVEC is not shadowed.\n");
 
       //MIE
       a_xsecure_hardened_csr_mie: assert property (
         p_hardened_csr(
           xsecure_if.core_i_cs_registers_i_mie_q,
-          xsecure_if.uvmt_cv32e40s_tb_mie_q_hardened_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mie_q_hardened_shadow_q)
       ) else `uvm_error(info_tag, "The CSR MIE is not shadowed.\n");
 
     end
@@ -762,7 +762,7 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mismatch_mseccfg: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_pmp_mseccfg_q,
-          xsecure_if.uvmt_cv32e40s_tb_pmp_mseccfg_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_pmp_mseccfg_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MSECCFG and its shadow does not set the major alert.\n");
 
     end
@@ -775,14 +775,14 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mismatch_pmpncfg: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_pmpncfg_q[n],
-          xsecure_if.uvmt_cv32e40s_tb_pmpncfg_q_shadow_q[n])
+          xsecure_if.uvmt_cv32e40x_tb_pmpncfg_q_shadow_q[n])
       ) else `uvm_error(info_tag_glitch, $sformatf("A mismatch between the CSR PMP%0dCFG and its shadow does not set the major alert.\n", n));
 
       //PMPADDR
       a_xsecure_hardened_csr_mismatch_pmpaddr: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_pmp_addr_q[n],
-          xsecure_if.uvmt_cv32e40s_tb_pmp_addr_q_shadow_q[n])
+          xsecure_if.uvmt_cv32e40x_tb_pmp_addr_q_shadow_q[n])
       ) else `uvm_error(info_tag_glitch, $sformatf("A mismatch between the CSR PMPADDR[%0d] and its shadow does not set the major alert.\n", n));
 
     end
@@ -795,28 +795,28 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mismatch_mtvt: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mtvt_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvt_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvt_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MTVT and its shadow does not set the major alert.\n");
 
       //MTVEC
       a_xsecure_hardened_csr_mismatch_mtvec: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mtvec_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvec_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvec_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MTVEC and its shadow does not set the major alert.\n");
 
       //MINTSTATUS
       a_xsecure_hardened_csr_mismatch_mintstatus: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mintstatus_q,
-          xsecure_if.uvmt_cv32e40s_tb_mintstatus_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mintstatus_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MINTSTATUS and its shadow does not set the major alert.\n");
 
       //MINTTHRESH
       a_xsecure_hardened_csr_mismatch_mintthresh: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mintthresh_q,
-          xsecure_if.uvmt_cv32e40s_tb_mintthresh_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mintthresh_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MINTTHRESH and its shadow does not set the major alert.\n");
 
     end else begin
@@ -825,14 +825,14 @@ module uvmt_cv32e40s_xsecure_assert
       a_xsecure_hardened_csr_mismatch_mtvec: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mtvec_q,
-          xsecure_if.uvmt_cv32e40s_tb_mtvec_q_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mtvec_q_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MTVEC and its shadow does not set the major alert.\n");
 
       //MIE
       a_xsecure_hardened_csr_mismatch_mie: assert property (
         p_hardened_csr_mismatch_sets_major_aler(
           xsecure_if.core_i_cs_registers_i_mie_q,
-          xsecure_if.uvmt_cv32e40s_tb_mie_q_hardened_shadow_q)
+          xsecure_if.uvmt_cv32e40x_tb_mie_q_hardened_shadow_q)
       ) else `uvm_error(info_tag_glitch, "A mismatch between the CSR MIE and its shadow does not set the major alert.\n");
 
     end
@@ -1750,7 +1750,7 @@ property p_parity_signal_is_not_invers_of_signal_set_major_alert(signal, parity_
     && dummy_hint_in_id_stage
 
     //Make sure the dummy/hint is a branch instruction
-    && if_id_pipe_instr_opcode == cv32e40s_pkg::OPCODE_BRANCH
+    && if_id_pipe_instr_opcode == cv32e40x_pkg::OPCODE_BRANCH
 
     |->
     //Make sure we jump to next instruction (dummy: PC + 0)(hint: PC + 2)
@@ -1841,7 +1841,7 @@ property p_parity_signal_is_not_invers_of_signal_set_major_alert(signal, parity_
 
     //Make sure we do not write to mcycle
     && !($past(xsecure_if.core_cs_registers_csr_en_gated)
-    && ($past(xsecure_if.core_cs_registers_csr_waddr == cv32e40s_pkg::CSR_MCYCLE)) || $past(xsecure_if.core_cs_registers_csr_waddr == cv32e40s_pkg::CSR_MCYCLEH))
+    && ($past(xsecure_if.core_cs_registers_csr_waddr == cv32e40x_pkg::CSR_MCYCLE)) || $past(xsecure_if.core_cs_registers_csr_waddr == cv32e40x_pkg::CSR_MCYCLEH))
 
     |->
     //Make sure the mcycle counts every cycle (including the clock cycles used by dummy and hint instructions)
@@ -2214,4 +2214,4 @@ property p_parity_signal_is_not_invers_of_signal_set_major_alert(signal, parity_
   ) else `uvm_error(info_tag_glitch, "The counter underflows but does not set the major alert.\n");
 */
 
-endmodule : uvmt_cv32e40s_xsecure_assert
+endmodule : uvmt_cv32e40x_xsecure_assert

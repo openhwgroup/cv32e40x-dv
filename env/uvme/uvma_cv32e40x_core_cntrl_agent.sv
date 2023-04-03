@@ -17,23 +17,23 @@
 //
 
 
-`ifndef __UVMA_CV32E40S_CORE_CNTRL_AGENT_SV__
-`define __UVMA_CV32E40S_CORE_CNTRL_AGENT_SV__
+`ifndef __UVMA_CV32E40X_CORE_CNTRL_AGENT_SV__
+`define __UVMA_CV32E40X_CORE_CNTRL_AGENT_SV__
 
 /**
- * Core control agent defined for the CV32E40S
+ * Core control agent defined for the CV32E40X
  */
-class uvma_cv32e40s_core_cntrl_agent_c extends uvma_core_cntrl_agent_c;
+class uvma_cv32e40x_core_cntrl_agent_c extends uvma_core_cntrl_agent_c;
 
-   string log_tag = "CV32E40SCORECTRLAGT";
+   string log_tag = "CV32E40XCORECTRLAGT";
 
-   `uvm_component_utils_begin(uvma_cv32e40s_core_cntrl_agent_c)
+   `uvm_component_utils_begin(uvma_cv32e40x_core_cntrl_agent_c)
    `uvm_component_utils_end
 
    /**
     * Default constructor.
     */
-   extern function new(string name="uvma_cv32e40s_core_cntrl_agent", uvm_component parent=null);
+   extern function new(string name="uvma_cv32e40x_core_cntrl_agent", uvm_component parent=null);
 
    /**
     * Uses uvm_config_db to retrieve cntxt and hand out to sub-components.
@@ -68,46 +68,46 @@ class uvma_cv32e40s_core_cntrl_agent_c extends uvma_core_cntrl_agent_c;
    extern function void configure_iss();
 
 
-endclass : uvma_cv32e40s_core_cntrl_agent_c
+endclass : uvma_cv32e40x_core_cntrl_agent_c
 
-function uvma_cv32e40s_core_cntrl_agent_c::new(string name="uvma_cv32e40s_core_cntrl_agent", uvm_component parent=null);
+function uvma_cv32e40x_core_cntrl_agent_c::new(string name="uvma_cv32e40x_core_cntrl_agent", uvm_component parent=null);
 
    super.new(name, parent);
 
-   set_inst_override_by_type("driver", uvma_core_cntrl_drv_c::get_type(), uvma_cv32e40s_core_cntrl_drv_c::get_type());
+   set_inst_override_by_type("driver", uvma_core_cntrl_drv_c::get_type(), uvma_cv32e40x_core_cntrl_drv_c::get_type());
 
 endfunction : new
 
-function void uvma_cv32e40s_core_cntrl_agent_c::retrieve_vif();
+function void uvma_cv32e40x_core_cntrl_agent_c::retrieve_vif();
 
-   uvma_cv32e40s_core_cntrl_cntxt_c e40s_cntxt;
+   uvma_cv32e40x_core_cntrl_cntxt_c e40x_cntxt;
 
-   $cast(e40s_cntxt, cntxt);
+   $cast(e40x_cntxt, cntxt);
 
    // Core control interface
-   if (!uvm_config_db#(virtual uvme_cv32e40s_core_cntrl_if)::get(this, "", $sformatf("core_cntrl_vif"), e40s_cntxt.core_cntrl_vif)) begin
+   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if)::get(this, "", $sformatf("core_cntrl_vif"), e40x_cntxt.core_cntrl_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vif handle of type %s in uvm_config_db",
-                                    $typename(e40s_cntxt.core_cntrl_vif)))
+                                    $typename(e40x_cntxt.core_cntrl_vif)))
    end
    else begin
       `uvm_info("VIF", $sformatf("Found vif handle of type %s in uvm_config_db",
-                                 $typename(e40s_cntxt.core_cntrl_vif)), UVM_DEBUG)
+                                 $typename(e40x_cntxt.core_cntrl_vif)), UVM_DEBUG)
    end
 endfunction : retrieve_vif
 
-function void uvma_cv32e40s_core_cntrl_agent_c::get_and_set_cntxt();
+function void uvma_cv32e40x_core_cntrl_agent_c::get_and_set_cntxt();
 
    void'(uvm_config_db#(uvma_core_cntrl_cntxt_c)::get(this, "", "cntxt", cntxt));
    if (!cntxt) begin
       `uvm_info(log_tag, "Context handle is null; creating", UVM_LOW);
-      cntxt = uvma_cv32e40s_core_cntrl_cntxt_c::type_id::create("cntxt");
+      cntxt = uvma_cv32e40x_core_cntrl_cntxt_c::type_id::create("cntxt");
    end
 
    uvm_config_db#(uvma_core_cntrl_cntxt_c)::set(this, "*", "cntxt", cntxt);
 
 endfunction : get_and_set_cntxt
 
-task uvma_cv32e40s_core_cntrl_agent_c::run_phase(uvm_phase phase);
+task uvma_cv32e40x_core_cntrl_agent_c::run_phase(uvm_phase phase);
 
    if (cfg.is_active) begin
       fork
@@ -117,15 +117,15 @@ task uvma_cv32e40s_core_cntrl_agent_c::run_phase(uvm_phase phase);
 
 endtask : run_phase
 
-task uvma_cv32e40s_core_cntrl_agent_c::start_fetch_toggle_seq();
+task uvma_cv32e40x_core_cntrl_agent_c::start_fetch_toggle_seq();
 
-  uvme_cv32e40s_fetch_toggle_seq_c fetch_toggle_seq = uvme_cv32e40s_fetch_toggle_seq_c::type_id::create("fetch_toggle_seq");
+  uvme_cv32e40x_fetch_toggle_seq_c fetch_toggle_seq = uvme_cv32e40x_fetch_toggle_seq_c::type_id::create("fetch_toggle_seq");
   void'(fetch_toggle_seq.randomize());
   fetch_toggle_seq.start(this.sequencer);
 
 endtask : start_fetch_toggle_seq
 
-function void uvma_cv32e40s_core_cntrl_agent_c::end_of_elaboration_phase(uvm_phase phase);
+function void uvma_cv32e40x_core_cntrl_agent_c::end_of_elaboration_phase(uvm_phase phase);
   super.end_of_elaboration_phase(phase);
 
   if (cfg.use_iss) begin
@@ -134,7 +134,7 @@ function void uvma_cv32e40s_core_cntrl_agent_c::end_of_elaboration_phase(uvm_pha
 
 endfunction : end_of_elaboration_phase
 
-function void uvma_cv32e40s_core_cntrl_agent_c::configure_iss();
+function void uvma_cv32e40x_core_cntrl_agent_c::configure_iss();
   int    fh;                // file handle ISS control file (typically ovpsim.ic).
   string refpath = "cpu" ;  // root of config path in ISS control file.
 
@@ -257,4 +257,4 @@ function void uvma_cv32e40s_core_cntrl_agent_c::configure_iss();
    $fclose(fh);
 endfunction : configure_iss
 
-`endif // __UVMA_CV32E40S_CORE_CNTRL_AGENT_SV__
+`endif // __UVMA_CV32E40X_CORE_CNTRL_AGENT_SV__

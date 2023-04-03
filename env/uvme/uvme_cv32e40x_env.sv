@@ -15,29 +15,29 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_ENV_SV__
-`define __UVME_CV32E40S_ENV_SV__
+`ifndef __UVME_CV32E40X_ENV_SV__
+`define __UVME_CV32E40X_ENV_SV__
 
 
 /**
  * Top-level component that encapsulates, builds and connects all other
- * CV32E40S environment components.
+ * CV32E40X environment components.
  */
-class uvme_cv32e40s_env_c extends uvm_env;
+class uvme_cv32e40x_env_c extends uvm_env;
 
    // Objects
-   uvme_cv32e40s_cfg_c    cfg;
-   uvme_cv32e40s_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c    cfg;
+   uvme_cv32e40x_cntxt_c  cntxt;
 
    // Components
-   uvme_cv32e40s_cov_model_c  cov_model;
-   uvme_cv32e40s_prd_c        predictor;
-   uvme_cv32e40s_sb_c         sb;
-   uvme_cv32e40s_buserr_sb_c  buserr_sb;
-   uvme_cv32e40s_vsqr_c       vsequencer;
+   uvme_cv32e40x_cov_model_c  cov_model;
+   uvme_cv32e40x_prd_c        predictor;
+   uvme_cv32e40x_sb_c         sb;
+   uvme_cv32e40x_buserr_sb_c  buserr_sb;
+   uvme_cv32e40x_vsqr_c       vsequencer;
 
    // Agents
-   uvma_cv32e40s_core_cntrl_agent_c core_cntrl_agent;
+   uvma_cv32e40x_core_cntrl_agent_c core_cntrl_agent;
    uvma_isacov_agent_c#(ILEN,XLEN)  isacov_agent;
    uvma_clknrst_agent_c             clknrst_agent;
    uvma_interrupt_agent_c           interrupt_agent;
@@ -67,7 +67,7 @@ class uvme_cv32e40s_env_c extends uvm_env;
    uvma_fencei_agent_c              fencei_agent;
    uvma_pma_agent_c#(ILEN,XLEN)     pma_agent;
 
-   `uvm_component_utils_begin(uvme_cv32e40s_env_c)
+   `uvm_component_utils_begin(uvme_cv32e40x_env_c)
       `uvm_field_object(cfg  , UVM_DEFAULT)
       `uvm_field_object(cntxt, UVM_DEFAULT)
    `uvm_component_utils_end
@@ -75,7 +75,7 @@ class uvme_cv32e40s_env_c extends uvm_env;
    /**
     * Default constructor.
     */
-   extern function new(string name="uvme_cv32e40s_env", uvm_component parent=null);
+   extern function new(string name="uvme_cv32e40x_env", uvm_component parent=null);
 
    /**
     * 1. Ensures cfg & cntxt handles are not null
@@ -171,21 +171,21 @@ class uvme_cv32e40s_env_c extends uvm_env;
        .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
    )data_slv_seq);
 
-endclass : uvme_cv32e40s_env_c
+endclass : uvme_cv32e40x_env_c
 
 
-function uvme_cv32e40s_env_c::new(string name="uvme_cv32e40s_env", uvm_component parent=null);
+function uvme_cv32e40x_env_c::new(string name="uvme_cv32e40x_env", uvm_component parent=null);
 
    super.new(name, parent);
 
 endfunction : new
 
 
-function void uvme_cv32e40s_env_c::build_phase(uvm_phase phase);
+function void uvme_cv32e40x_env_c::build_phase(uvm_phase phase);
 
    super.build_phase(phase);
 
-   void'(uvm_config_db#(uvme_cv32e40s_cfg_c)::get(this, "", "cfg", cfg));
+   void'(uvm_config_db#(uvme_cv32e40x_cfg_c)::get(this, "", "cfg", cfg));
    if (!cfg) begin
       `uvm_fatal("CFG", "Configuration handle is null")
    end
@@ -194,10 +194,10 @@ function void uvme_cv32e40s_env_c::build_phase(uvm_phase phase);
    end
 
    if (cfg.enabled) begin
-      void'(uvm_config_db#(uvme_cv32e40s_cntxt_c)::get(this, "", "cntxt", cntxt));
+      void'(uvm_config_db#(uvme_cv32e40x_cntxt_c)::get(this, "", "cntxt", cntxt));
       if (!cntxt) begin
          `uvm_info("CNTXT", "Context handle is null; creating.", UVM_DEBUG)
-         cntxt = uvme_cv32e40s_cntxt_c::type_id::create("cntxt");
+         cntxt = uvme_cv32e40x_cntxt_c::type_id::create("cntxt");
       end
 
       cntxt.obi_memory_instr_cntxt.mem = cntxt.mem;
@@ -220,7 +220,7 @@ function void uvme_cv32e40s_env_c::build_phase(uvm_phase phase);
 
 endfunction : build_phase
 
-function void uvme_cv32e40s_env_c::connect_phase(uvm_phase phase);
+function void uvme_cv32e40x_env_c::connect_phase(uvm_phase phase);
 
    super.connect_phase(phase);
 
@@ -243,13 +243,13 @@ function void uvme_cv32e40s_env_c::connect_phase(uvm_phase phase);
 endfunction: connect_phase
 
 
-function void uvme_cv32e40s_env_c::end_of_elaboration_phase(uvm_phase phase);
+function void uvme_cv32e40x_env_c::end_of_elaboration_phase(uvm_phase phase);
 
    super.end_of_elaboration_phase(phase);
 
 endfunction : end_of_elaboration_phase
 
-task uvme_cv32e40s_env_c::run_phase(uvm_phase phase);
+task uvme_cv32e40x_env_c::run_phase(uvm_phase phase);
 
    uvma_obi_memory_fw_preload_seq_c#(
      .AUSER_WIDTH(ENV_PARAM_INSTR_AUSER_WIDTH),
@@ -337,9 +337,9 @@ task uvme_cv32e40s_env_c::run_phase(uvm_phase phase);
 endtask : run_phase
 
 
-function void uvme_cv32e40s_env_c::retrieve_vifs();
+function void uvme_cv32e40x_env_c::retrieve_vifs();
 
-   if (!uvm_config_db#(virtual uvmt_cv32e40s_vp_status_if)::get(this, "", "vp_status_vif", cntxt.vp_status_vif)) begin
+   if (!uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if)::get(this, "", "vp_status_vif", cntxt.vp_status_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vp_status_vif handle of type %s in uvm_config_db", $typename(cntxt.vp_status_vif)))
    end
    else begin
@@ -367,16 +367,16 @@ function void uvme_cv32e40s_env_c::retrieve_vifs();
       `uvm_info("VIF", $sformatf("Found debug_vif handle of type %s in uvm_config_db", $typename(cntxt.debug_vif)), UVM_DEBUG)
    end
 
-   void'(uvm_config_db#(virtual uvmt_cv32e40s_debug_cov_assert_if)::get(this, "", "debug_cov_vif", cntxt.debug_cov_vif));
+   void'(uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if)::get(this, "", "debug_cov_vif", cntxt.debug_cov_vif));
    if (cntxt.debug_cov_vif == null) begin
-      `uvm_fatal("CNTXT", $sformatf("No uvmt_cv32e40s_debug_cov_assert_if found in config database"))
+      `uvm_fatal("CNTXT", $sformatf("No uvmt_cv32e40x_debug_cov_assert_if found in config database"))
    end
 
 endfunction: retrieve_vifs
 
-function void uvme_cv32e40s_env_c::assign_cfg();
+function void uvme_cv32e40x_env_c::assign_cfg();
 
-   uvm_config_db#(uvme_cv32e40s_cfg_c)::set(this, "*", "cfg", cfg);
+   uvm_config_db#(uvme_cv32e40x_cfg_c)::set(this, "*", "cfg", cfg);
 
    uvm_config_db#(uvma_clknrst_cfg_c)::set(this, "*clknrst_agent", "cfg", cfg.clknrst_cfg);
    uvm_config_db#(uvma_core_cntrl_cfg_c)::set(this, "*core_cntrl_agent", "cfg", cfg);
@@ -393,9 +393,9 @@ function void uvme_cv32e40s_env_c::assign_cfg();
 endfunction: assign_cfg
 
 
-function void uvme_cv32e40s_env_c::assign_cntxt();
+function void uvme_cv32e40x_env_c::assign_cntxt();
 
-   uvm_config_db#(uvme_cv32e40s_cntxt_c)::set(this, "*", "cntxt", cntxt);
+   uvm_config_db#(uvme_cv32e40x_cntxt_c)::set(this, "*", "cntxt", cntxt);
 
    uvm_config_db#(uvma_clknrst_cntxt_c)::set(this, "clknrst_agent", "cntxt", cntxt.clknrst_cntxt);
    //TODO core_cntrl_cntxt?
@@ -428,9 +428,9 @@ function void uvme_cv32e40s_env_c::assign_cntxt();
 endfunction: assign_cntxt
 
 
-function void uvme_cv32e40s_env_c::create_agents();
+function void uvme_cv32e40x_env_c::create_agents();
 
-   core_cntrl_agent       = uvma_cv32e40s_core_cntrl_agent_c::type_id::create("core_cntrl_agent", this);
+   core_cntrl_agent       = uvma_cv32e40x_core_cntrl_agent_c::type_id::create("core_cntrl_agent", this);
    isacov_agent           = uvma_isacov_agent_c#(ILEN,XLEN)::type_id::create("isacov_agent", this);
    clknrst_agent          = uvma_clknrst_agent_c::type_id::create("clknrst_agent", this);
    interrupt_agent        = uvma_interrupt_agent_c::type_id::create("interrupt_agent", this);
@@ -463,38 +463,38 @@ function void uvme_cv32e40s_env_c::create_agents();
 endfunction: create_agents
 
 
-function void uvme_cv32e40s_env_c::create_env_components();
+function void uvme_cv32e40x_env_c::create_env_components();
 
    if (cfg.scoreboarding_enabled) begin
-      predictor = uvme_cv32e40s_prd_c::type_id::create("predictor", this);
-      sb        = uvme_cv32e40s_sb_c::type_id::create("sb"       , this);
+      predictor = uvme_cv32e40x_prd_c::type_id::create("predictor", this);
+      sb        = uvme_cv32e40x_sb_c::type_id::create("sb"       , this);
    end
 
    if (cfg.buserr_scoreboarding_enabled) begin
-      buserr_sb = uvme_cv32e40s_buserr_sb_c::type_id::create("buserr_sb", this);
+      buserr_sb = uvme_cv32e40x_buserr_sb_c::type_id::create("buserr_sb", this);
    end
 
 endfunction: create_env_components
 
 
-function void uvme_cv32e40s_env_c::create_vsequencer();
+function void uvme_cv32e40x_env_c::create_vsequencer();
 
-   vsequencer = uvme_cv32e40s_vsqr_c::type_id::create("vsequencer", this);
+   vsequencer = uvme_cv32e40x_vsqr_c::type_id::create("vsequencer", this);
 
 endfunction: create_vsequencer
 
-function void uvme_cv32e40s_env_c::create_cov_model();
+function void uvme_cv32e40x_env_c::create_cov_model();
 
-   cov_model = uvme_cv32e40s_cov_model_c::type_id::create("cov_model", this);
+   cov_model = uvme_cv32e40x_cov_model_c::type_id::create("cov_model", this);
 
 endfunction: create_cov_model
 
 
-function void uvme_cv32e40s_env_c::connect_predictor();
+function void uvme_cv32e40x_env_c::connect_predictor();
 
 endfunction: connect_predictor
 
-function void uvme_cv32e40s_env_c::connect_scoreboard();
+function void uvme_cv32e40x_env_c::connect_scoreboard();
 
    // Connect the bus error scoreboard
    if (cfg.buserr_scoreboarding_enabled) begin
@@ -515,7 +515,7 @@ function void uvme_cv32e40s_env_c::connect_scoreboard();
 endfunction: connect_scoreboard
 
 
-function void uvme_cv32e40s_env_c::connect_coverage_model();
+function void uvme_cv32e40x_env_c::connect_coverage_model();
 
    isacov_agent.monitor.ap.connect(cov_model.exceptions_covg.isacov_mon_export);
    isacov_agent.monitor.ap.connect(cov_model.counters_covg.isacov_mon_export);
@@ -531,7 +531,7 @@ function void uvme_cv32e40s_env_c::connect_coverage_model();
 endfunction: connect_coverage_model
 
 
-function void uvme_cv32e40s_env_c::assemble_vsequencer();
+function void uvme_cv32e40x_env_c::assemble_vsequencer();
 
    vsequencer.clknrst_sequencer          = clknrst_agent.sequencer;
    vsequencer.interrupt_sequencer        = interrupt_agent.sequencer;
@@ -543,7 +543,7 @@ function void uvme_cv32e40s_env_c::assemble_vsequencer();
 endfunction: assemble_vsequencer
 
 
-function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_seq_c#(
+function void uvme_cv32e40x_env_c::install_vp_register_seqs(uvma_obi_memory_slv_seq_c#(
   .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
   .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
   .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -610,14 +610,14 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_directed_slv_resp correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_directed_slv_resp correctly"));
       end
       vp_seq.obi_cfg[0] = cfg.obi_memory_instr_cfg;
       vp_seq.obi_cfg[1] = cfg.obi_memory_data_cfg;
    end
 
    begin
-      uvme_cv32e40s_vp_sig_writer_seq_c#(
+      uvme_cv32e40x_vp_sig_writer_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -627,7 +627,7 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       ) vp_seq;
-      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_sig_writer", CV_VP_SIG_WRITER_BASE, uvme_cv32e40s_vp_sig_writer_seq_c#(
+      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_sig_writer", CV_VP_SIG_WRITER_BASE, uvme_cv32e40x_vp_sig_writer_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -637,13 +637,13 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_sig_writes correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_sig_writes correctly"));
       end
-      vp_seq.cv32e40s_cntxt = cntxt;
+      vp_seq.cv32e40x_cntxt = cntxt;
    end
 
    begin
-      uvme_cv32e40s_vp_status_flags_seq_c#(
+      uvme_cv32e40x_vp_status_flags_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -653,7 +653,7 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       ) vp_seq;
-      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_status_flags", CV_VP_STATUS_FLAGS_BASE, uvme_cv32e40s_vp_status_flags_seq_c#(
+      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_status_flags", CV_VP_STATUS_FLAGS_BASE, uvme_cv32e40x_vp_status_flags_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -663,13 +663,13 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_status_flags correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_status_flags correctly"));
       end
-      vp_seq.cv32e40s_cntxt = cntxt;
+      vp_seq.cv32e40x_cntxt = cntxt;
    end
 
    begin
-      uvme_cv32e40s_vp_interrupt_timer_seq_c#(
+      uvme_cv32e40x_vp_interrupt_timer_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -679,7 +679,7 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )vp_seq;
-      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_interrupt_timer", CV_VP_INTR_TIMER_BASE, uvme_cv32e40s_vp_interrupt_timer_seq_c#(
+      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_interrupt_timer", CV_VP_INTR_TIMER_BASE, uvme_cv32e40x_vp_interrupt_timer_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -689,13 +689,13 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_interrupt_timer correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_interrupt_timer correctly"));
       end
-      vp_seq.cv32e40s_cntxt = cntxt;
+      vp_seq.cv32e40x_cntxt = cntxt;
    end
 
    begin
-      uvme_cv32e40s_vp_debug_control_seq_c#(
+      uvme_cv32e40x_vp_debug_control_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -705,7 +705,7 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )vp_seq;
-      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_debug_control", CV_VP_DEBUG_CONTROL_BASE, uvme_cv32e40s_vp_debug_control_seq_c#(
+      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_debug_control", CV_VP_DEBUG_CONTROL_BASE, uvme_cv32e40x_vp_debug_control_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -715,13 +715,13 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_debug_control correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_debug_control correctly"));
       end
-      vp_seq.cv32e40s_cntxt = cntxt;
+      vp_seq.cv32e40x_cntxt = cntxt;
    end
 
    begin
-      uvme_cv32e40s_vp_fencei_tamper_seq_c#(
+      uvme_cv32e40x_vp_fencei_tamper_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -731,7 +731,7 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       ) vp_seq;
-      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_fencei_tamper", CV_VP_FENCEI_TAMPER_BASE, uvme_cv32e40s_vp_fencei_tamper_seq_c#(
+      if (!$cast(vp_seq, data_slv_seq.register_vp_vseq("vp_fencei_tamper", CV_VP_FENCEI_TAMPER_BASE, uvme_cv32e40x_vp_fencei_tamper_seq_c#(
         .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
         .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
         .RUSER_WIDTH(ENV_PARAM_DATA_RUSER_WIDTH),
@@ -741,11 +741,11 @@ function void uvme_cv32e40s_env_c::install_vp_register_seqs(uvma_obi_memory_slv_
         .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
         .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
       )::get_type()))) begin
-         `uvm_fatal("CV32E40SVPSEQ", $sformatf("Could not cast vp_fencei_tamper correctly"));
+         `uvm_fatal("CV32E40XVPSEQ", $sformatf("Could not cast vp_fencei_tamper correctly"));
       end
-      vp_seq.cv32e40s_cntxt = cntxt;
+      vp_seq.cv32e40x_cntxt = cntxt;
    end
 
 endfunction : install_vp_register_seqs
 
-`endif // __UVME_CV32E40S_ENV_SV__
+`endif // __UVME_CV32E40X_ENV_SV__

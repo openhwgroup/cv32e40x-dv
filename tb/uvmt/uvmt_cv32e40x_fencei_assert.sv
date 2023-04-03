@@ -19,8 +19,8 @@
 `default_nettype  none
 
 
-module uvmt_cv32e40s_fencei_assert
-  import cv32e40s_pkg::*;
+module uvmt_cv32e40x_fencei_assert
+  import cv32e40x_pkg::*;
   import uvm_pkg::*;
 #(
   parameter int        PMA_NUM_REGIONS              = 0,
@@ -57,7 +57,7 @@ module uvmt_cv32e40s_fencei_assert
   default clocking @(posedge clk_i); endclocking
   default disable iff !rst_ni;
 
-  string info_tag = "CV32E40S_FENCEI_ASSERT";
+  string info_tag = "CV32E40X_FENCEI_ASSERT";
 
   localparam int CYCLE_COUNT  = 6;
   localparam int FENCEI_IDATA = 32'b 000000000000_00000_001_00000_0001111;
@@ -376,7 +376,7 @@ module uvmt_cv32e40s_fencei_assert
   cg_reserved reserved_cg = new("reserved_cg");
 
 
-endmodule : uvmt_cv32e40s_fencei_assert
+endmodule : uvmt_cv32e40x_fencei_assert
 
 
 `default_nettype  wire

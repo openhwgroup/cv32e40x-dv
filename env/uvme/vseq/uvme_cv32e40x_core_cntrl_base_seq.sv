@@ -14,43 +14,43 @@
 // limitations under the License.
 
 
-`ifndef __UVME_CV32E40S_CORE_CNTRL_BASE_SEQ_C__
-`define __UVME_CV32E40S_CORE_CNTRL_BASE_SEQ_C__
+`ifndef __UVME_CV32E40X_CORE_CNTRL_BASE_SEQ_C__
+`define __UVME_CV32E40X_CORE_CNTRL_BASE_SEQ_C__
 
 /**
  * Virtual sequence responsible for controlling fetch_en during tests
  */
-class uvme_cv32e40s_core_cntrl_base_seq_c extends uvma_core_cntrl_base_seq_c;
+class uvme_cv32e40x_core_cntrl_base_seq_c extends uvma_core_cntrl_base_seq_c;
 
    // Environment handles
-   uvme_cv32e40s_cfg_c               cfg;
-   uvma_cv32e40s_core_cntrl_cntxt_c  cntxt;
+   uvme_cv32e40x_cfg_c               cfg;
+   uvma_cv32e40x_core_cntrl_cntxt_c  cntxt;
 
-  `uvm_object_utils(uvme_cv32e40s_core_cntrl_base_seq_c)
+  `uvm_object_utils(uvme_cv32e40x_core_cntrl_base_seq_c)
   `uvm_declare_p_sequencer(uvma_core_cntrl_sqr_c)
 
   extern function new(string name = "");
 
   extern virtual task pre_start();
 
-endclass : uvme_cv32e40s_core_cntrl_base_seq_c
+endclass : uvme_cv32e40x_core_cntrl_base_seq_c
 
-function uvme_cv32e40s_core_cntrl_base_seq_c::new(string name = "");
+function uvme_cv32e40x_core_cntrl_base_seq_c::new(string name = "");
 
   super.new(name);
 
 endfunction : new
 
-task uvme_cv32e40s_core_cntrl_base_seq_c::pre_start();
+task uvme_cv32e40x_core_cntrl_base_seq_c::pre_start();
 
   if (!$cast(cfg, p_sequencer.cfg)) begin
-    `uvm_fatal("E40SCORECNTRLSEQ", $sformatf("Could not cast p_sequencer.cfg to uvme_cv32e40s_cfg"))
+    `uvm_fatal("E40XCORECNTRLSEQ", $sformatf("Could not cast p_sequencer.cfg to uvme_cv32e40x_cfg"))
   end
 
   if (!$cast(cntxt, p_sequencer.cntxt)) begin
-    `uvm_fatal("E40SCORECNTRLSEQ", $sformatf("Could not cast p_sequencer.cntxt' to uvme_cv32e40s_cntxt'"))
+    `uvm_fatal("E40XCORECNTRLSEQ", $sformatf("Could not cast p_sequencer.cntxt' to uvme_cv32e40x_cntxt'"))
   end
 
 endtask : pre_start
 
-`endif // __UVME_CV32E40S_CORE_CNTRL_BASE_SEQ_C__
+`endif // __UVME_CV32E40X_CORE_CNTRL_BASE_SEQ_C__

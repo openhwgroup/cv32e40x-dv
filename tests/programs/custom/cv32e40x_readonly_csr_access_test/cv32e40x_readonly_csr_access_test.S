@@ -153,7 +153,7 @@ main:
 
     ##
     ## Access the User Custom CSRs.   These are all illegal instructions when
-    ## PULP_XPULP = 0 (which is the default for CV32E40S).
+    ## PULP_XPULP = 0 (which is the default for CV32E40X).
     ##
 
     # lpstart0

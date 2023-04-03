@@ -304,20 +304,20 @@ nmi_end_handler_ret:
 
 .section .rodata
 data_load_bus_fault_msg:
-	.string "CV32E40S BSP: data load bus fault exception handler entered\n"
+	.string "CV32E40X BSP: data load bus fault exception handler entered\n"
 data_store_bus_fault_msg:
-	.string "CV32E40S BSP: data store bus fault exception handler entered\n"
+	.string "CV32E40X BSP: data store bus fault exception handler entered\n"
 insn_access_fault_msg:
-	.string "CV32E40S BSP: instruction access fault exception handler entered\n"
+	.string "CV32E40X BSP: instruction access fault exception handler entered\n"
 insn_bus_fault_msg:
-	.string "CV32E40S BSP: instruction bus fault exception handler entered\n"
+	.string "CV32E40X BSP: instruction bus fault exception handler entered\n"
 illegal_insn_msg:
-	.string "CV32E40S BSP: illegal instruction exception handler entered\n"
+	.string "CV32E40X BSP: illegal instruction exception handler entered\n"
 ecall_msg:
-	.string "CV32E40S BSP: ecall exception handler entered\n"
+	.string "CV32E40X BSP: ecall exception handler entered\n"
 ebreak_msg:
-	.string "CV32E40S BSP: ebreak exception handler entered\n"
+	.string "CV32E40X BSP: ebreak exception handler entered\n"
 unknown_msg:
-	.string "CV32E40S BSP: unknown exception handler entered\n"
+	.string "CV32E40X BSP: unknown exception handler entered\n"
 no_exception_handler_msg:
-	.string "CV32E40S BSP: no exception handler installed\n"
+	.string "CV32E40X BSP: no exception handler installed\n"
