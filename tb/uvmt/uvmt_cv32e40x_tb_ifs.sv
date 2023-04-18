@@ -107,6 +107,7 @@ endinterface : uvmt_cv32e40x_core_status_if
 // Interface to debug assertions and covergroups
 interface uvmt_cv32e40x_debug_cov_assert_if
     import cv32e40x_pkg::*;
+    import cv32e40x_rvfi_pkg::*;
     (
     input  clk_i,
     input  rst_ni,
@@ -154,18 +155,23 @@ interface uvmt_cv32e40x_debug_cov_assert_if
 
     // Debug signals
     input         debug_req_i, // From controller
+    input         ctrl_fsm_async_debug_allowed,
     input         debug_havereset,
     input         debug_running,
     input         debug_halted,
+    input  [31:0] debug_pc_o,
+    input         debug_pc_valid_o,
 
     input         pending_sync_debug, // From controller
     input         pending_async_debug, // From controller
     input         pending_nmi, // From controller
     input         nmi_allowed, // From controller
     input         debug_mode_q, // From controller
+    input         debug_mode_if, // From controller
+    input         ctrl_halt_ex, // From controller
     input  [31:0] dcsr_q, // From controller
-    input  [31:0] depc_q, // From cs regs  //TODO:ropeders rename "dpc_q"
-    input  [31:0] depc_n,
+    input  [31:0] dpc_q, // From cs regs
+    input  [31:0] dpc_n,
     input  [31:0] dm_halt_addr_i,
     input  [31:0] dm_exception_addr_i,
 
@@ -175,6 +181,7 @@ interface uvmt_cv32e40x_debug_cov_assert_if
     input  [31:0] tdata1,
     input  [31:0] tdata2,
     input  trigger_match_in_wb,
+    input  etrigger_in_wb,
 
     // Counter related input from cs_registers
     input  [31:0] mcountinhibit_q,
@@ -188,7 +195,7 @@ interface uvmt_cv32e40x_debug_cov_assert_if
     input  sys_fence_insn_i,
 
     input  csr_access,
-    input  [1:0] csr_op,
+    input  cv32e40x_pkg::csr_opcode_e csr_op,
     input  [11:0] csr_addr,
     input  csr_we_int,
 
@@ -222,13 +229,13 @@ interface uvmt_cv32e40x_debug_cov_assert_if
     sys_en_i,
     sys_ecall_insn_i,
     boot_addr_i,
-    rvfi_pc_wdata,
-    rvfi_pc_rdata,
-    debug_req_i,
-    debug_mode_q,
     dcsr_q,
-    depc_q,
-    depc_n,
+    debug_mode_q,
+    debug_req_i,
+    dpc_n,
+    dpc_q,
+    rvfi_pc_rdata,
+    rvfi_pc_wdata,
     dm_halt_addr_i,
     dm_exception_addr_i,
     mcause_q,
@@ -238,6 +245,7 @@ interface uvmt_cv32e40x_debug_cov_assert_if
     tdata2,
     pending_sync_debug,
     trigger_match_in_wb,
+    etrigger_in_wb,
     sys_fence_insn_i,
     mcountinhibit_q,
     mcycle,
@@ -262,5 +270,219 @@ interface uvmt_cv32e40x_debug_cov_assert_if
   endclocking : mon_cb
 
 endinterface : uvmt_cv32e40x_debug_cov_assert_if
+
+interface uvmt_cv32e40x_input_to_support_logic_module_if
+   import cv32e40x_pkg::*;
+   import cv32e40x_rvfi_pkg::*;
+   (
+
+   /* obi bus protocol signal information:
+   ---------------------------------------
+   - The obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) is refered to as abiim
+   - The obi protocol between LSU (l) mpu (m) and LSU (l) is refered to as lml
+   - The obi protocol between LSU (l) respons (r) filter (f) and OBI (o) data (d) interface (i) is refered to as lrfodi
+   */
+
+   input logic clk,
+   input logic rst_n,
+
+   //Controller fsm control signals output
+   input ctrl_fsm_t ctrl_fsm_o,
+
+   input logic fetch_enable,
+   input logic debug_req_i,
+
+   //Obi signals:
+
+   //Data bus inputs
+   input logic data_bus_rvalid,
+   input logic data_bus_gnt,
+   input logic data_bus_gntpar,
+   input logic data_bus_req,
+
+   //Instr bus inputs
+   input logic instr_bus_rvalid,
+   input logic instr_bus_gnt,
+   input logic instr_bus_gntpar,
+   input logic instr_bus_req,
+
+   //Abiim bus inputs
+   input logic abiim_bus_rvalid,
+   input logic abiim_bus_gnt,
+   input logic abiim_bus_req,
+
+   //Lml bus inputs
+   input logic lml_bus_rvalid,
+   input logic lml_bus_gnt,
+   input logic lml_bus_req,
+
+   //Instr bus inputs
+   input logic lrfodi_bus_rvalid,
+   input logic lrfodi_bus_gnt,
+   input logic lrfodi_bus_req,
+
+   //Obi request information
+   input logic req_is_store,
+   input logic req_instr_integrity,
+   input logic req_data_integrity
+
+   );
+
+   modport driver_mp (
+     input  clk,
+      rst_n,
+
+      ctrl_fsm_o,
+
+      fetch_enable,
+      debug_req_i,
+
+      data_bus_rvalid,
+      data_bus_gnt,
+      data_bus_gntpar,
+      data_bus_req,
+
+      instr_bus_rvalid,
+      instr_bus_gnt,
+      instr_bus_gntpar,
+      instr_bus_req,
+
+      abiim_bus_rvalid,
+      abiim_bus_gnt,
+      abiim_bus_req,
+
+      lml_bus_rvalid,
+      lml_bus_gnt,
+      lml_bus_req,
+
+      lrfodi_bus_rvalid,
+      lrfodi_bus_gnt,
+      lrfodi_bus_req,
+
+      req_is_store,
+      req_instr_integrity,
+      req_data_integrity
+   );
+
+endinterface : uvmt_cv32e40x_input_to_support_logic_module_if
+
+
+interface uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if;
+   import cv32e40x_pkg::*;
+   import cv32e40x_rvfi_pkg::*;
+
+   // Indicates that a new obi data req arrives after an exception is triggered.
+   // Used to verify exception timing with multiop instruction
+   logic req_after_exception;
+
+   // support logic signals for the obi bus protocol:
+
+   // continued address and respons phase indicators, indicates address and respons phases
+   // of more than one cycle
+   logic data_bus_addr_ph_cont;
+   logic data_bus_resp_ph_cont;
+
+   logic instr_bus_addr_ph_cont;
+   logic instr_bus_resp_ph_cont;
+
+   logic abiim_bus_addr_ph_cont;
+   logic abiim_bus_resp_ph_cont;
+
+   logic lml_bus_addr_ph_cont;
+   logic lml_bus_resp_ph_cont;
+
+   logic lrfodi_bus_addr_ph_cont;
+   logic lrfodi_bus_resp_ph_cont;
+
+   // address phase counter, used to verify no response phase preceedes an address phase
+   integer data_bus_v_addr_ph_cnt;
+   integer instr_bus_v_addr_ph_cnt;
+   integer abiim_bus_v_addr_ph_cnt;
+   integer lml_bus_v_addr_ph_cnt;
+   integer lrfodi_bus_v_addr_ph_cnt;
+
+   //Signals stating whether the request for the current response had the attribute value or not
+   logic req_was_store;
+   logic instr_req_had_integrity;
+   logic data_req_had_integrity;
+   logic gntpar_error_in_response_instr;
+   logic gntpar_error_in_response_data;
+
+   // indicates that the current rvfi_valid instruction is the first in a debug handler
+   logic first_debug_ins;
+
+   // this signal indicates core startup
+   logic first_fetch;
+
+   // signal indicates that a debug_req has been observed whithin
+   // a timeframe where the core could oboserve it
+   logic recorded_dbg_req;
+
+   modport master_mp (
+      output req_after_exception,
+         data_bus_addr_ph_cont,
+	      data_bus_resp_ph_cont,
+	      data_bus_v_addr_ph_cnt,
+
+         instr_bus_addr_ph_cont,
+	      instr_bus_resp_ph_cont,
+	      instr_bus_v_addr_ph_cnt,
+
+         abiim_bus_addr_ph_cont,
+	      abiim_bus_resp_ph_cont,
+	      abiim_bus_v_addr_ph_cnt,
+
+         lml_bus_addr_ph_cont,
+	      lml_bus_resp_ph_cont,
+	      lml_bus_v_addr_ph_cnt,
+
+         lrfodi_bus_addr_ph_cont,
+	      lrfodi_bus_resp_ph_cont,
+	      lrfodi_bus_v_addr_ph_cnt,
+
+         req_was_store,
+         instr_req_had_integrity,
+         data_req_had_integrity,
+         gntpar_error_in_response_instr,
+         gntpar_error_in_response_data,
+         first_debug_ins,
+         first_fetch,
+         recorded_dbg_req
+   );
+
+   modport slave_mp (
+      input req_after_exception,
+         data_bus_addr_ph_cont,
+         data_bus_resp_ph_cont,
+	 data_bus_v_addr_ph_cnt,
+
+         instr_bus_addr_ph_cont,
+         instr_bus_resp_ph_cont,
+         instr_bus_v_addr_ph_cnt,
+
+         abiim_bus_addr_ph_cont,
+         abiim_bus_resp_ph_cont,
+         abiim_bus_v_addr_ph_cnt,
+
+         lml_bus_addr_ph_cont,
+         lml_bus_resp_ph_cont,
+         lml_bus_v_addr_ph_cnt,
+
+         lrfodi_bus_addr_ph_cont,
+         lrfodi_bus_resp_ph_cont,
+         lrfodi_bus_v_addr_ph_cnt,
+
+         req_was_store,
+         instr_req_had_integrity,
+         data_req_had_integrity,
+         gntpar_error_in_response_instr,
+         gntpar_error_in_response_data,
+         first_debug_ins,
+         first_fetch,
+         recorded_dbg_req
+   );
+
+endinterface : uvmt_cv32e40x_support_logic_for_assert_coverage_modules_if
+
 
 `endif // __UVMT_CV32E40X_TB_IFS_SV__
