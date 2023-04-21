@@ -122,6 +122,8 @@
 
    // PMA
 
+   parameter int  PMA_MAX_REGIONS = 16;
+
    `ifdef PARAM_SET_0
       // Sat from the include file
    `elsif PARAM_SET_1
@@ -182,7 +184,6 @@
       parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[0:CORE_PARAM_PMA_NUM_REGIONS-1] = '{
         '{word_addr_low : 32'h0000_0000>>2, word_addr_high : 32'h7FFF_FFFF>>2, main : 1'b1, bufferable : 1'b1, cacheable : 1'b1, atomic : 1'b1}
       };
-
    `elsif PMA_TEST_CFG_2
       const string pma_cfg_name = "pma_test_cfg_2";
       parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 7;
@@ -270,7 +271,7 @@
         };
    `else
       const string pma_cfg_name = "pma_noregion";
-      parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 0;
+      parameter int unsigned            CORE_PARAM_PMA_NUM_REGIONS = 0;
       parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[-1:0] = '{default:cv32e40x_pkg::PMA_R_DEFAULT};
    `endif
 
