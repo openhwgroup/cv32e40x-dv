@@ -41,7 +41,6 @@
  */
 module uvmt_cv32e40x_dut_wrap
   import cv32e40x_pkg::*;
-
 #(
     // DUT (riscv_core) parameters.
     parameter NUM_MHPMCOUNTERS    =  1,
@@ -63,15 +62,15 @@ module uvmt_cv32e40x_dut_wrap
     parameter RAM_ADDR_WIDTH      =  20
   )
   (
-    uvma_clknrst_if              clknrst_if,
-    uvma_interrupt_if            interrupt_if,
-    uvma_clic_if                 clic_if,
-    uvmt_cv32e40x_vp_status_if   vp_status_if,
-    uvme_cv32e40x_core_cntrl_if  core_cntrl_if,
-    uvmt_cv32e40x_core_status_if core_status_if,
-    uvma_obi_memory_if           obi_instr_if_i,
-    uvma_obi_memory_if           obi_data_if_i,
-    uvma_fencei_if               fencei_if_i
+    uvma_clknrst_if_t               clknrst_if,
+    uvma_interrupt_if_t             interrupt_if,
+    uvma_clic_if_t                  clic_if,
+    uvmt_cv32e40x_vp_status_if_t    vp_status_if,
+    uvme_cv32e40x_core_cntrl_if_t   core_cntrl_if,
+    uvmt_cv32e40x_core_status_if_t  core_status_if,
+    uvma_obi_memory_if_t            obi_instr_if,
+    uvma_obi_memory_if_t            obi_data_if,
+    uvma_fencei_if_t                fencei_if
   );
 
     import uvm_pkg::*; // needed for the UVM messaging service (`uvm_info(), etc.)
@@ -109,23 +108,24 @@ module uvmt_cv32e40x_dut_wrap
 
     // --------------------------------------------
     // OBI Instruction agent v1.2 signal tie-offs
-    assign obi_instr_if_i.we        = 'b0;
-    assign obi_instr_if_i.be        = 'hf; // Always assumes 32-bit full bus reads on instruction OBI
-    assign obi_instr_if_i.auser     = 'b0;
-    assign obi_instr_if_i.wuser     = 'b0;
-    assign obi_instr_if_i.aid       = 'b0;
-    assign obi_instr_if_i.atop      = 'b0;
-    assign obi_instr_if_i.wdata     = 'b0;
-    assign obi_instr_if_i.rready    = 1'b1;
-    assign obi_instr_if_i.rreadypar = 1'b0;
+    assign obi_instr_if.we        = 'b0;
+    assign obi_instr_if.be        = 'hf; // Always assumes 32-bit full bus reads on instruction OBI
+    assign obi_instr_if.auser     = 'b0;
+    assign obi_instr_if.wuser     = 'b0;
+    assign obi_instr_if.aid       = 'b0;
+    assign obi_instr_if.wdata     = 'b0;
+    assign obi_instr_if.reqpar    = ~obi_instr_if.req;
+    assign obi_instr_if.rready    = 1'b1;
+    assign obi_instr_if.rreadypar = 1'b0;
 
     // --------------------------------------------
     // OBI Data agent v1.2 signal tie-offs
-    assign obi_data_if_i.auser      = 'b0;
-    assign obi_data_if_i.wuser      = 'b0;
-    assign obi_data_if_i.aid        = 'b0;
-    assign obi_data_if_i.rready     = 1'b1;
-    assign obi_data_if_i.rreadypar  = 1'b0;
+    assign obi_data_if.auser      = 'b0;
+    assign obi_data_if.wuser      = 'b0;
+    assign obi_data_if.aid        = 'b0;
+    assign obi_data_if.reqpar     = ~obi_data_if.req;
+    assign obi_data_if.rready     = 1'b1;
+    assign obi_data_if.rreadypar  = 1'b0;
 
     // --------------------------------------------
     // Connect to uvma_interrupt_if
@@ -228,8 +228,9 @@ module uvmt_cv32e40x_dut_wrap
          .clic_irq_priv_i        ( clic_if.clic_irq_priv          ),
          .clic_irq_shv_i         ( clic_if.clic_irq_shv           ),
 
-         .fencei_flush_req_o     ( fencei_if_i.flush_req          ),
-         .fencei_flush_ack_i     ( fencei_if_i.flush_ack          ),
+
+         .fencei_flush_req_o     ( fencei_if.flush_req          ),
+         .fencei_flush_ack_i     ( fencei_if.flush_ack          ),
 
          .debug_req_i            ( debug_if.debug_req             ),
          .debug_havereset_o      ( debug_havereset                ),
