@@ -41,31 +41,40 @@
  */
 module uvmt_cv32e40x_dut_wrap
   import cv32e40x_pkg::*;
-
-  #(// DUT (riscv_core) parameters.
+#(
+    // DUT (riscv_core) parameters.
     parameter NUM_MHPMCOUNTERS    =  1,
-    parameter USE_DEPRECATED_FEATURE_SET = 0,
-    parameter cv32e40x_pkg::b_ext_e B_EXT  = cv32e40x_pkg::B_NONE,
-    parameter int          PMA_NUM_REGIONS =  0,
-    parameter pma_cfg_t PMA_CFG[PMA_NUM_REGIONS-1 : 0] = '{default:PMA_R_DEFAULT},
+    parameter logic [31:0]           DM_REGION_START                     = 32'hF0000000,
+    parameter logic [31:0]           DM_REGION_END                       = 32'hF0003FFF,
+    parameter m_ext_e                M_EXT                               = M,
+    parameter cv32e40x_pkg::b_ext_e  B_EXT                               = cv32e40x_pkg::B_NONE,
+    parameter int                    PMA_NUM_REGIONS                     = 0,
+    parameter pma_cfg_t              PMA_CFG[PMA_NUM_REGIONS-1 : 0]      = '{default:PMA_R_DEFAULT},
+    parameter logic                  CLIC                                = 0,
+    parameter int                    CLIC_ID_WIDTH                       = 5,
+    parameter int                    CLIC_INTTHRESHBITS                  = 8,
+    parameter int                    DBG_NUM_TRIGGERS                    = 1,
+    parameter rv32_e                 RV32                                = RV32I,
+
     // Remaining parameters are used by TB components only
-              INSTR_ADDR_WIDTH    =  32,
-              INSTR_RDATA_WIDTH   =  32,
-              RAM_ADDR_WIDTH      =  20
-   )
+    parameter INSTR_ADDR_WIDTH    =  32,
+    parameter INSTR_RDATA_WIDTH   =  32,
+    parameter RAM_ADDR_WIDTH      =  20
+  )
   (
-    uvma_clknrst_if              clknrst_if,
-    uvma_interrupt_if            interrupt_if,
-    uvmt_cv32e40x_vp_status_if   vp_status_if,
-    uvme_cv32e40x_core_cntrl_if  core_cntrl_if,
-    uvmt_cv32e40x_core_status_if core_status_if,
-    uvma_obi_memory_if           obi_instr_if_i,
-    uvma_obi_memory_if           obi_data_if_i,
-    uvma_fencei_if               fencei_if_i
+    uvma_clknrst_if_t               clknrst_if,
+    uvma_interrupt_if_t             interrupt_if,
+    uvma_clic_if_t                  clic_if,
+    uvmt_cv32e40x_vp_status_if_t    vp_status_if,
+    uvme_cv32e40x_core_cntrl_if_t   core_cntrl_if,
+    uvmt_cv32e40x_core_status_if_t  core_status_if,
+    uvma_obi_memory_if_t            obi_instr_if,
+    uvma_obi_memory_if_t            obi_data_if,
+    uvma_fencei_if_t                fencei_if
   );
 
     import uvm_pkg::*; // needed for the UVM messaging service (`uvm_info(), etc.)
-
+    /*
     // signals connecting core to memory
     logic                         instr_req;
     logic                         instr_gnt;
@@ -83,7 +92,7 @@ module uvmt_cv32e40x_dut_wrap
     logic [31:0]                  data_wdata;
 
     logic [31:0]                  irq;
-
+  */
     logic                         debug_havereset;
     logic                         debug_running;
     logic                         debug_halted;
@@ -99,42 +108,41 @@ module uvmt_cv32e40x_dut_wrap
 
     // --------------------------------------------
     // OBI Instruction agent v1.2 signal tie-offs
-    assign obi_instr_if_i.we        = 'b0;
-    assign obi_instr_if_i.be        = 'hf; // Always assumes 32-bit full bus reads on instruction OBI
-    assign obi_instr_if_i.auser     = 'b0;
-    assign obi_instr_if_i.wuser     = 'b0;
-    assign obi_instr_if_i.aid       = 'b0;
-    assign obi_instr_if_i.atop      = 'b0;
-    assign obi_instr_if_i.wdata     = 'b0;
-    assign obi_instr_if_i.reqpar    = ~obi_instr_if_i.req;
-    assign obi_instr_if_i.achk      = 'b0;
-    assign obi_instr_if_i.rchk      = 'b0;
-    assign obi_instr_if_i.rready    = 1'b1;
-    assign obi_instr_if_i.rreadypar = 1'b0;
+    assign obi_instr_if.we        = 'b0;
+    assign obi_instr_if.be        = 'hf; // Always assumes 32-bit full bus reads on instruction OBI
+    assign obi_instr_if.auser     = 'b0;
+    assign obi_instr_if.wuser     = 'b0;
+    assign obi_instr_if.aid       = 'b0;
+    assign obi_instr_if.wdata     = 'b0;
+    assign obi_instr_if.reqpar    = ~obi_instr_if.req;
+    assign obi_instr_if.rready    = 1'b1;
+    assign obi_instr_if.rreadypar = 1'b0;
 
     // --------------------------------------------
     // OBI Data agent v1.2 signal tie-offs
-    assign obi_data_if_i.auser      = 'b0;
-    assign obi_data_if_i.wuser      = 'b0;
-    assign obi_data_if_i.aid        = 'b0;
-    assign obi_data_if_i.reqpar     = ~obi_data_if_i.req;
-    assign obi_data_if_i.achk       = 'b0;
-    assign obi_data_if_i.rchk       = 'b0;
-    assign obi_data_if_i.rready     = 1'b1;
-    assign obi_data_if_i.rreadypar  = 1'b0;
+    assign obi_data_if.auser      = 'b0;
+    assign obi_data_if.wuser      = 'b0;
+    assign obi_data_if.aid        = 'b0;
+    assign obi_data_if.reqpar     = ~obi_data_if.req;
+    assign obi_data_if.rready     = 1'b1;
+    assign obi_data_if.rreadypar  = 1'b0;
 
     // --------------------------------------------
     // Connect to uvma_interrupt_if
-    assign interrupt_if.clk                     = clknrst_if.clk;
-    assign interrupt_if.reset_n                 = clknrst_if.reset_n;
-    assign interrupt_if.irq_id                  = cv32e40x_wrapper_i.core_i.irq_id;
-    assign interrupt_if.irq_ack                 = cv32e40x_wrapper_i.core_i.irq_ack;
+    assign interrupt_if.clk         = clknrst_if.clk;
+    assign interrupt_if.reset_n     = clknrst_if.reset_n;
+    assign interrupt_if.irq_id      = cv32e40x_wrapper_i.core_i.irq_id;
+    assign interrupt_if.irq_ack     = cv32e40x_wrapper_i.core_i.irq_ack;
+
+    // --------------------------------------------
+    assign clic_if.clk              = clknrst_if.clk;
+    assign clic_if.reset_n          = clknrst_if.reset_n;
+    assign clic_if.irq_ack          = cv32e40x_wrapper_i.core_i.irq_ack;
 
     // --------------------------------------------
     // Connect to core_cntrl_if
     assign core_cntrl_if.num_mhpmcounters = NUM_MHPMCOUNTERS;
     assign core_cntrl_if.b_ext = B_EXT;
-
     `ifndef FORMAL
     initial begin
       core_cntrl_if.pma_cfg = new[PMA_NUM_REGIONS];
@@ -153,9 +161,17 @@ module uvmt_cv32e40x_dut_wrap
     // instantiate the core
     cv32e40x_wrapper #(
                       .NUM_MHPMCOUNTERS (NUM_MHPMCOUNTERS),
-                      .B_EXT            (B_EXT),
-                      .PMA_NUM_REGIONS  (PMA_NUM_REGIONS),
-                      .PMA_CFG          (PMA_CFG)
+                      .B_EXT                (B_EXT),
+                      .DBG_NUM_TRIGGERS     (DBG_NUM_TRIGGERS),
+                      .DM_REGION_END        (DM_REGION_END),
+                      .DM_REGION_START      (DM_REGION_START),
+                      .M_EXT                (M_EXT),
+                      .PMA_CFG              (PMA_CFG),
+                      .PMA_NUM_REGIONS      (PMA_NUM_REGIONS),
+                      .RV32                 (RV32),
+                      .CLIC                 (CLIC),
+                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH),
+                      .CLIC_INTTHRESHBITS   (CLIC_INTTHRESHBITS)
                       )
     cv32e40x_wrapper_i
         (
@@ -175,7 +191,7 @@ module uvmt_cv32e40x_dut_wrap
          .instr_gnt_i            ( obi_instr_if_i.gnt             ),
          .instr_addr_o           ( obi_instr_if_i.addr            ),
          .instr_prot_o           ( obi_instr_if_i.prot            ),
-         .instr_dbg_o            ( /* obi_instr_if_i.dbg */       ), // todo: Support OBI 1.3
+         .instr_dbg_o            ( obi_instr_if_i.dbg             ),
          .instr_memtype_o        ( obi_instr_if_i.memtype         ),
          .instr_rdata_i          ( obi_instr_if_i.rdata           ),
          .instr_rvalid_i         ( obi_instr_if_i.rvalid          ),
@@ -189,15 +205,12 @@ module uvmt_cv32e40x_dut_wrap
          .data_addr_o            ( obi_data_if_i.addr             ),
          .data_wdata_o           ( obi_data_if_i.wdata            ),
          .data_prot_o            ( obi_data_if_i.prot             ),
-         .data_dbg_o             ( /* obi_data_if_i.dbg */        ), // todo: Support OBI 1.3
+         .data_dbg_o             ( obi_data_if_i.dbg              ),
          .data_memtype_o         ( obi_data_if_i.memtype          ),
          .data_rdata_i           ( obi_data_if_i.rdata            ),
          .data_atop_o            ( obi_data_if_i.atop             ),
          .data_err_i             ( obi_data_if_i.err              ),
          .data_exokay_i          ( obi_data_if_i.exokay           ),
-
-         .mcycle_o               (      /*todo: connect */        ),
-
          .xif_compressed_if      ( xif.cpu_compressed             ),
          .xif_issue_if           ( xif.cpu_issue                  ),
          .xif_commit_if          ( xif.cpu_commit                 ),
@@ -205,16 +218,19 @@ module uvmt_cv32e40x_dut_wrap
          .xif_mem_result_if      ( xif.cpu_mem_result             ),
          .xif_result_if          ( xif.cpu_result                 ),
 
+         .mcycle_o               ( /*todo: connect */             ),
+
          .irq_i                  ( interrupt_if.irq               ),
+         .wu_wfe_i               ( 1'b0                           ), // todo: hook up
+         .clic_irq_i             ( clic_if.clic_irq               ),
+         .clic_irq_id_i          ( clic_if.clic_irq_id            ),
+         .clic_irq_level_i       ( clic_if.clic_irq_level         ),
+         .clic_irq_priv_i        ( clic_if.clic_irq_priv          ),
+         .clic_irq_shv_i         ( clic_if.clic_irq_shv           ),
 
-         .clic_irq_i             ( '0   /*todo: connect */        ),
-         .clic_irq_id_i          ( '0   /*todo: connect */        ),
-         .clic_irq_level_i       ( '0   /*todo: connect */        ),
-         .clic_irq_priv_i        ( '0   /*todo: connect */        ),
-         .clic_irq_shv_i         ( '0   /*todo: connect */        ),
 
-         .fencei_flush_req_o     ( fencei_if_i.flush_req          ),
-         .fencei_flush_ack_i     ( fencei_if_i.flush_ack          ),
+         .fencei_flush_req_o     ( fencei_if.flush_req          ),
+         .fencei_flush_ack_i     ( fencei_if.flush_ack          ),
 
          .debug_req_i            ( debug_if.debug_req             ),
          .debug_havereset_o      ( debug_havereset                ),
