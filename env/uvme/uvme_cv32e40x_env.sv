@@ -41,6 +41,7 @@ class uvme_cv32e40x_env_c extends uvm_env;
    uvma_isacov_agent_c#(ILEN,XLEN)  isacov_agent;
    uvma_clknrst_agent_c             clknrst_agent;
    uvma_interrupt_agent_c           interrupt_agent;
+   uvma_clic_agent_c                clic_agent;
    uvma_debug_agent_c               debug_agent;
    uvma_obi_memory_agent_c#(
      .AUSER_WIDTH(ENV_PARAM_INSTR_AUSER_WIDTH),
@@ -61,7 +62,7 @@ class uvme_cv32e40x_env_c extends uvm_env;
      .ID_WIDTH(ENV_PARAM_DATA_ID_WIDTH),
      .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
      .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
-   ) obi_memory_data_agent ;
+   ) obi_memory_data_agent;
    uvma_rvfi_agent_c#(ILEN,XLEN)    rvfi_agent;
    uvma_fencei_agent_c              fencei_agent;
    uvma_pma_agent_c#(ILEN,XLEN)     pma_agent;
@@ -338,30 +339,37 @@ endtask : run_phase
 
 function void uvme_cv32e40x_env_c::retrieve_vifs();
 
-   if (!uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if)::get(this, "", "vp_status_vif", cntxt.vp_status_vif)) begin
+   if (!uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if_t)::get(this, "", "vp_status_vif", cntxt.vp_status_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vp_status_vif handle of type %s in uvm_config_db", $typename(cntxt.vp_status_vif)))
    end
    else begin
       `uvm_info("VIF", $sformatf("Found vp_status_vif handle of type %s in uvm_config_db", $typename(cntxt.vp_status_vif)), UVM_DEBUG)
    end
 
-   if (!uvm_config_db#(virtual uvma_interrupt_if)::get(this, "", "intr_vif", cntxt.intr_vif)) begin
+   if (!uvm_config_db#(virtual uvma_interrupt_if_t)::get(this, "", "intr_vif", cntxt.intr_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find intr_vif handle of type %s in uvm_config_db", $typename(cntxt.intr_vif)))
    end
    else begin
       `uvm_info("VIF", $sformatf("Found intr_vif handle of type %s in uvm_config_db", $typename(cntxt.intr_vif)), UVM_DEBUG)
    end
 
-   if (!uvm_config_db#(virtual uvma_debug_if)::get(this, "", "debug_vif", cntxt.debug_vif)) begin
+   if (!uvm_config_db#(virtual uvma_clic_if_t)::get(this, "", "clic_vif", cntxt.clic_vif)) begin
+      `uvm_fatal("VIF", $sformatf("Could not find clic_vif handle of type %s in uvm_config_db", $typename(cntxt.clic_vif)))
+   end
+   else begin
+      `uvm_info("VIF", $sformatf("Found clic_vif handle of type %s in uvm_config_db", $typename(cntxt.clic_vif)), UVM_DEBUG)
+   end
+
+   if (!uvm_config_db#(virtual uvma_debug_if_t)::get(this, "", "debug_vif", cntxt.debug_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find debug_vif handle of type %s in uvm_config_db", $typename(cntxt.debug_vif)))
    end
    else begin
       `uvm_info("VIF", $sformatf("Found debug_vif handle of type %s in uvm_config_db", $typename(cntxt.debug_vif)), UVM_DEBUG)
    end
 
-   void'(uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if)::get(this, "", "debug_cov_vif", cntxt.debug_cov_vif));
+   void'(uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if_t)::get(this, "", "debug_cov_vif", cntxt.debug_cov_vif));
    if (cntxt.debug_cov_vif == null) begin
-      `uvm_fatal("CNTXT", $sformatf("No uvmt_cv32e40x_debug_cov_assert_if found in config database"))
+      `uvm_fatal("CNTXT", $sformatf("No uvmt_cv32e40x_debug_cov_assert_if_t found in config database"))
    end
 
 endfunction: retrieve_vifs
@@ -375,6 +383,7 @@ function void uvme_cv32e40x_env_c::assign_cfg();
    uvm_config_db#(uvma_debug_cfg_c)::set(this, "debug_agent", "cfg", cfg.debug_cfg);
    uvm_config_db#(uvma_fencei_cfg_c)::set(this, "fencei_agent", "cfg", cfg.fencei_cfg);
    uvm_config_db#(uvma_interrupt_cfg_c)::set(this, "*interrupt_agent", "cfg", cfg.interrupt_cfg);
+   uvm_config_db#(uvma_clic_cfg_c)::set(this, "*clic_agent", "cfg", cfg.clic_cfg);
    uvm_config_db#(uvma_isacov_cfg_c)::set(this, "*isacov_agent", "cfg", cfg.isacov_cfg);
    uvm_config_db#(uvma_obi_memory_cfg_c)::set(this, "obi_memory_data_agent",  "cfg", cfg.obi_memory_data_cfg);
    uvm_config_db#(uvma_obi_memory_cfg_c)::set(this, "obi_memory_instr_agent", "cfg", cfg.obi_memory_instr_cfg);
@@ -393,6 +402,7 @@ function void uvme_cv32e40x_env_c::assign_cntxt();
    uvm_config_db#(uvma_debug_cntxt_c)::set(this, "debug_agent", "cntxt", cntxt.debug_cntxt);
    uvm_config_db#(uvma_fencei_cntxt_c)::set(this, "fencei_agent", "cntxt", cntxt.fencei_cntxt);
    uvm_config_db#(uvma_interrupt_cntxt_c)::set(this, "interrupt_agent", "cntxt", cntxt.interrupt_cntxt);
+   uvm_config_db#(uvma_clic_cntxt_c)::set(this, "clic_agent", "cntxt", cntxt.clic_cntxt);
    uvm_config_db#(uvma_obi_memory_cntxt_c#(
      .AUSER_WIDTH(ENV_PARAM_DATA_AUSER_WIDTH),
      .WUSER_WIDTH(ENV_PARAM_DATA_WUSER_WIDTH),
@@ -420,11 +430,12 @@ endfunction: assign_cntxt
 
 function void uvme_cv32e40x_env_c::create_agents();
 
-   core_cntrl_agent = uvma_cv32e40x_core_cntrl_agent_c::type_id::create("core_cntrl_agent", this);
-   isacov_agent = uvma_isacov_agent_c#(ILEN,XLEN)::type_id::create("isacov_agent", this);
-   clknrst_agent = uvma_clknrst_agent_c::type_id::create("clknrst_agent", this);
-   interrupt_agent = uvma_interrupt_agent_c::type_id::create("interrupt_agent", this);
-   debug_agent = uvma_debug_agent_c::type_id::create("debug_agent", this);
+   core_cntrl_agent       = uvma_cv32e40x_core_cntrl_agent_c::type_id::create("core_cntrl_agent", this);
+   isacov_agent           = uvma_isacov_agent_c#(ILEN,XLEN)::type_id::create("isacov_agent", this);
+   clknrst_agent          = uvma_clknrst_agent_c::type_id::create("clknrst_agent", this);
+   interrupt_agent        = uvma_interrupt_agent_c::type_id::create("interrupt_agent", this);
+   clic_agent             = uvma_clic_agent_c::type_id::create("clic_agent", this);
+   debug_agent            = uvma_debug_agent_c::type_id::create("debug_agent", this);
    obi_memory_instr_agent = uvma_obi_memory_agent_c#(
      .AUSER_WIDTH(ENV_PARAM_INSTR_AUSER_WIDTH),
      .WUSER_WIDTH(ENV_PARAM_INSTR_WUSER_WIDTH),
@@ -445,9 +456,9 @@ function void uvme_cv32e40x_env_c::create_agents();
      .ACHK_WIDTH(ENV_PARAM_DATA_ACHK_WIDTH),
      .RCHK_WIDTH(ENV_PARAM_DATA_RCHK_WIDTH)
    )::type_id::create("obi_memory_data_agent",  this);
-   rvfi_agent = uvma_rvfi_agent_c#(ILEN,XLEN)::type_id::create("rvfi_agent", this);
-   fencei_agent = uvma_fencei_agent_c::type_id::create("fencei_agent", this);
-   pma_agent = uvma_pma_agent_c#(ILEN,XLEN)::type_id::create("pma_agent", this);
+   rvfi_agent             = uvma_rvfi_agent_c#(ILEN,XLEN)::type_id::create("rvfi_agent", this);
+   fencei_agent           = uvma_fencei_agent_c::type_id::create("fencei_agent", this);
+   pma_agent              = uvma_pma_agent_c#(ILEN,XLEN)::type_id::create("pma_agent", this);
 
 endfunction: create_agents
 
@@ -523,9 +534,10 @@ endfunction: connect_coverage_model
 
 function void uvme_cv32e40x_env_c::assemble_vsequencer();
 
-   vsequencer.clknrst_sequencer   = clknrst_agent.sequencer;
-   vsequencer.interrupt_sequencer = interrupt_agent.sequencer;
-   vsequencer.debug_sequencer     = debug_agent.sequencer;
+   vsequencer.clknrst_sequencer          = clknrst_agent.sequencer;
+   vsequencer.interrupt_sequencer        = interrupt_agent.sequencer;
+   vsequencer.clic_sequencer             = clic_agent.sequencer;
+   vsequencer.debug_sequencer            = debug_agent.sequencer;
    vsequencer.obi_memory_instr_sequencer = obi_memory_instr_agent.sequencer;
    vsequencer.obi_memory_data_sequencer  = obi_memory_data_agent.sequencer;
 
