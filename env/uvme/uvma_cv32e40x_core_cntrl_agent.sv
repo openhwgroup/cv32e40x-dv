@@ -85,7 +85,7 @@ function void uvma_cv32e40x_core_cntrl_agent_c::retrieve_vif();
    $cast(e40x_cntxt, cntxt);
 
    // Core control interface
-   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if)::get(this, "", $sformatf("core_cntrl_vif"), e40x_cntxt.core_cntrl_vif)) begin
+   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if_t)::get(this, "", $sformatf("core_cntrl_vif"), e40x_cntxt.core_cntrl_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vif handle of type %s in uvm_config_db",
                                     $typename(e40x_cntxt.core_cntrl_vif)))
    end
@@ -194,13 +194,6 @@ function void uvma_cv32e40x_core_cntrl_agent_c::configure_iss();
     $fwrite(fh, $sformatf("--override %s/Zcmt=0\n", refpath));
   end
 
-  if (cfg.ext_zcmb_supported) begin
-    $fwrite(fh, $sformatf("--override %s/Zcmb=1\n", refpath));
-  end else begin
-    $fwrite(fh, $sformatf("--override %s/Zcmb=0\n", refpath));
-  end
-
-
   if (cfg.is_ext_b_supported()) begin
      // Bitmanip version
      case (cfg.bitmanip_version)
@@ -255,7 +248,7 @@ function void uvma_cv32e40x_core_cntrl_agent_c::configure_iss();
       $fwrite(fh, $sformatf("--override %s/extension_*/main%0d=%0d\n", refpath, i, cfg.pma_regions[i].main));
       $fwrite(fh, $sformatf("--override %s/extension_*/bufferable%0d=%0d\n", refpath, i, cfg.pma_regions[i].bufferable));
       $fwrite(fh, $sformatf("--override %s/extension_*/cacheable%0d=%0d\n", refpath, i, cfg.pma_regions[i].cacheable));
-      $fwrite(fh, $sformatf("--override %s/extension_*/atomic%0d=%0d\n", refpath, i, cfg.pma_regions[i].atomic));
+      $fwrite(fh, $sformatf("--override %s/extension_*/atomic%0d=%0d\n", refpath, i, 1));
    end
 
    // Enable use of hw reg names instead of abi

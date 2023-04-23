@@ -34,14 +34,15 @@
  */
 package uvme_cv32e40x_pkg;
 
-   import uvm_pkg         ::*;
-   import uvml_hrtbt_pkg  ::*;
-   import uvml_sb_pkg     ::*;
-   import uvml_trn_pkg    ::*;
-   import uvml_mem_pkg    ::*;
+   import uvm_pkg::*;
+   import uvml_hrtbt_pkg::*;
+   import uvml_sb_pkg::*;
+   import uvml_trn_pkg::*;
+   import uvml_mem_pkg::*;
    import uvma_core_cntrl_pkg::*;
    import uvma_isacov_pkg::*;
    import uvma_clknrst_pkg::*;
+   import uvma_clic_pkg::*;
    import uvma_interrupt_pkg::*;
    import uvma_debug_pkg::*;
    import uvma_obi_memory_pkg::*;
@@ -67,12 +68,14 @@ package uvme_cv32e40x_pkg;
    // Virtual sequences
    `include "uvme_cv32e40x_base_vseq.sv"
    `include "uvme_cv32e40x_reset_vseq.sv"
+   `include "uvme_cv32e40x_nmi_timeout_vseq.sv"
    `include "uvme_cv32e40x_vp_debug_control_seq.sv"
    `include "uvme_cv32e40x_vp_interrupt_timer_seq.sv"
    `include "uvme_cv32e40x_vp_sig_writer_seq.sv"
    `include "uvme_cv32e40x_vp_status_flags_seq.sv"
    `include "uvme_cv32e40x_vp_fencei_tamper_seq.sv"
    `include "uvme_cv32e40x_interrupt_noise_vseq.sv"
+   `include "uvme_cv32e40x_clic_noise_vseq.sv"
    `include "uvme_cv32e40x_vseq_lib.sv"
    `include "uvme_cv32e40x_core_cntrl_base_seq.sv"
    `include "uvme_cv32e40x_core_cntrl_fetch_toggle_seq.sv"
