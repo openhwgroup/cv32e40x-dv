@@ -497,7 +497,7 @@ function void cv32e40x_ldgen_c::create_fixed_addr_section_file(string filepath);
   $fdisplay(fhandle_fix, { indent(L1), "/* NMI interrupt handler fixed entry point */" });
   $fdisplay(fhandle_fix, { indent(L1), $sformatf(".nmi_bootstrap ABSOLUTE(0x%08x) ", nmi_addr), " :"});
   $fdisplay(fhandle_fix, { indent(L1), "{" });
-  $fdisplay(fhandle_fix, { indent(L2), "KEEP(*(.nmi));" });
+  $fdisplay(fhandle_fix, { indent(L2), "KEEP(*(.nmi_bootstrap));" });
   $fdisplay(fhandle_fix, { indent(L1), "}", nmi_memory_area, "\n" });
   $fdisplay(fhandle_fix, "}");
 
