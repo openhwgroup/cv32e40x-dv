@@ -12,7 +12,7 @@ builds:
     cmd: make clean_bsp clean_test_programs
     dir: cv32e40x/sim/uvmt
 
- corev-dv_pma_1:
+  corev-dv_pma_1:
     cmd: make comp_corev-dv
     cfg: pma_test_cfg_1
     dir: cv32e40x/sim/uvmt
@@ -66,6 +66,7 @@ builds:
     cmd: make clean_riscv-dv comp_corev-dv
     dir: cv32e40x/sim/uvmt
     cov: 0
+
 
 # List of tests
 tests:
