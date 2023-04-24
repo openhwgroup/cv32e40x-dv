@@ -16,8 +16,8 @@
 // SPDX-License-Identifier:Apache-2.0 WITH SHL-2.0
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "corev_uvmt.h"
 
 #define VP_ENAB_ADDR (CV_VP_FENCEI_TAMPER_BASE + 0)

@@ -9,7 +9,6 @@
 .include "user_define.h"
 .section .text.start
 .globl _start
-.section .text
 .type _start, @function
 
 
@@ -11961,10 +11960,10 @@ mmode_intr_vector_15:
                   j mmode_intr_handler
                   1: j test_done
 
-# CV32E40X trap-handler base address is always aligned to 128 bytes
 .align 7
 mtvec_handler:
-                  .option norvc;
+                  .option push
+                  .option norvc
                   j mmode_exception_handler
                   j mmode_intr_vector_1
                   j mmode_intr_vector_2
@@ -11981,7 +11980,7 @@ mtvec_handler:
                   j mmode_intr_vector_13
                   j mmode_intr_vector_14
                   j mmode_intr_vector_15
-                  .option rvc;
+                  .option pop
 
 mmode_exception_handler:
                   csrrw x12, 0x340, x12
