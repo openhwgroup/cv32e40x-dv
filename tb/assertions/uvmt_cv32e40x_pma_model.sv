@@ -121,7 +121,7 @@ module  uvmt_cv32e40x_pma_model
   assign  pma_status_o.main              = cfg_effective.main;
   assign  pma_status_o.bufferable        = cfg_effective.bufferable;
   assign  pma_status_o.cacheable         = cfg_effective.cacheable;
-  assign  pma_status_o.integrity         = cfg_effective.integrity;
+  assign  pma_status_o.atomic            = cfg_effective.atomic;
   assign  pma_status_o.override_dm       = override_dm;
   assign  pma_status_o.accesses_dmregion = accesses_dmregion;
   assign  pma_status_o.accesses_jvt      = accesses_jvt;

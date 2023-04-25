@@ -102,7 +102,7 @@ interface uvmt_cv32e40x_core_status_if_t (
 
   import uvm_pkg::*;
 
-endinterface : uvmt_cv32e40x_core_status_if
+endinterface : uvmt_cv32e40x_core_status_if_t
 
 // Interface to debug assertions and covergroups
 interface uvmt_cv32e40x_debug_cov_assert_if_t

@@ -59,7 +59,7 @@ module  uvmt_cv32e40x_pma_assert
   input wire  pma_err,
   input wire  bus_trans_bufferable,
   input wire  bus_trans_cacheable,
-  input wire  bus_trans_integrity,
+  //TODO:ERROR:silabs-robin  input wire  bus_trans_integrity,
 
   // Support Logic
   uvma_obi_memory_if_t     obi_memory_if,
@@ -219,9 +219,11 @@ module  uvmt_cv32e40x_pma_assert
     bus_trans_cacheable == pma_status_i.cacheable
   ) else `uvm_error(info_tag, "pma cacheable unexpected value");
 
+/* TODO:ERROR:silabs-robin "atomic"
   a_pma_integrity: assert property (
     bus_trans_integrity == pma_status_i.integrity
   ) else `uvm_error(info_tag, "pma integrity unexpected value");
+*/
 
 
 endmodule : uvmt_cv32e40x_pma_assert

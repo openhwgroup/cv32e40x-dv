@@ -189,7 +189,6 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
 
       obi_memory_instr_cfg.version       == UVMA_OBI_MEMORY_VERSION_1P2;
       obi_memory_instr_cfg.drv_mode      == UVMA_OBI_MEMORY_MODE_SLV;
-      obi_memory_instr_cfg.chk_scheme    == UVMA_OBI_MEMORY_CHK_CV32E40X;
       obi_memory_instr_cfg.write_enabled == 0;
       obi_memory_instr_cfg.addr_width    == XLEN;
       obi_memory_instr_cfg.data_width    == XLEN;
@@ -204,7 +203,6 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
 
       obi_memory_data_cfg.version        == UVMA_OBI_MEMORY_VERSION_1P2;
       obi_memory_data_cfg.drv_mode       == UVMA_OBI_MEMORY_MODE_SLV;
-      obi_memory_data_cfg.chk_scheme     == UVMA_OBI_MEMORY_CHK_CV32E40X;
       obi_memory_data_cfg.addr_width     == XLEN;
       obi_memory_data_cfg.data_width     == XLEN;
       obi_memory_data_cfg.id_width       == 0;

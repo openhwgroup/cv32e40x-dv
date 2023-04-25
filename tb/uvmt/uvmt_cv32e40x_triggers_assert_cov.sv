@@ -619,14 +619,10 @@ module uvmt_cv32e40x_triggers_assert_cov
         load_access_fault_u_hit[t]      = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_LOAD_FAULT)             && wb_is_exception(EXC_CAUSE_LOAD_FAULT);
         store_AMO_access_fault_m_hit[t] = wb_is_mmode() && set_tdatas_etrigger_state(t, ET_M_MODE, EXC_CAUSE_STORE_FAULT)            && wb_is_exception(EXC_CAUSE_STORE_FAULT);
         store_AMO_access_fault_u_hit[t] = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_STORE_FAULT)            && wb_is_exception(EXC_CAUSE_STORE_FAULT);
-        uecall_m_hit[t]                 = wb_is_mmode() && set_tdatas_etrigger_state(t, ET_M_MODE, EXC_CAUSE_ECALL_UMODE)            && wb_is_exception(EXC_CAUSE_ECALL_UMODE);
-        uecall_u_hit[t]                 = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_ECALL_UMODE)            && wb_is_exception(EXC_CAUSE_ECALL_UMODE);
         mecall_m_hit[t]                 = wb_is_mmode() && set_tdatas_etrigger_state(t, ET_M_MODE, EXC_CAUSE_ECALL_MMODE)            && wb_is_exception(EXC_CAUSE_ECALL_MMODE);
         mecall_u_hit[t]                 = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_ECALL_MMODE)            && wb_is_exception(EXC_CAUSE_ECALL_MMODE);
         instr_bus_fault_m_hit[t]        = wb_is_mmode() && set_tdatas_etrigger_state(t, ET_M_MODE, EXC_CAUSE_INSTR_BUS_FAULT)        && wb_is_exception(EXC_CAUSE_INSTR_BUS_FAULT);
         instr_bus_fault_u_hit[t]        = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_INSTR_BUS_FAULT)        && wb_is_exception(EXC_CAUSE_INSTR_BUS_FAULT);
-        instr_integrity_fault_m_hit[t]  = wb_is_mmode() && set_tdatas_etrigger_state(t, ET_M_MODE, EXC_CAUSE_INSTR_INTEGRITY_FAULT)  && wb_is_exception(EXC_CAUSE_INSTR_INTEGRITY_FAULT);
-        instr_integrity_fault_u_hit[t]  = wb_is_umode() && set_tdatas_etrigger_state(t, ET_U_MODE, EXC_CAUSE_INSTR_INTEGRITY_FAULT)  && wb_is_exception(EXC_CAUSE_INSTR_INTEGRITY_FAULT);
       end
     end
   endgenerate

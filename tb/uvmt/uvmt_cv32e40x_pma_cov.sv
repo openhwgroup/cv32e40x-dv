@@ -170,8 +170,8 @@ module  uvmt_cv32e40x_pma_cov
       bins no        = {0};
     }
 
-    cp_integrity: coverpoint  pma_status_i.integrity  iff (is_mpu_activated) {
-      bins integrity = {1} with (!SIMPLIFY_FV);
+    cp_atomic: coverpoint  pma_status_i.atomic  iff (is_mpu_activated) {
+      bins atomic = {1} with (!SIMPLIFY_FV);
       bins no        = {0};
     }
 
@@ -220,7 +220,7 @@ module  uvmt_cv32e40x_pma_cov
         (binsof(cp_multimatch.one) && binsof(cp_cacheable.no))
         iff (SIMPLIFY_FV);
     }
-    x_multimatch_integrity: cross  cp_multimatch, cp_integrity;
+    x_multimatch_atomic: cross  cp_multimatch, cp_atomic;
     x_multimatch_overridedm: cross  cp_multimatch, cp_overridedm {
       ignore_bins  one_override =
         (binsof(cp_multimatch.one) && binsof(cp_overridedm.override))
@@ -231,7 +231,7 @@ module  uvmt_cv32e40x_pma_cov
     x_aligned_main_loadstoreexec: cross  cp_aligned, cp_main, cp_loadstoreexec;
     x_aligned_bufferable:         cross  cp_aligned, cp_bufferable;
     x_aligned_cacheable:          cross  cp_aligned, cp_cacheable;
-    x_aligned_integrity:          cross  cp_aligned, cp_integrity;
+    x_aligned_atomic:          cross  cp_aligned, cp_atomic;
     x_aligned_overridedm:         cross  cp_aligned, cp_overridedm;
 
     x_loadstoreexec_allow_main:   cross  cp_loadstoreexec, cp_allow, cp_main {
@@ -251,7 +251,7 @@ module  uvmt_cv32e40x_pma_cov
       //you can seemingly make it work in one or the other but not both at once.
       //See "x_store_bufferable"
     x_loadstoreexec_cacheable:    cross  cp_loadstoreexec, cp_cacheable;
-    x_loadstoreexec_integrity:    cross  cp_loadstoreexec, cp_integrity;
+    x_loadstoreexec_atomic:    cross  cp_loadstoreexec, cp_atomic;
     x_loadstoreexec_overridedm:   cross  cp_loadstoreexec, cp_overridedm;
 
     x_allow_bufferable: cross  cp_allow, cp_bufferable {
@@ -263,9 +263,9 @@ module  uvmt_cv32e40x_pma_cov
       illegal_bins  disallow_cacheable =
         binsof(cp_allow.disallow) && binsof(cp_cacheable.cacheable);
     }
-    x_allow_integrity:  cross  cp_allow, cp_integrity {
-      illegal_bins  disallow_integrity =
-        binsof(cp_allow.disallow) && binsof(cp_integrity.integrity);
+    x_allow_atomic:  cross  cp_allow, cp_atomic {
+      illegal_bins  disallow_atomic =
+        binsof(cp_allow.disallow) && binsof(cp_atomic.atomic);
     }
     x_allow_jvt:        cross  cp_allow, cp_jvt;
 

@@ -175,7 +175,6 @@ module uvmt_cv32e40x_tb;
                                                                    );
 
   // RVFI CSR binds
-  `RVFI_CSR_BIND(cpuctrl)
   `RVFI_CSR_BIND(jvt)
   `RVFI_CSR_BIND(marchid)
   `RVFI_CSR_BIND(mcause)
@@ -710,12 +709,12 @@ module uvmt_cv32e40x_tb;
         .data_bus_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
         .data_bus_req (core_i.m_c_obi_data_if.s_req.req),
         .data_bus_gnt (core_i.m_c_obi_data_if.s_gnt.gnt),
-        .data_bus_gntpar (core_i.m_c_obi_data_if.s_gnt.gntpar),
+        //TODO:ERROR:silabs-robin  .data_bus_gntpar (core_i.m_c_obi_data_if.s_gnt.gntpar),
 
         .instr_bus_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
         .instr_bus_req (core_i.m_c_obi_instr_if.s_req.req),
         .instr_bus_gnt (core_i.m_c_obi_instr_if.s_gnt.gnt),
-        .instr_bus_gntpar (core_i.m_c_obi_instr_if.s_gnt.gntpar),
+        //TODO:ERROR:silabs-robin  .instr_bus_gntpar (core_i.m_c_obi_instr_if.s_gnt.gntpar),
 
         //obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) is refered to as abiim
         .abiim_bus_rvalid (core_i.if_stage_i.prefetch_resp_valid),
@@ -732,9 +731,9 @@ module uvmt_cv32e40x_tb;
         .lrfodi_bus_req (core_i.load_store_unit_i.buffer_trans_valid),
         .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready),
 
-        .req_is_store (core_i.load_store_unit_i.bus_trans.we),
-        .req_instr_integrity (core_i.if_stage_i.mpu_i.bus_trans_integrity),
-        .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
+        .req_is_store (core_i.load_store_unit_i.bus_trans.we)
+        //TODO:ERROR:silabs-robin  .req_instr_integrity (core_i.if_stage_i.mpu_i.bus_trans_integrity),
+        //TODO:eRROR:silabs-robin  .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
 
     );
 
@@ -987,7 +986,6 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(virtual uvma_clic_if_t              )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("clic_vif"),      .value(clic_if) );
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("debug_vif"),     .value(debug_if)     );
 //     uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if_t)::set(.cntxt(null), .inst_name("*.env"),                 .field_name("debug_cov_vif"),    .value(debug_cov_assert_if));
-     `RVFI_CSR_UVM_CONFIG_DB_SET(cpuctrl)
      `RVFI_CSR_UVM_CONFIG_DB_SET(jvt)
      `RVFI_CSR_UVM_CONFIG_DB_SET(marchid)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mcause)

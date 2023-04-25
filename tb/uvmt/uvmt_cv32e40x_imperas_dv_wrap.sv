@@ -61,7 +61,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // CSR definitions
 ////////////////////////////////////////////////////////////////////////////
-`define CSR_CPUCTRL_ADDR        32'hBF0
 `define CSR_CYCLEH_ADDR         32'hC80
 `define CSR_CYCLE_ADDR          32'hC00
 `define CSR_DCSR_ADDR           32'h7B0
@@ -415,8 +414,6 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MHPMCOUNTER29H_ADDR,mhpmcounter29h )
    `RVVI_SET_CSR( `CSR_MHPMCOUNTER30H_ADDR,mhpmcounter30h )
    `RVVI_SET_CSR( `CSR_MHPMCOUNTER31H_ADDR,mhpmcounter31h )
-
-   `RVVI_SET_CSR( `CSR_CPUCTRL_ADDR,       cpuctrl       )
 
    `RVVI_SET_CSR( `CSR_MVENDORID_ADDR,     mvendorid     )
    `RVVI_SET_CSR( `CSR_MARCHID_ADDR,       marchid       )

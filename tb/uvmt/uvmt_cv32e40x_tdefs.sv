@@ -40,7 +40,7 @@ typedef struct packed {
   logic                        main;
   logic                        bufferable;
   logic                        cacheable;
-  logic                        integrity;
+  logic                        atomic;
   logic                        override_dm;
   logic [PMA_MAX_REGIONS-1:0]  match_list;
   logic [31:0]                 match_idx;

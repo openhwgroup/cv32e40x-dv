@@ -1,0 +1,4 @@
+*.swp
+vendor_lib/verilab/svlib/
+vmgr_sessions
+xrun_results
