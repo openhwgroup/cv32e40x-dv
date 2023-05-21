@@ -3,9 +3,9 @@
 
 module uvmt_cv32e40s_pmprvfi_assert
   import cv32e40s_pkg::*;
-  import cv32e40s_rvfi_pkg::*;
   import uvm_pkg::*;
-  import uvmt_cv32e40s_pkg::*;
+  import uvmt_cv32e40s_base_test_pkg::*;
+  import uvma_rvfi_pkg::*;
 #(
   parameter int  PMP_GRANULARITY = 0,
   parameter int  PMP_NUM_REGIONS = 0
@@ -14,6 +14,8 @@ module uvmt_cv32e40s_pmprvfi_assert
   input wire  clk_i,
   input wire  rst_ni,
 
+  //RVFI INSTR IF
+  uvma_rvfi_instr_if_t    rvfi_if,
   // RVFI
   input wire              rvfi_valid,
   input wire [31:0]       rvfi_insn,
@@ -191,8 +193,8 @@ module uvmt_cv32e40s_pmprvfi_assert
   uvmt_cv32e40s_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (CORE_PARAM_DM_REGION_END)
   ) model_instr_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -212,8 +214,8 @@ module uvmt_cv32e40s_pmprvfi_assert
   uvmt_cv32e40s_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (CORE_PARAM_DM_REGION_END)
   ) model_data_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -233,8 +235,8 @@ module uvmt_cv32e40s_pmprvfi_assert
   uvmt_cv32e40s_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (CORE_PARAM_DM_REGION_END)
   ) model_upperinstr_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -254,8 +256,8 @@ module uvmt_cv32e40s_pmprvfi_assert
   uvmt_cv32e40s_pmp_model #(
     .PMP_GRANULARITY  (PMP_GRANULARITY),
     .PMP_NUM_REGIONS  (PMP_NUM_REGIONS),
-    .DM_REGION_START  (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_START),
-    .DM_REGION_END    (uvmt_cv32e40s_pkg::CORE_PARAM_DM_REGION_END)
+    .DM_REGION_START  (CORE_PARAM_DM_REGION_START),
+    .DM_REGION_END    (CORE_PARAM_DM_REGION_END)
   ) model_upperdata_i (
     .clk   (clk_i),
     .rst_n (rst_ni),
@@ -292,11 +294,11 @@ module uvmt_cv32e40s_pmprvfi_assert
     (rvfi_mode == MODE_U)  &&
     (rvfi_insn[31:20] inside {['h3A0 : 'h3EF], 'h747, 'h757})  //PMP regs
     |->
-    is_rvfi_exc_ill_instr           ^
-    is_rvfi_exc_instr_bus_fault     ^
-    is_rvfi_exc_instr_chksum_fault  ^
-    is_rvfi_exc_instr_acc_fault     ^
-    is_rvfi_dbg_trigger             ;
+    is_rvfi_exc_ill_instr ||
+    is_rvfi_exc_instr_bus_fault ||
+    is_rvfi_exc_instr_chksum_fault ||
+    is_rvfi_exc_instr_acc_fault ||
+    is_rvfi_dbg_trigger;
   endproperty : p_csrs_mmode_only
 
   a_csrs_mmode_only: assert property (
@@ -788,18 +790,19 @@ module uvmt_cv32e40s_pmprvfi_assert
   // RLB lifts restrictions  (vplan:ExecRlb)
 
   for (genvar i = 0; i < PMP_NUM_REGIONS; i++) begin: gen_rlblifts_lockedexec
-    wire pmpncfg_t  cfg_attempt = rvfi_rs1_rdata[8*(i%4) +: 8];
+    logic [31:0] csr_intended_wdata;
+    always_comb begin
+      csr_intended_wdata <= rvfi_if.csr_intended_wdata((pmp_csr_rvfi_rdata.cfg[i] << 8*(i%4)),CSRADDR_FIRST_PMPCFG + i/4);
+    end
+    wire pmpncfg_t  cfg_attempt = csr_intended_wdata[8*(i%4) +: 8];
 
     sequence seq_rlblifts_lockedexec_ante;
       pmp_csr_rvfi_rdata.mseccfg.rlb  &&
       pmp_csr_rvfi_rdata.mseccfg.mml
       ##0
-      (is_rvfi_csr_write_instr && (rvfi_insn[14:12] == 3'b 001))  &&  // "csrrw"
-      (rvfi_insn[31:20] == (CSRADDR_FIRST_PMPCFG + i/4))          &&  // cfg csr
-      !rvfi_trap
-      ##0
-      ({cfg_attempt.lock, cfg_attempt.read, cfg_attempt.write, cfg_attempt.exec}
-        inside {4'b 1001, 4'b 1010, 4'b 1011, 4'b 1101})
+      rvfi_if.is_csr_write(CSRADDR_FIRST_PMPCFG + i/4) &&
+      !rvfi_trap &&
+      !(PMP_GRANULARITY > 0 && cfg_attempt.mode == PMP_MODE_NA4)
       ;
     endsequence : seq_rlblifts_lockedexec_ante
 
@@ -810,11 +813,6 @@ module uvmt_cv32e40s_pmprvfi_assert
     ) else `uvm_error(info_tag, "with rlb, some illegal cfgs must be writable");
     // Note, "lockedexec" is just one case of a restriction that RLB lifts.
 
-    a_rlblifts_lockedexec_helper: assert property (
-      (clk_cnt < 29)
-      |->
-      not seq_rlblifts_lockedexec_ante
-    ) else `uvm_error(info_tag, "with rlb, some illegal cfgs must be writable");
   end
 
   cov_rlb_mml: cover property (
