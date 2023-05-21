@@ -30,7 +30,7 @@
 module  uvmt_cv32e40x_pma_assert
   import cv32e40x_pkg::*;
   import uvm_pkg::*;
-  import uvmt_cv32e40x_pkg::*;
+  import uvmt_cv32e40x_base_test_pkg::*;
 #(
   parameter type          CORE_REQ_TYPE,
   parameter logic [31:0]  DM_REGION_START,

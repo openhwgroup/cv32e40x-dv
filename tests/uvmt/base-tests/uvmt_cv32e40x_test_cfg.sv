@@ -17,7 +17,7 @@
 `ifndef __UVMT_CV32E40X_TEST_CFG_SV__
 `define __UVMT_CV32E40X_TEST_CFG_SV__
 
-
+import uvmt_cv32e40x_base_test_pkg::*;
 /**
  * Configuration object for testcases
  */

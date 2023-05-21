@@ -14,10 +14,12 @@
 // limitations under the License.
 
 `include "cv32e40x_pkg.sv"
+`include "uvmt_cv32e40x_base_test_pkg.sv"
 
+import uvm_pkg::*;
 import cv32e40x_pkg::pma_cfg_t;
+import uvmt_cv32e40x_base_test_pkg::*;
 
-`include "uvmt_cv32e40x_constants.sv"
 `include "pma_adapted_mem_region_gen.sv"
 `include "cv32e40x_ldgen.sv"
 
