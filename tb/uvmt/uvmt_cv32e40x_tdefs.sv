@@ -19,35 +19,4 @@
 `ifndef __UVMT_CV32E40X_TDEFS_SV__
 `define __UVMT_CV32E40X_TDEFS_SV__
 
-
-/**
- * Test Program Type.  See the Verification Strategy for a discussion of this.
- */
-typedef enum {
-              PREEXISTING_SELFCHECKING,
-              PREEXISTING_NOTSELFCHECKING,
-              GENERATED_SELFCHECKING,
-              GENERATED_NOTSELFCHECKING,
-              NO_TEST_PROGRAM
-             } test_program_type;
-
-
-/**
- * PMA Status
- */
-typedef struct packed {
-  logic                        allow;
-  logic                        main;
-  logic                        bufferable;
-  logic                        cacheable;
-  logic                        atomic;
-  logic                        override_dm;
-  logic [PMA_MAX_REGIONS-1:0]  match_list;
-  logic [31:0]                 match_idx;
-  logic                        have_match;
-  logic                        accesses_dmregion;
-  logic                        accesses_jvt;
-} pma_status_t;
-
-
 `endif // __UVMT_CV32E40X_TDEFS_SV__

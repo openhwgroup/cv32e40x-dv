@@ -96,6 +96,8 @@ module uvmt_cv32e40x_dut_wrap
     logic                         debug_havereset;
     logic                         debug_running;
     logic                         debug_halted;
+    logic                         debug_pc_valid;
+    logic [31:0]                  debug_pc;
 
     // eXtension interface
     // todo: Connect to TB when implemented.
@@ -236,6 +238,8 @@ module uvmt_cv32e40x_dut_wrap
          .debug_havereset_o      ( debug_havereset                ),
          .debug_running_o        ( debug_running                  ),
          .debug_halted_o         ( debug_halted                   ),
+         .debug_pc_valid_o       ( debug_pc_valid                 ),
+         .debug_pc_o             ( debug_pc                       ),
 
          .fetch_enable_i         ( core_cntrl_if.fetch_en         ),
          .core_sleep_o           ( core_status_if.core_busy       )

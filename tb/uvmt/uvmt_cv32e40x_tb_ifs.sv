@@ -104,6 +104,7 @@ interface uvmt_cv32e40x_core_status_if_t (
 
 endinterface : uvmt_cv32e40x_core_status_if_t
 
+
 // Interface to debug assertions and covergroups
 interface uvmt_cv32e40x_debug_cov_assert_if_t
     import cv32e40x_pkg::*;
@@ -329,7 +330,8 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
    //Obi request information
    input logic req_is_store,
    input logic req_instr_integrity,
-   input logic req_data_integrity
+   input logic req_data_integrity,
+   input logic [31:0] instr_req_pc
 
    );
 
@@ -371,7 +373,8 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
 
       req_is_store,
       req_instr_integrity,
-      req_data_integrity
+      req_data_integrity,
+      instr_req_pc
    );
 
 endinterface : uvmt_cv32e40x_support_logic_module_i_if_t
@@ -384,7 +387,12 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    // Indicates that a new obi data req arrives after an exception is triggered.
    // Used to verify exception timing with multiop instruction
    logic req_after_exception;
-   logic is_exception_trigger_hit;
+   logic is_trigger_match_exception;
+   logic is_trigger_match_load;
+   logic is_trigger_match_store;
+   logic is_trigger_match_execute;
+   logic [4:0][31:0] tdata1_array;
+   logic [4:0][31:0] tdata2_array;
 
    // support logic signals for the obi bus protocol:
 
@@ -397,10 +405,10 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    logic instr_bus_resp_ph_cont;
 
    logic abiim_bus_addr_ph_cont;
-   logic abiim_bus_resp_ph_cont;
+   logic alignment_buff_resp_ph_cont;
 
    logic lml_bus_addr_ph_cont;
-   logic lml_bus_resp_ph_cont;
+   logic lsu_resp_ph_cont;
 
    logic lrfodi_bus_addr_ph_cont;
    logic lrfodi_bus_resp_ph_cont;
@@ -408,9 +416,9 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    // address phase counter, used to verify no response phase preceedes an address phase
    integer data_bus_v_addr_ph_cnt;
    integer instr_bus_v_addr_ph_cnt;
-   integer abiim_bus_v_addr_ph_cnt;
-   integer lml_bus_v_addr_ph_cnt;
-   integer lrfodi_bus_v_addr_ph_cnt;
+   integer alignment_buff_addr_ph_cnt;
+   integer lsu_addr_ph_cnt;
+   //integer lrfodi_bus_v_addr_ph_cnt; TODO: remove?
 
    // Counter for ack'ed irqs
    logic [31:0] cnt_irq_ack;
@@ -422,6 +430,7 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    logic data_req_had_integrity;
    logic gntpar_error_in_response_instr;
    logic gntpar_error_in_response_data;
+   logic [31:0] instr_resp_pc;
 
    // indicates that the current rvfi_valid instruction is the first in a debug handler
    logic first_debug_ins;
@@ -435,26 +444,32 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
 
    modport master_mp (
       output req_after_exception,
-         is_exception_trigger_hit,
+         is_trigger_match_exception,
+         is_trigger_match_load,
+         is_trigger_match_store,
+         is_trigger_match_execute,
+         tdata1_array,
+         tdata2_array,
+
          data_bus_addr_ph_cont,
-	      data_bus_resp_ph_cont,
-	      data_bus_v_addr_ph_cnt,
+         data_bus_resp_ph_cont,
+         data_bus_v_addr_ph_cnt,
 
          instr_bus_addr_ph_cont,
-	      instr_bus_resp_ph_cont,
-	      instr_bus_v_addr_ph_cnt,
+         instr_bus_resp_ph_cont,
+         instr_bus_v_addr_ph_cnt,
 
          abiim_bus_addr_ph_cont,
-	      abiim_bus_resp_ph_cont,
-	      abiim_bus_v_addr_ph_cnt,
+         alignment_buff_resp_ph_cont,
+         alignment_buff_addr_ph_cnt,
 
          lml_bus_addr_ph_cont,
-	      lml_bus_resp_ph_cont,
-	      lml_bus_v_addr_ph_cnt,
+         lsu_resp_ph_cont,
+         lsu_addr_ph_cnt,
 
          lrfodi_bus_addr_ph_cont,
-	      lrfodi_bus_resp_ph_cont,
-	      lrfodi_bus_v_addr_ph_cnt,
+         lrfodi_bus_resp_ph_cont,
+         //lrfodi_bus_v_addr_ph_cnt, TODO: remove?
 
          cnt_irq_ack,
          cnt_rvfi_irqs,
@@ -464,6 +479,7 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
          data_req_had_integrity,
          gntpar_error_in_response_instr,
          gntpar_error_in_response_data,
+         instr_resp_pc,
          first_debug_ins,
          first_fetch,
          recorded_dbg_req
@@ -471,26 +487,31 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
 
    modport slave_mp (
       input req_after_exception,
-         is_exception_trigger_hit,
+          is_trigger_match_exception,
+         is_trigger_match_load,
+         is_trigger_match_store,
+         is_trigger_match_execute,
+         tdata1_array,
+         tdata2_array,
+
          data_bus_addr_ph_cont,
          data_bus_resp_ph_cont,
-	 data_bus_v_addr_ph_cnt,
+         data_bus_v_addr_ph_cnt,
 
          instr_bus_addr_ph_cont,
          instr_bus_resp_ph_cont,
          instr_bus_v_addr_ph_cnt,
 
          abiim_bus_addr_ph_cont,
-         abiim_bus_resp_ph_cont,
-         abiim_bus_v_addr_ph_cnt,
+         alignment_buff_resp_ph_cont,
+         alignment_buff_addr_ph_cnt,
 
          lml_bus_addr_ph_cont,
-         lml_bus_resp_ph_cont,
-         lml_bus_v_addr_ph_cnt,
+         lsu_resp_ph_cont,
+         lsu_addr_ph_cnt,
 
          lrfodi_bus_addr_ph_cont,
          lrfodi_bus_resp_ph_cont,
-         lrfodi_bus_v_addr_ph_cnt,
 
          cnt_irq_ack,
          cnt_rvfi_irqs,
@@ -500,6 +521,7 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
          data_req_had_integrity,
          gntpar_error_in_response_instr,
          gntpar_error_in_response_data,
+         instr_resp_pc,
          first_debug_ins,
          first_fetch,
          recorded_dbg_req
