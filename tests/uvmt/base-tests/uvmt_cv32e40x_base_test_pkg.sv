@@ -1,5 +1,5 @@
-// Copyright 2020 OpenHW Group
-// Copyright 2020 Datum Technology Corporation
+//
+// Copyright 2023 Silicon Labs, Inc.
 //
 // Licensed under the Solderpad Hardware Licence, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
 
+`ifndef __UVMT_CV32E40X_BASE_TEST_PKG_SV__
+`define __UVMT_CV32E40X_BASE_TEST_PKG_SV__
 
-`ifndef __UVME_CV32E40X_CONSTANTS_SV__
-`define __UVME_CV32E40X_CONSTANTS_SV__
+// Pre-processor macros
+`include "uvm_macros.svh"
+`include "uvmt_cv32e40x_macros.sv"
 
+package uvmt_cv32e40x_base_test_pkg;
 
-`endif // __UVME_CV32E40X_CONSTANTS_SV__
+    import cv32e40x_pkg::*;
+    import uvm_pkg::*;
+
+    `include "uvmt_cv32e40x_base_test_constants.sv"
+    `include "uvmt_cv32e40x_base_test_tdefs.sv"
+
+endpackage : uvmt_cv32e40x_base_test_pkg;
+
+`endif // __UVMT_CV32E40X_BASE_TEST_PKG_SV__
+

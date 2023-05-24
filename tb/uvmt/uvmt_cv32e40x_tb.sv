@@ -34,10 +34,12 @@ module uvmt_cv32e40x_tb;
 
    import uvm_pkg::*;
    import cv32e40x_pkg::*;
+   import uvmt_cv32e40x_base_test_pkg::*;
    import uvmt_cv32e40x_pkg::*;
-   import uvme_cv32e40x_pkg::*;
+   `ifdef USE_ISS
    `ifndef FORMAL
    import rvviApiPkg::*;
+   `endif
    `endif
 
    // CORE parameters
@@ -59,7 +61,9 @@ module uvmt_cv32e40x_tb;
    uvma_clknrst_if_t            clknrst_if_iss();
    uvma_debug_if_t              debug_if();
    uvma_interrupt_if_t          interrupt_if();
-   uvma_clic_if_t               clic_if();
+   uvma_clic_if_t#(
+     .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+   ) clic_if();
    uvma_obi_memory_if_t #(
      .ADDR_WIDTH  (ENV_PARAM_INSTR_ADDR_WIDTH),
      .DATA_WIDTH  (ENV_PARAM_INSTR_DATA_WIDTH),
@@ -94,8 +98,10 @@ module uvmt_cv32e40x_tb;
                                                    .sec_lvl());     // Core status outputs
 
    // RVVI SystemVerilog Interface
+   `ifdef USE_ISS
    `ifndef FORMAL
       rvviTrace #( .NHART(1), .RETIRE(1)) rvvi_if();
+   `endif
    `endif
 
   /**
@@ -104,18 +110,18 @@ module uvmt_cv32e40x_tb;
    * a few mods to bring unused ports from the CORE to this level using SV interfaces.
    */
    uvmt_cv32e40x_dut_wrap  #(
-                             .NUM_MHPMCOUNTERS  (CORE_PARAM_NUM_MHPMCOUNTERS),
-                             .B_EXT                (uvmt_cv32e40x_pkg::CORE_PARAM_B_EXT),
-                             .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
-                             .DM_REGION_END        (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-                             .DM_REGION_START      (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
-                             .M_EXT                (uvmt_cv32e40x_pkg::CORE_PARAM_M_EXT),
-                             .PMA_CFG              (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG),
-                             .PMA_NUM_REGIONS      (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-                             .RV32                 (uvmt_cv32e40x_pkg::CORE_PARAM_RV32),
-                             .CLIC                 (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC),
-                             .CLIC_ID_WIDTH        (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-                             .CLIC_INTTHRESHBITS   (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC_INTTHRESHBITS),
+                             .B_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
+                             .CLIC                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+                             .CLIC_ID_WIDTH        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
+                             .CLIC_INTTHRESHBITS   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_INTTHRESHBITS),
+                             .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
+                             .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+                             .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
+                             .M_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
+                             .NUM_MHPMCOUNTERS     (CORE_PARAM_NUM_MHPMCOUNTERS),
+                             .PMA_CFG              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
+                             .PMA_NUM_REGIONS      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+                             .RV32                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
                              .INSTR_ADDR_WIDTH     (ENV_PARAM_INSTR_ADDR_WIDTH),
                              .INSTR_RDATA_WIDTH    (ENV_PARAM_INSTR_DATA_WIDTH),
                              .RAM_ADDR_WIDTH       (ENV_PARAM_RAM_ADDR_WIDTH)
@@ -134,13 +140,13 @@ module uvmt_cv32e40x_tb;
                             );
 
   bind cv32e40x_wrapper
-    uvma_rvfi_instr_if_t#(uvme_cv32e40x_pkg::ILEN,
-                        uvme_cv32e40x_pkg::XLEN) rvfi_instr_if(.clk(clk_i),
+    uvma_rvfi_instr_if_t#(uvmt_cv32e40x_base_test_pkg::ILEN,
+                          uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_instr_if(.clk(clk_i),
                                                                    .reset_n(rst_ni),
 
                                                                    .rvfi_valid(rvfi_i.rvfi_valid[0]),
                                                                    .rvfi_order(rvfi_i.rvfi_order[uvma_rvfi_pkg::ORDER_WL*0+:uvma_rvfi_pkg::ORDER_WL]),
-                                                                   .rvfi_insn(rvfi_i.rvfi_insn[uvme_cv32e40x_pkg::ILEN*0+:uvme_cv32e40x_pkg::ILEN]),
+                                                                   .rvfi_insn(rvfi_i.rvfi_insn[uvmt_cv32e40x_base_test_pkg::ILEN*0+:uvmt_cv32e40x_base_test_pkg::ILEN]),
                                                                    .rvfi_trap(rvfi_i.rvfi_trap),
                                                                    .rvfi_halt(rvfi_i.rvfi_halt[0]),
                                                                    .rvfi_intr(rvfi_i.rvfi_intr),
@@ -149,27 +155,27 @@ module uvmt_cv32e40x_tb;
                                                                    .rvfi_nmip(rvfi_i.rvfi_nmip),
                                                                    .rvfi_mode(rvfi_i.rvfi_mode[uvma_rvfi_pkg::MODE_WL*0+:uvma_rvfi_pkg::MODE_WL]),
                                                                    .rvfi_ixl(rvfi_i.rvfi_ixl[uvma_rvfi_pkg::IXL_WL*0+:uvma_rvfi_pkg::IXL_WL]),
-                                                                   .rvfi_pc_rdata(rvfi_i.rvfi_pc_rdata[uvme_cv32e40x_pkg::XLEN*0+:uvme_cv32e40x_pkg::XLEN]),
-                                                                   .rvfi_pc_wdata(rvfi_i.rvfi_pc_wdata[uvme_cv32e40x_pkg::XLEN*0+:uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_pc_rdata(rvfi_i.rvfi_pc_rdata[uvmt_cv32e40x_base_test_pkg::XLEN*0+:uvmt_cv32e40x_base_test_pkg::XLEN]),
+                                                                   .rvfi_pc_wdata(rvfi_i.rvfi_pc_wdata[uvmt_cv32e40x_base_test_pkg::XLEN*0+:uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_rs1_addr(rvfi_i.rvfi_rs1_addr[uvma_rvfi_pkg::GPR_ADDR_WL*0+:uvma_rvfi_pkg::GPR_ADDR_WL]),
-                                                                   .rvfi_rs1_rdata(rvfi_i.rvfi_rs1_rdata[uvme_cv32e40x_pkg::XLEN*0+:uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_rs1_rdata(rvfi_i.rvfi_rs1_rdata[uvmt_cv32e40x_base_test_pkg::XLEN*0+:uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_rs2_addr(rvfi_i.rvfi_rs2_addr[uvma_rvfi_pkg::GPR_ADDR_WL*0+:uvma_rvfi_pkg::GPR_ADDR_WL]),
-                                                                   .rvfi_rs2_rdata(rvfi_i.rvfi_rs2_rdata[uvme_cv32e40x_pkg::XLEN*0+:uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_rs2_rdata(rvfi_i.rvfi_rs2_rdata[uvmt_cv32e40x_base_test_pkg::XLEN*0+:uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_rs3_addr('0),
                                                                    .rvfi_rs3_rdata('0),
                                                                    .rvfi_rd1_addr(rvfi_i.rvfi_rd_addr[uvma_rvfi_pkg::GPR_ADDR_WL*0+:uvma_rvfi_pkg::GPR_ADDR_WL]),
-                                                                   .rvfi_rd1_wdata(rvfi_i.rvfi_rd_wdata[uvme_cv32e40x_pkg::XLEN*0+:uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_rd1_wdata(rvfi_i.rvfi_rd_wdata[uvmt_cv32e40x_base_test_pkg::XLEN*0+:uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_rd2_addr('0),
                                                                    .rvfi_rd2_wdata('0),
-                                                                   .rvfi_gpr_rdata(rvfi_i.rvfi_gpr_rdata[32*uvme_cv32e40x_pkg::XLEN*0  +:32*uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_gpr_rdata(rvfi_i.rvfi_gpr_rdata[32*uvmt_cv32e40x_base_test_pkg::XLEN*0  +:32*uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_gpr_rmask(rvfi_i.rvfi_gpr_rmask[32*0  +:32]),
-                                                                   .rvfi_gpr_wdata(rvfi_i.rvfi_gpr_wdata[32*uvme_cv32e40x_pkg::XLEN*0  +:32*uvme_cv32e40x_pkg::XLEN]),
+                                                                   .rvfi_gpr_wdata(rvfi_i.rvfi_gpr_wdata[32*uvmt_cv32e40x_base_test_pkg::XLEN*0  +:32*uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_gpr_wmask(rvfi_i.rvfi_gpr_wmask[32*0  +:32]),
-                                                                   .rvfi_mem_addr(rvfi_i.rvfi_mem_addr[  uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN]),
-                                                                   .rvfi_mem_rdata(rvfi_i.rvfi_mem_rdata[uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN]),
-                                                                   .rvfi_mem_rmask(rvfi_i.rvfi_mem_rmask[uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN/8]),
-                                                                   .rvfi_mem_wdata(rvfi_i.rvfi_mem_wdata[uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN]),
-                                                                   .rvfi_mem_wmask(rvfi_i.rvfi_mem_wmask[uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvme_cv32e40x_pkg::XLEN/8]),
+                                                                   .rvfi_mem_addr(rvfi_i.rvfi_mem_addr[  uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN]),
+                                                                   .rvfi_mem_rdata(rvfi_i.rvfi_mem_rdata[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN]),
+                                                                   .rvfi_mem_rmask(rvfi_i.rvfi_mem_rmask[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8]),
+                                                                   .rvfi_mem_wdata(rvfi_i.rvfi_mem_wdata[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN]),
+                                                                   .rvfi_mem_wmask(rvfi_i.rvfi_mem_wmask[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8]),
                                                                    .instr_prot(rvfi_i.rvfi_instr_prot),
                                                                    .mem_prot(rvfi_i.rvfi_mem_prot)
                                                                    );
@@ -318,7 +324,7 @@ module uvmt_cv32e40x_tb;
 
   // dscratch0
   bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvme_cv32e40x_pkg::XLEN) rvfi_csr_dscratch0_if(.clk(clk_i),
+    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_dscratch0_if(.clk(clk_i),
                                                                      .reset_n(rst_ni),
                                                                      .rvfi_csr_rmask(rvfi_i.rvfi_csr_dscratch_rmask[0]),
                                                                      .rvfi_csr_wmask(rvfi_i.rvfi_csr_dscratch_wmask[0]),
@@ -328,7 +334,7 @@ module uvmt_cv32e40x_tb;
 
   // dscratch1
   bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvme_cv32e40x_pkg::XLEN) rvfi_csr_dscratch1_if(.clk(clk_i),
+    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_dscratch1_if(.clk(clk_i),
                                                                      .reset_n(rst_ni),
                                                                      .rvfi_csr_rmask(rvfi_i.rvfi_csr_dscratch_rmask[1]),
                                                                      .rvfi_csr_wmask(rvfi_i.rvfi_csr_dscratch_wmask[1]),
@@ -338,7 +344,7 @@ module uvmt_cv32e40x_tb;
 
   // tdata1
   bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvme_cv32e40x_pkg::XLEN) rvfi_csr_tdata1_if(.clk(clk_i),
+    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_tdata1_if(.clk(clk_i),
                                                                   .reset_n(rst_ni),
                                                                   .rvfi_csr_rmask(rvfi_i.rvfi_csr_tdata_rmask[1]),
                                                                   .rvfi_csr_wmask(rvfi_i.rvfi_csr_tdata_wmask[1]),
@@ -348,7 +354,7 @@ module uvmt_cv32e40x_tb;
 
   // tdata2
   bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvme_cv32e40x_pkg::XLEN) rvfi_csr_tdata2_if(.clk(clk_i),
+    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_tdata2_if(.clk(clk_i),
                                                                   .reset_n(rst_ni),
                                                                   .rvfi_csr_rmask(rvfi_i.rvfi_csr_tdata_rmask[2]),
                                                                   .rvfi_csr_wmask(rvfi_i.rvfi_csr_tdata_wmask[2]),
@@ -358,7 +364,7 @@ module uvmt_cv32e40x_tb;
 
   // tdata3
   bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvme_cv32e40x_pkg::XLEN) rvfi_csr_tdata3_if(.clk(clk_i),
+    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_tdata3_if(.clk(clk_i),
                                                                   .reset_n(rst_ni),
                                                                   .rvfi_csr_rmask(rvfi_i.rvfi_csr_tdata_rmask[3]),
                                                                   .rvfi_csr_wmask(rvfi_i.rvfi_csr_tdata_wmask[3]),
@@ -369,27 +375,27 @@ module uvmt_cv32e40x_tb;
 
   bind uvmt_cv32e40x_dut_wrap
     uvma_obi_memory_assert_if_wrp#(
-      .ADDR_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_ADDR_WIDTH),
-      .DATA_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_DATA_WIDTH),
-      .AUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_AUSER_WIDTH),
-      .WUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_WUSER_WIDTH),
-      .RUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_RUSER_WIDTH),
-      .ID_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_ID_WIDTH),
-      .ACHK_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_ACHK_WIDTH),
-      .RCHK_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_INSTR_RCHK_WIDTH),
+      .ADDR_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_ADDR_WIDTH),
+      .DATA_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_DATA_WIDTH),
+      .AUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_AUSER_WIDTH),
+      .WUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_WUSER_WIDTH),
+      .RUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_RUSER_WIDTH),
+      .ID_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_ID_WIDTH),
+      .ACHK_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_ACHK_WIDTH),
+      .RCHK_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_RCHK_WIDTH),
       .IS_1P2(1)
     ) obi_instr_memory_assert_i(.obi(obi_instr_if));
 
   bind uvmt_cv32e40x_dut_wrap
     uvma_obi_memory_assert_if_wrp#(
-      .ADDR_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_ADDR_WIDTH),
-      .DATA_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_DATA_WIDTH),
-      .AUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_AUSER_WIDTH),
-      .WUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_WUSER_WIDTH),
-      .RUSER_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_RUSER_WIDTH),
-      .ID_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_ID_WIDTH),
-      .ACHK_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_ACHK_WIDTH),
-      .RCHK_WIDTH(uvme_cv32e40x_pkg::ENV_PARAM_DATA_RCHK_WIDTH),
+      .ADDR_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_ADDR_WIDTH),
+      .DATA_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_DATA_WIDTH),
+      .AUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_AUSER_WIDTH),
+      .WUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_WUSER_WIDTH),
+      .RUSER_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_RUSER_WIDTH),
+      .ID_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_ID_WIDTH),
+      .ACHK_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_ACHK_WIDTH),
+      .RCHK_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_DATA_RCHK_WIDTH),
       .IS_1P2(1)
     ) obi_data_memory_assert_i(.obi(obi_data_if));
 
@@ -445,7 +451,8 @@ module uvmt_cv32e40x_tb;
     // CLIC assertions
     bind cv32e40x_core
       uvmt_cv32e40x_clic_interrupt_assert#(
-        .CLIC (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC)
+        .CLIC (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+        .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
       ) clic_assert_i(
         .dpc                 (cs_registers_i.dpc_rdata),
         .mintstatus          (cs_registers_i.mintstatus_rdata),
@@ -483,7 +490,7 @@ module uvmt_cv32e40x_tb;
         // External inputs
         .clic_if             (dut_wrap.clic_if),
         // Internal sampled   variants
-        .irq_id              (core_i.irq_id[CLIC_ID_WIDTH-1:0]),
+        .irq_id              (core_i.irq_id[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH-1:0]),
         .irq_level           (core_i.irq_level),
         .irq_priv            (core_i.irq_priv),
         .irq_shv             (core_i.irq_shv),
@@ -537,8 +544,8 @@ module uvmt_cv32e40x_tb;
 
   bind cv32e40x_wrapper
     uvmt_cv32e40x_fencei_assert #(
-      .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-      .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+      .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+      .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
     ) fencei_assert_i (
       .wb_valid           (core_i.wb_stage_i.wb_valid),
       .wb_instr_valid     (core_i.ex_wb_pipe.instr_valid),
@@ -561,8 +568,8 @@ module uvmt_cv32e40x_tb;
 
   bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
     uvmt_cv32e40x_rvfi_assert #(
-      .CLIC          (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC),
-      .CLIC_ID_WIDTH (uvmt_cv32e40x_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+      .CLIC          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+      .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
     ) rvfi_assert_i (
       .rvfi_if          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
       .support_if       (dut_wrap.cv32e40x_wrapper_i.support_logic_module_o_if.slave_mp),
@@ -731,9 +738,10 @@ module uvmt_cv32e40x_tb;
         .lrfodi_bus_req (core_i.load_store_unit_i.buffer_trans_valid),
         .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready),
 
-        .req_is_store (core_i.load_store_unit_i.bus_trans.we)
+        .req_is_store (core_i.load_store_unit_i.bus_trans.we),
         //TODO:ERROR:silabs-robin  .req_instr_integrity (core_i.if_stage_i.mpu_i.bus_trans_integrity),
-        //TODO:eRROR:silabs-robin  .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
+        //TODO:ERROR:silabs-robin  .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
+        .instr_req_pc ({core_i.m_c_obi_instr_if.req_payload.addr[31:2], 2'b0})
 
     );
 
@@ -750,11 +758,11 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_model #(
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1'b 1),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_model_instr_i (
         .addr_i       (pma_i.trans_addr_i),
         .dbg          (core_trans_i.dbg),
@@ -765,11 +773,11 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_model #(
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1'b 0),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_model_data_i (
         .addr_i       (pma_i.trans_addr_i),
         .dbg          (core_trans_i.dbg),
@@ -780,11 +788,11 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i
       uvmt_cv32e40x_pma_model #(
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1'b 0),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_model_rvfidata_low_i (
         .clk                  (clknrst_if.clk),
         .rst_n                (clknrst_if.reset_n),
@@ -799,11 +807,11 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i
       uvmt_cv32e40x_pma_model #(
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1'b 0),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_model_rvfidata_high_i (
         .clk                  (clknrst_if.clk),
         .rst_n                (clknrst_if.reset_n),
@@ -819,11 +827,11 @@ module uvmt_cv32e40x_tb;
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_assert #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_inst_req_t),
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_assert_instr_i (
         .obi_memory_if    (dut_wrap.obi_instr_if),
         .rvfi_instr_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
@@ -837,11 +845,11 @@ module uvmt_cv32e40x_tb;
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_assert #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_data_req_t),
-        .DM_REGION_END   (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_END),
-        .DM_REGION_START (uvmt_cv32e40x_pkg::CORE_PARAM_DM_REGION_START),
+        .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+        .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (0),
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_CFG)
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_assert_data_i (
         .obi_memory_if    (dut_wrap.obi_data_if),
         .rvfi_instr_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
@@ -854,7 +862,7 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
         .IS_INSTR_SIDE   (1'b 1)
       ) pma_cov_instr_i (
         .clk_ungated                         (clknrst_if.clk),
@@ -867,7 +875,7 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
         .IS_INSTR_SIDE   (1'b 0)
       ) pma_cov_data_i (
         .clk_ungated                         (clknrst_if.clk),
@@ -918,13 +926,16 @@ module uvmt_cv32e40x_tb;
 
                                                                     .rvfi_if (rvfi_instr_if),
                                                                     .clknrst_if (dut_wrap.clknrst_if),
+                                                                    .support_if (support_logic_module_o_if.slave_mp),
 
                                                                     .tdata1 (rvfi_csr_tdata1_if),
                                                                     .tdata2 (rvfi_csr_tdata2_if),
                                                                     .tdata3 (rvfi_csr_tdata3_if),
                                                                     .tinfo (rvfi_csr_tinfo_if),
                                                                     .tselect (rvfi_csr_tselect_if),
-                                                                    .tcontrol (rvfi_csr_tcontrol_if)
+                                                                    .tcontrol (rvfi_csr_tcontrol_if),
+                                                                    .dcsr (rvfi_csr_dcsr_if),
+                                                                    .dpc (rvfi_csr_dpc_if)
                                                                     );
 
 
@@ -938,8 +949,10 @@ module uvmt_cv32e40x_tb;
     //uvmt_cv32e40x_rvvi_handcar u_rvvi_handcar();
 
     // IMPERAS DV
+    `ifdef USE_ISS
     `ifndef FORMAL
       uvmt_cv32e40x_imperas_dv_wrap imperas_dv (rvvi_if);
+    `endif
     `endif
 
    /**
@@ -956,7 +969,9 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env.debug_agent"),            .field_name("vif"),           .value(debug_if));
      uvm_config_db#(virtual uvma_clknrst_if_t           )::set(.cntxt(null), .inst_name("*.env.clknrst_agent"),          .field_name("vif"),           .value(clknrst_if));
      uvm_config_db#(virtual uvma_interrupt_if_t         )::set(.cntxt(null), .inst_name("*.env.interrupt_agent"),        .field_name("vif"),           .value(interrupt_if));
-     uvm_config_db#(virtual uvma_clic_if_t              )::set(.cntxt(null), .inst_name("*.env.clic_agent"),             .field_name("vif"),           .value(clic_if));
+     uvm_config_db#(virtual uvma_clic_if_t#(
+       .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+     ))::set(.cntxt(null), .inst_name("*.env.clic_agent"), .field_name("vif"), .value(clic_if));
 
      uvm_config_db#(virtual uvma_obi_memory_if_t#(
        .AUSER_WIDTH(ENV_PARAM_INSTR_AUSER_WIDTH),
@@ -983,7 +998,9 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(virtual uvma_fencei_if_t            )::set(.cntxt(null), .inst_name("*.env.fencei_agent"),           .field_name("fencei_vif"),    .value(fencei_if)  );
      uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if_t)::set(.cntxt(null), .inst_name("*"),                            .field_name("vp_status_vif"), .value(vp_status_if) );
      uvm_config_db#(virtual uvma_interrupt_if_t         )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("intr_vif"),      .value(interrupt_if) );
-     uvm_config_db#(virtual uvma_clic_if_t              )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("clic_vif"),      .value(clic_if) );
+     uvm_config_db#(virtual uvma_clic_if_t#(
+       .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+     ))::set(.cntxt(null), .inst_name("*.env"), .field_name("clic_vif"), .value(clic_if) );
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("debug_vif"),     .value(debug_if)     );
 //     uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if_t)::set(.cntxt(null), .inst_name("*.env"),                 .field_name("debug_cov_vif"),    .value(debug_cov_assert_if));
      `RVFI_CSR_UVM_CONFIG_DB_SET(jvt)
@@ -1133,7 +1150,9 @@ module uvmt_cv32e40x_tb;
      `endif
 
      // IMPERAS_DV interface
+     `ifdef USE_ISS
      uvm_config_db#(virtual rvviTrace)::set(.cntxt(null), .inst_name("*.env.rvvi_agent"), .field_name("rvvi_vif"), .value(rvvi_if));
+     `endif
 
      // Virtual Peripheral Status interface
      uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if_t              )::set(.cntxt(null), .inst_name("*"), .field_name("vp_status_vif"),       .value(vp_status_if)      );
@@ -1166,7 +1185,7 @@ module uvmt_cv32e40x_tb;
 
    // Informational print message on loading of OVPSIM ISS to benchmark some elf image loading times
    // OVPSIM runs its initialization at the #1ns timestamp, and should dominate the initial startup time
-
+   `ifdef USE_ISS
    `ifndef FORMAL // Formal ignores initial blocks, avoids unnecessary warning
    // overcome race
    initial begin
@@ -1175,6 +1194,7 @@ module uvmt_cv32e40x_tb;
        imperas_dv.ref_init();
      end
    end
+   `endif
    `endif
 
    //TODO verify these are correct with regards to isacov function
@@ -1240,10 +1260,12 @@ module uvmt_cv32e40x_tb;
       void'(uvm_config_db#(bit)::get(null, "", "sim_finished", sim_finished));
 
       // Shutdown the Reference Model
+      `ifdef USE_ISS
       if ($test$plusargs("USE_ISS")) begin
          // Exit handler for ImperasDV
          void'(rvviRefShutdown());
       end
+      `endif
 
       `uvm_info("DV_WRAP", $sformatf("\n%m: *** Test Summary ***\n"), UVM_DEBUG);
 
