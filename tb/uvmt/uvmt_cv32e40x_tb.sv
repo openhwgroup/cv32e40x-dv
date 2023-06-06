@@ -56,7 +56,6 @@ module uvmt_cv32e40x_tb;
    bit [31:0] evalue;
 
    // Agent interfaces
-   uvma_isacov_if_t             isacov_if();
    uvma_clknrst_if_t            clknrst_if(); // clock and resets from the clknrst agent
    uvma_clknrst_if_t            clknrst_if_iss();
    uvma_debug_if_t              debug_if();
@@ -219,7 +218,6 @@ module uvmt_cv32e40x_tb;
   `RVFI_CSR_BIND(dpc)
   `RVFI_CSR_BIND(tselect)
   `RVFI_CSR_BIND(tinfo)
-  `RVFI_CSR_BIND(tcontrol)
 
   `RVFI_CSR_IDX_BIND(mhpmcounter,,3)
   `RVFI_CSR_IDX_BIND(mhpmcounter,,4)
@@ -360,16 +358,6 @@ module uvmt_cv32e40x_tb;
                                                                   .rvfi_csr_wmask(rvfi_i.rvfi_csr_tdata_wmask[2]),
                                                                   .rvfi_csr_rdata(rvfi_i.rvfi_csr_tdata_rdata[2]),
                                                                   .rvfi_csr_wdata(rvfi_i.rvfi_csr_tdata_wdata[2])
-    );
-
-  // tdata3
-  bind cv32e40x_wrapper
-    uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_tdata3_if(.clk(clk_i),
-                                                                  .reset_n(rst_ni),
-                                                                  .rvfi_csr_rmask(rvfi_i.rvfi_csr_tdata_rmask[3]),
-                                                                  .rvfi_csr_wmask(rvfi_i.rvfi_csr_tdata_wmask[3]),
-                                                                  .rvfi_csr_rdata(rvfi_i.rvfi_csr_tdata_rdata[3]),
-                                                                  .rvfi_csr_wdata(rvfi_i.rvfi_csr_tdata_wdata[3])
     );
 
 
@@ -862,8 +850,9 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .IS_INSTR_SIDE   (1'b 1)
+        .CORE_REQ_TYPE   (cv32e40x_pkg::obi_inst_req_t),
+        .IS_INSTR_SIDE   (1'b 1),
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS)
       ) pma_cov_instr_i (
         .clk_ungated                         (clknrst_if.clk),
         .pma_status_i                        (uvmt_cv32e40x_tb.pma_status_instr),
@@ -875,8 +864,9 @@ module uvmt_cv32e40x_tb;
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
-        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .IS_INSTR_SIDE   (1'b 0)
+        .CORE_REQ_TYPE   (cv32e40x_pkg::obi_data_req_t),
+        .IS_INSTR_SIDE   (1'b 0),
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS)
       ) pma_cov_data_i (
         .clk_ungated                         (clknrst_if.clk),
         .pma_status_i                        (uvmt_cv32e40x_tb.pma_status_data),
@@ -923,17 +913,14 @@ module uvmt_cv32e40x_tb;
                                                                     .wb_tselect (rvfi_i.rvfi_csr_rdata_d.tselect),
                                                                     .wb_exception (core_i.controller_i.controller_fsm_i.exception_in_wb),
 
-
                                                                     .rvfi_if (rvfi_instr_if),
                                                                     .clknrst_if (dut_wrap.clknrst_if),
                                                                     .support_if (support_logic_module_o_if.slave_mp),
 
                                                                     .tdata1 (rvfi_csr_tdata1_if),
                                                                     .tdata2 (rvfi_csr_tdata2_if),
-                                                                    .tdata3 (rvfi_csr_tdata3_if),
                                                                     .tinfo (rvfi_csr_tinfo_if),
                                                                     .tselect (rvfi_csr_tselect_if),
-                                                                    .tcontrol (rvfi_csr_tcontrol_if),
                                                                     .dcsr (rvfi_csr_dcsr_if),
                                                                     .dpc (rvfi_csr_dpc_if)
                                                                     );
@@ -965,7 +952,6 @@ module uvmt_cv32e40x_tb;
      $timeformat(-9, 3, " ns", 8);
 
      // Add interfaces handles to uvm_config_db
-     uvm_config_db#(virtual uvma_isacov_if_t            )::set(.cntxt(null), .inst_name("*.env.isacov_agent"),           .field_name("vif"),           .value(isacov_if));
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env.debug_agent"),            .field_name("vif"),           .value(debug_if));
      uvm_config_db#(virtual uvma_clknrst_if_t           )::set(.cntxt(null), .inst_name("*.env.clknrst_agent"),          .field_name("vif"),           .value(clknrst_if));
      uvm_config_db#(virtual uvma_interrupt_if_t         )::set(.cntxt(null), .inst_name("*.env.interrupt_agent"),        .field_name("vif"),           .value(interrupt_if));
@@ -1044,9 +1030,7 @@ module uvmt_cv32e40x_tb;
      `RVFI_CSR_UVM_CONFIG_DB_SET(tselect)
      `RVFI_CSR_UVM_CONFIG_DB_SET(tdata1)
      `RVFI_CSR_UVM_CONFIG_DB_SET(tdata2)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(tdata3)
      `RVFI_CSR_UVM_CONFIG_DB_SET(tinfo)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(tcontrol)
 
      `RVFI_CSR_UVM_CONFIG_DB_SET(mhpmevent3)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mhpmevent4)
@@ -1196,13 +1180,6 @@ module uvmt_cv32e40x_tb;
    end
    `endif
    `endif
-
-   //TODO verify these are correct with regards to isacov function
-   `ifndef FORMAL // events ignored for formal - this avoids unnecessary warning
-   always @(dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if.rvfi_valid) -> isacov_if.retire;
-   `endif
-   assign isacov_if.instr = dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if.rvfi_insn;
-   //assign isacov_if.is_compressed = dut_wrap.cv32e40x_wrapper_i.tracer_i.insn_compressed;
 
    // Capture the test status and exit pulse flags
    // TODO: put this logic in the vp_status_if (makes it easier to pass to ENV)
