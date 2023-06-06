@@ -507,7 +507,6 @@ function void uvme_cv32e40x_cfg_c::set_unsupported_csr_mask();
    super.set_unsupported_csr_mask();
 
    // Now re-invalidate the user mode CSRs since they are not implemented, yet
-  /*TODO:ERROR:silabs-robin Are these really necessary?
    unsupported_csr_mask[uvma_core_cntrl_pkg::USTATUS] = 1;
    unsupported_csr_mask[uvma_core_cntrl_pkg::UIE] = 1;
    unsupported_csr_mask[uvma_core_cntrl_pkg::UTVEC] = 1;
@@ -523,7 +522,6 @@ function void uvme_cv32e40x_cfg_c::set_unsupported_csr_mask();
 
    unsupported_csr_mask[uvma_core_cntrl_pkg::MCONTEXT] = 1;
    unsupported_csr_mask[uvma_core_cntrl_pkg::SCONTEXT] = 1;
-  */
 
 endfunction : set_unsupported_csr_mask
 

@@ -103,7 +103,7 @@ module uvmt_cv32e40x_dut_wrap
     // todo: Connect to TB when implemented.
     // Included to allow core-v-verif to compile with RTL including
     // interface definition.
-    if_xif xif();
+    cv32e40x_if_xif xif();
 
     assign debug_if.clk      = clknrst_if.clk;
     assign debug_if.reset_n  = clknrst_if.reset_n;

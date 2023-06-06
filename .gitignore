@@ -33,8 +33,8 @@ waves.shm/
 *.log
 stdout.txt
 .vscode
-*/vendor_lib/dpi_dasm_spike/
-*/vendor_lib/verilab/svlib/
+vendor_lib/dpi_dasm_spike/
+vendor_lib/verilab/svlib/
 work*
 vsim.dbg
 *.wlf
