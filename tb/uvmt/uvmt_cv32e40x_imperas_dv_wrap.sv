@@ -185,6 +185,8 @@
 `define CSR_MSCRATCH_ADDR       32'h340
 `define CSR_MSECCFG             32'h747
 `define CSR_MSECCFGH            32'h757
+`define CSR_MSECCFGH_ADDR       32'h757
+`define CSR_MSECCFG_ADDR        32'h747
 `define CSR_MSTATEEN0H_ADDR     32'h31C
 `define CSR_MSTATEEN0_ADDR      32'h30C
 `define CSR_MSTATEEN1H_ADDR     32'h31D
@@ -199,6 +201,86 @@
 `define CSR_MTVEC_ADDR          32'h305
 `define CSR_MTVT_ADDR           32'h307 // only available when CLIC=1
 `define CSR_MVENDORID_ADDR      32'hF11
+`define CSR_PMPADDR0_ADDR       32'h3B0
+`define CSR_PMPADDR10_ADDR      32'h3BA
+`define CSR_PMPADDR11_ADDR      32'h3BB
+`define CSR_PMPADDR12_ADDR      32'h3BC
+`define CSR_PMPADDR13_ADDR      32'h3BD
+`define CSR_PMPADDR14_ADDR      32'h3BE
+`define CSR_PMPADDR15_ADDR      32'h3BF
+`define CSR_PMPADDR16_ADDR      32'h3C0
+`define CSR_PMPADDR17_ADDR      32'h3C1
+`define CSR_PMPADDR18_ADDR      32'h3C2
+`define CSR_PMPADDR19_ADDR      32'h3C3
+`define CSR_PMPADDR1_ADDR       32'h3B1
+`define CSR_PMPADDR20_ADDR      32'h3C4
+`define CSR_PMPADDR21_ADDR      32'h3C5
+`define CSR_PMPADDR22_ADDR      32'h3C6
+`define CSR_PMPADDR23_ADDR      32'h3C7
+`define CSR_PMPADDR24_ADDR      32'h3C8
+`define CSR_PMPADDR25_ADDR      32'h3C9
+`define CSR_PMPADDR26_ADDR      32'h3CA
+`define CSR_PMPADDR27_ADDR      32'h3CB
+`define CSR_PMPADDR28_ADDR      32'h3CC
+`define CSR_PMPADDR29_ADDR      32'h3CD
+`define CSR_PMPADDR2_ADDR       32'h3B2
+`define CSR_PMPADDR30_ADDR      32'h3CE
+`define CSR_PMPADDR31_ADDR      32'h3CF
+`define CSR_PMPADDR32_ADDR      32'h3D0
+`define CSR_PMPADDR33_ADDR      32'h3D1
+`define CSR_PMPADDR34_ADDR      32'h3D2
+`define CSR_PMPADDR35_ADDR      32'h3D3
+`define CSR_PMPADDR36_ADDR      32'h3D4
+`define CSR_PMPADDR37_ADDR      32'h3D5
+`define CSR_PMPADDR38_ADDR      32'h3D6
+`define CSR_PMPADDR39_ADDR      32'h3D7
+`define CSR_PMPADDR3_ADDR       32'h3B3
+`define CSR_PMPADDR40_ADDR      32'h3D8
+`define CSR_PMPADDR41_ADDR      32'h3D9
+`define CSR_PMPADDR42_ADDR      32'h3DA
+`define CSR_PMPADDR43_ADDR      32'h3DB
+`define CSR_PMPADDR44_ADDR      32'h3DC
+`define CSR_PMPADDR45_ADDR      32'h3DD
+`define CSR_PMPADDR46_ADDR      32'h3DE
+`define CSR_PMPADDR47_ADDR      32'h3DF
+`define CSR_PMPADDR48_ADDR      32'h3E0
+`define CSR_PMPADDR49_ADDR      32'h3E1
+`define CSR_PMPADDR4_ADDR       32'h3B4
+`define CSR_PMPADDR50_ADDR      32'h3E2
+`define CSR_PMPADDR51_ADDR      32'h3E3
+`define CSR_PMPADDR52_ADDR      32'h3E4
+`define CSR_PMPADDR53_ADDR      32'h3E5
+`define CSR_PMPADDR54_ADDR      32'h3E6
+`define CSR_PMPADDR55_ADDR      32'h3E7
+`define CSR_PMPADDR56_ADDR      32'h3E8
+`define CSR_PMPADDR57_ADDR      32'h3E9
+`define CSR_PMPADDR58_ADDR      32'h3EA
+`define CSR_PMPADDR59_ADDR      32'h3EB
+`define CSR_PMPADDR5_ADDR       32'h3B5
+`define CSR_PMPADDR60_ADDR      32'h3EC
+`define CSR_PMPADDR61_ADDR      32'h3ED
+`define CSR_PMPADDR62_ADDR      32'h3EE
+`define CSR_PMPADDR63_ADDR      32'h3EF
+`define CSR_PMPADDR6_ADDR       32'h3B6
+`define CSR_PMPADDR7_ADDR       32'h3B7
+`define CSR_PMPADDR8_ADDR       32'h3B8
+`define CSR_PMPADDR9_ADDR       32'h3B9
+`define CSR_PMPCFG0_ADDR        32'h3A0
+`define CSR_PMPCFG10_ADDR       32'h3AA
+`define CSR_PMPCFG11_ADDR       32'h3AB
+`define CSR_PMPCFG12_ADDR       32'h3AC
+`define CSR_PMPCFG13_ADDR       32'h3AD
+`define CSR_PMPCFG14_ADDR       32'h3AE
+`define CSR_PMPCFG15_ADDR       32'h3AF
+`define CSR_PMPCFG1_ADDR        32'h3A1
+`define CSR_PMPCFG2_ADDR        32'h3A2
+`define CSR_PMPCFG3_ADDR        32'h3A3
+`define CSR_PMPCFG4_ADDR        32'h3A4
+`define CSR_PMPCFG5_ADDR        32'h3A5
+`define CSR_PMPCFG6_ADDR        32'h3A6
+`define CSR_PMPCFG7_ADDR        32'h3A7
+`define CSR_PMPCFG8_ADDR        32'h3A8
+`define CSR_PMPCFG9_ADDR        32'h3A9
 `define CSR_SCONTEXT_ADDR       32'h7AA
 `define CSR_TCONTROL_ADDR       32'h7A5 // only when DBG_NUM_TRIGGERS > 0
 `define CSR_TDATA1_ADDR         32'h7A1 // only when DBG_NUM_TRIGGERS > 0
@@ -212,7 +294,7 @@
 ////////////////////////////////////////////////////////////////////////////
 `ifdef USE_IMPERASDV
 
-`include "rvvi/imperasDV.svh" // located in $IMPERAS_HOME/ImpProprietary/include/host
+`include "idv/idv.svh" // located in $IMPERAS_HOME/ImpProprietary/include/host
 
 module uvmt_cv32e40x_imperas_dv_wrap
   import uvm_pkg::*;
@@ -342,9 +424,7 @@ module uvmt_cv32e40x_imperas_dv_wrap
      `RVVI_SET_CSR( `CSR_TSELECT_ADDR,       tselect       )
      `RVVI_SET_CSR( `CSR_TDATA1_ADDR,        tdata1        )
      `RVVI_SET_CSR( `CSR_TDATA2_ADDR,        tdata2        )
-     `RVVI_SET_CSR( `CSR_TDATA3_ADDR,        tdata3        )
      `RVVI_SET_CSR( `CSR_TINFO_ADDR,         tinfo         )
-     `RVVI_SET_CSR( `CSR_TCONTROL_ADDR,      tcontrol      )
    end
 
    `RVVI_SET_CSR( `CSR_DCSR_ADDR,          dcsr          )

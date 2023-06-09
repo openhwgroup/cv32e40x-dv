@@ -18,7 +18,6 @@
 `define __UVMT_CV32E40X_BASE_TEST_PKG_SV__
 
 // Pre-processor macros
-`include "uvm_macros.svh"
 `include "uvmt_cv32e40x_macros.sv"
 
 package uvmt_cv32e40x_base_test_pkg;

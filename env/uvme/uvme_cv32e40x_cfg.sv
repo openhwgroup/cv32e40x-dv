@@ -504,10 +504,24 @@ function void uvme_cv32e40x_cfg_c::configure_disable_csr_checks();
 endfunction : configure_disable_csr_checks
 
 function void uvme_cv32e40x_cfg_c::set_unsupported_csr_mask();
-  super.set_unsupported_csr_mask();
+   super.set_unsupported_csr_mask();
 
-  unsupported_csr_mask[uvma_core_cntrl_pkg::MCONTEXT] = 1;
-  unsupported_csr_mask[uvma_core_cntrl_pkg::SCONTEXT] = 1;
+   // Now re-invalidate the user mode CSRs since they are not implemented, yet
+   unsupported_csr_mask[uvma_core_cntrl_pkg::USTATUS] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UIE] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UTVEC] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::USCRATCH] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UEPC] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UCAUSE] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UTVAL] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::UIP] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::SCOUNTEREN] = 1;
+
+   unsupported_csr_mask[uvma_core_cntrl_pkg::TDATA3] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::TCONTROL] = 1;
+
+   unsupported_csr_mask[uvma_core_cntrl_pkg::MCONTEXT] = 1;
+   unsupported_csr_mask[uvma_core_cntrl_pkg::SCONTEXT] = 1;
 
 endfunction : set_unsupported_csr_mask
 
