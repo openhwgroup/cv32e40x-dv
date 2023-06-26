@@ -52,7 +52,6 @@ module uvmt_cv32e40x_dut_wrap
     parameter pma_cfg_t              PMA_CFG[PMA_NUM_REGIONS-1 : 0]      = '{default:PMA_R_DEFAULT},
     parameter logic                  CLIC                                = 0,
     parameter int                    CLIC_ID_WIDTH                       = 5,
-    parameter int                    CLIC_INTTHRESHBITS                  = 8,
     parameter int                    DBG_NUM_TRIGGERS                    = 1,
     parameter rv32_e                 RV32                                = RV32I,
 
@@ -172,8 +171,7 @@ module uvmt_cv32e40x_dut_wrap
                       .PMA_NUM_REGIONS      (PMA_NUM_REGIONS),
                       .RV32                 (RV32),
                       .CLIC                 (CLIC),
-                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH),
-                      .CLIC_INTTHRESHBITS   (CLIC_INTTHRESHBITS)
+                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH)
                       )
     cv32e40x_wrapper_i
         (

@@ -112,7 +112,6 @@ module uvmt_cv32e40x_tb;
                              .B_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
                              .CLIC                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
                              .CLIC_ID_WIDTH        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-                             .CLIC_INTTHRESHBITS   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_INTTHRESHBITS),
                              .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
                              .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
                              .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
