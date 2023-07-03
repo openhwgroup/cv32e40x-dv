@@ -17,7 +17,7 @@
 #
 ################################################################################
 #
-# CSR definitions for the CV32E40S CORE-V proessor core (an RV32IMCZ machine).
+# CSR definitions for the CV32E40X CORE-V proessor core (an RV32IMCZ machine).
 #
 # This file can be used as input to "gen_csr_test.py" delivered as part of
 # Google's riscv-dv project.  Assuming you are running this from
@@ -28,8 +28,8 @@
 #            --csr_file <csr_template.yaml> \
 #            --xlen 32
 #
-# Source document is the CV32E40S user Manual:
-# https://core-v-docs-verif-strat.readthedocs.io/projects/cv32e40s_um/en/latest/index.html
+# Source document is the CV32E40X user Manual:
+# https://core-v-docs-verif-strat.readthedocs.io/projects/cv32e40x_um/en/latest/index.html
 # Revision 62f0d86b
 #
 # Assumptions:

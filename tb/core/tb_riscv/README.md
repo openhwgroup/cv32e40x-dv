@@ -1,7 +1,7 @@
 # TB_RISCV: VERIFICATION ENVIRONMENT FOR THE PULP CORES
 
 Files and directories foundn here are adopted from the testbench for the PULP
-cores.   They are now known as the `core` testbench of the CV32E40S testbench.
+cores.   They are now known as the `core` testbench of the CV32E40X testbench.
 Note that some information in this file may be out of date.
 
 ## Description

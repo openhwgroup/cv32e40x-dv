@@ -1,5 +1,5 @@
 name: dummy_instr
-description: Default configuration for CV32E40S simulations that includes dummy instructions
+description: Default configuration for CV32E40X simulations that includes dummy instructions
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN

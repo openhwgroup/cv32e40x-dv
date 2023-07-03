@@ -13,20 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-`include "cv32e40s_pkg.sv"
-`include "uvmt_cv32e40s_base_test_pkg.sv"
+`include "cv32e40x_pkg.sv"
+`include "uvmt_cv32e40x_base_test_pkg.sv"
 
 import uvm_pkg::*;
-import cv32e40s_pkg::pma_cfg_t;
-import uvmt_cv32e40s_base_test_pkg::*;
+import cv32e40x_pkg::pma_cfg_t;
+import uvmt_cv32e40x_base_test_pkg::*;
 
 `include "pma_adapted_mem_region_gen.sv"
-`include "cv32e40s_ldgen.sv"
+`include "cv32e40x_ldgen.sv"
 
 module ldgen_tb;
 
   initial begin : ldgen_start
-    cv32e40s_ldgen_c linker_generator;
+    cv32e40x_ldgen_c linker_generator;
     linker_generator = new();
     linker_generator.gen_pma_linker_scripts();
   end

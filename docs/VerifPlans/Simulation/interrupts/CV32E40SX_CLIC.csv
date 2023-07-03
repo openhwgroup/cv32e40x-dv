@@ -23,7 +23,7 @@ Silabs Internal,Interrupt Interface,Interrupt ID is valid,Interrupt valid ID mat
 Silabs Internal,Interrupt Interface,Interrupt ID is never reserved,"Interrupt valid ID during interrupt acknowledge is never a reserved interrupt [15,14,13,12,10,9,8,6,5,4,2,1,0]",Assert irq_id is not a reserved valid when irq_ack is asserted,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 Silabs Internal,Interrupt Interface,Single interrupt ack per ISR,Interrupt acknowledge only asserted once per interrupt,irq_ack only asserts once for an interrupt service period,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 Silabs internal,Interrupt interface,RVFI,Every irq_ack must be followed by a corresponding rvfi_intr,"Check that whenever and irq_ack occurs, then the next rvfi retired instruction must have rvfi interrupt set correctly",Assertion Check,"ENV capability, not specific test",Functional Coverage,
-Silabs Internal,Interrupt CSR,mclicbase,12 least significant bits hardwired to zero,"Assert mclicbase[11:0] = 0 
+Silabs Internal,Interrupt CSR,mclicbase,12 least significant bits hardwired to zero,"Assert mclicbase[11:0] = 0
 
 Note: This register will possibly be removed in the future",Assertion Check,"ENV capability, not specific test",functional Coverage,
 CLIC 8675ec,Interrupt CSR,mstatus.mpp,mstatus.mpp accessible through mcause.mpp,Read/Write mpp to mcause.mpp and read back through mstatus.mpp,Self Checking Test,Directed Self-Checking,Testcase,
@@ -37,8 +37,8 @@ CLIC 8675ec,Interrupt CSR,mip,Writes should not trap,Attempt writes to mip and e
 UM v0.3.0 Common,Interrupt CSR,mtvec,Always aligned to 128 bytes,Assert that mtvec[6:2] always zero,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 UM v0.3.0 Common,Interrupt CSR,mtvec,Always in CLIC mode (I.e. model can not switch between interrupt modes),Assert that mtvec.mode is always 2'b11 when CLIC is enabled,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 Silabs Internal,Interrupt CSR,mtvt,Memory writes to the vector table require an instruction barrier (fence.i) to guarantee that they are visible to the instruction fetch.,Verify that a fence.i instruction after writes to the vector table guarantees that the new vector table pointer taken matches the latest pointer written to the vector table.,Assertion Check,"ENV capability, not specific test",Functional Coverage,
-CLIC 8675ec,Interrupt CSR,mtvt,"Function ptr reads treated as instruction fetch, adhering to configured PMA settings 
-(CV32E40S): PMP settings apply as for any other instruction fetch","Assert that interrupts accessing the vector table pointers do so through the instruction interface, and that a lack of PMP execute and PMA main-memory settings causes the instruction fetch to fail.
+CLIC 8675ec,Interrupt CSR,mtvt,"Function ptr reads treated as instruction fetch, adhering to configured PMA settings
+(CV32E40X): PMP settings apply as for any other instruction fetch","Assert that interrupts accessing the vector table pointers do so through the instruction interface, and that a lack of PMP execute and PMA main-memory settings causes the instruction fetch to fail.
 
 Note, instruction fetch is treated as an implicit read, thus do not require PMP read permissions, but execute permission is required.
 
@@ -66,7 +66,7 @@ Case 2:
 ""The II has been superceded by a higher-level non-SHV interrupt. In this case, xil will be set to the new higher interrupt level, exccode will be updated to the new interrupt id, and xnxti will return the vector table entry for the new higher-level interrupt. The OIC is not disturbed, retaining the original epc and the original pil. This case reduces latency to service a more-important interrupt that arrives after the state-save sequence was begun for the less-important II. The II, if still pending-enabled, will be serviced sometime after the higher-level interrupt as described below.""","Assert that mnxti returns the table entry for the new higher-level interrupt when the current interrupt is being interrupted by a higher level, non-shv interrupt",Assertion Check,"ENV capability, not specific test",Functional Coverage,
 CLIC 8675ec,Interrupt CSR,mnxti,"mnxti read value after ISR is entered:
 
-Case 3: 
+Case 3:
 ""The II has been superceded by a higher-priority non-SHV interrupt at the same level. This operates similarly to the previous case, with exccode updated to the new interrupt id. Because the lower-priority interrupt had not begun to run its service routine, this optimization preserves the property that interrupt handlers at the same interrupt level but different priorities execute atomically with respect to each other (i.e., they do not preempt each other).""","Only machine mode interrupts are supported, an interrupt of the same level but higher priority cannot occur
 ",N/A,N/A,N/A,
 CLIC 8675ec,Interrupt CSR,mnxti,"mnxti read value after ISR is entered:
@@ -99,7 +99,7 @@ CLIC 8675ec,Interrupt CSR,Hardware vectoring,mcause.minhv: Set at start of hw ve
 CLIC 8675ec,Interrupt CSR,Hardware vectoring,mcause.minhv: Cleared at end of hw vectoring,Assert that mcause.minhv is cleared when pointer fetch of hw-vectored interrupt is taken successfully,Assertion Check,Constrained-Random,Functional Coverage,
 CLIC 8675ec,Interrupt Vector,Hardware vectoring,"Exception on fetch:
 mepc : set to faulting address (pointer, rather than address for an instruction)
-mcause: exception type","Write invalid (not pointing to a valid instruction or a region with pmp restricted execute access) pointer to the mtvt table, and trigger this handler. 
+mcause: exception type","Write invalid (not pointing to a valid instruction or a region with pmp restricted execute access) pointer to the mtvt table, and trigger this handler.
 ",Check against RM,Directed Non-Self-Checking,Testcase,
 Silabs Internal,Interrupt Vector,Hardware vectoring,Prefetcher: no prefetches between pointer fetch and fetch of final vectored target,Assert that no new instructions get fetched that does not match the final vectored target after a pointer fetch is attempted,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 CLIC 8675ec,Interrupt Vector,Hardware vectoring,Interrupt executes trap handler function pointer located at the address specified in mtvt when shv = 1,"Assert that first pc after a taken, shv interrupt always matches address fetched from mtvt
@@ -108,10 +108,10 @@ CLIC 8675ec,Interrupt Vector,Hardware vectoring,Interrupt jumps to common code a
 UM v0.3.0 Common,Interrupt Vector,PC,"non-shv: taken trap handler always has address[6:0] = 0;
 implied by mtvec alignment restriction","Assert that first pc after a taken, non-shv interrupt always has bits [6:0] = 0
 ",Assertion Check,"ENV capability, not specific test",Functional Coverage,
-CLIC 8675ec,Interrupt arbitration,Interrupts ignored,"Interrupts ignored when 
+CLIC 8675ec,Interrupt arbitration,Interrupts ignored,"Interrupts ignored when
 new privilege mode (nP) lower than current privilege mode (P)","Not allowed, assuming clic_irq_priv_i always = 2'b11
 Covered by assertion that asserts that clic_irq_priv_i is always 2'b11 in sim and assumed in formal",N/A,N/A,N/A,
-CLIC 8675ec,Interrupt arbitration,Interrupts ignored,"Interrupts ignored when 
+CLIC 8675ec,Interrupt arbitration,Interrupts ignored,"Interrupts ignored when
 new privilege mode (nP) = current privilege mode(P) and new interrupt level (nL) != 0 and nL < current interrupt level (L)","During constrained random testing, the following should be true
 
 Current privilege mode: M-mode
@@ -128,8 +128,8 @@ CLIC 8675ec,Interrupt arbitration,Interupts disabled,"Interrupts disabled when
 mtatus.mie and clicintie[i] = 0","mstatus.mie = 0 should disallow any pending and enabled interrupts from being taken as we only have one level where interrupts can be taken (M-mode), so no other higher modes exist
 
 Check that no inadvertent state/register change occurs from a pending, enabled but not taken interrupt",Check against RM,Constrained-Random,Functional Coverage,
-CLIC 8675ec,Interrupt arbitration,No interrupt,"No interrupt when 
-new privilege mode (nP) = current privilege mode (P) 
+CLIC 8675ec,Interrupt arbitration,No interrupt,"No interrupt when
+new privilege mode (nP) = current privilege mode (P)
 clic.level = 0
 
 P, nP in M, U","During constrained random testing, the following should be true
@@ -137,19 +137,19 @@ P, nP in M, U","During constrained random testing, the following should be true
 Current privilege mode: M-mode (Cannot signal U-mode)
 Test in both nested and non-nested cases
 
-clic_irq_i = 1 
+clic_irq_i = 1
 clic_irq_id_i = random 0 .. max index
 clic_irq_lvl = 0
 clic_irq_priv_i = 2'b11 assumed always true
 clic_irq_shv_i = random 0 .. 1
 
 Check that no inadvertent state/register change occurs from a pending, enabled but not taken interrupt",Check against RM,Constrained-Random,Functional Coverage,
-CLIC 8675ec,Interrupt arbitration,No interrupt,"No interrupt when 
+CLIC 8675ec,Interrupt arbitration,No interrupt,"No interrupt when
 new privilege mode (nP) > current privilege mode (P)
 clic.level = 0
 
 nP = M, P = U, clic.level = 0
-(CV32E40S)","During constrained random testing, the following should be true
+(CV32E40X)","During constrained random testing, the following should be true
 
 Current privilege mode: U-mode
 Test for both nested and non-nested cases
@@ -185,7 +185,7 @@ new privilege level (nL) > 0
 
 nP = M, P = U
 
-(CV32E40S)","During constrained random testing, the following should be true
+(CV32E40X)","During constrained random testing, the following should be true
 
 Current privilege mode: U-mode
 
@@ -207,14 +207,14 @@ nP > P (i.e. nP = M, P = U)
 nL > 0",Assert that an interrupt is taken if and only if any of the two conditions are true,Assertion Check,"ENV capability, not specific test",Assertion Coverage,
 CLIC 8675ec,Interrupt preemption,mintthresh,Higher level interrupts than mintthresh.th can preempt execution,Assert that interrupts with the same privilege mode and higher privilege level than the running ISR can interrupt the currently running ISR,Assertion Check,"ENV capability, not specific test",Assertion Coverage,
 CLIC 8675ec,Interrupt preemption,mintthresh,Lower level interrupts than mintthresh.th cannot preempt execution,Assert that interrupts with the same privilege mode and lower privilege level than the running ISR cannot interrupt the currently running ISR,Assertion Check,"ENV capability, not specific test",Assertion Coverage,
-CLIC 8675ec,WFI resume,Resumes,"when 
+CLIC 8675ec,WFI resume,Resumes,"when
 nP > P
 interrupt is highest among pending-and-enabled interrupts
 i.level != 0
 
 nP = M, P = U
 
-(CV32E40S)","clic_irq_i = 1
+(CV32E40X)","clic_irq_i = 1
 clic_irq_lvl > 0
 P = U
 nP = M",Check against RM,Constrained-Random,Functional Coverage,
@@ -238,7 +238,7 @@ Can not occur 40S/40X as new privilege mode signalled on the CLIC interface can 
 No test/assertion applicable, should be covered by clic_irq_lvl assertion ensuring that an interrupt with irq_lvl != 2'b11 never occurs",N/A,N/A,N/A,
 CLIC 8675ec,WFI resume,Ignores,Everything not covered above,Core does not resume operation unless any of the above resume conditions are true,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 UM v0.3.0 Common,Interrupt instruction,Killed instructions have no side-effects,"When an instruction is interrupted, it is killed, meaning that it has no side-effects: 1) load/store instructions don't reach the bus, 2) control transfer instructions don't jump, 3) CSRs don't get updated, 4) GPRs don't get updated","Check that bus, jumps, and registers are unaffected by killed instructions",Check against RM,"ENV capability, not specific test",Functional Coverage,
-CLIC 8675ec,Return from handler,mret,"Execution continues at 
+CLIC 8675ec,Return from handler,mret,"Execution continues at
 Privilege mode = mcause.mpp
 pc = mepc
 interrupt level = mcause.mpil
@@ -247,7 +247,7 @@ global interrupt enable mie = mcause.mpie
 mcause.mpil unchanged
 mcause.mpp = least privileged mode
 mcause.mpie = 1",Correct update of CSR values when core returns from an ISR,Check against RM,Constrained-Random,Functional Coverage,
-CLIC 8675ec,Return from handler,mret,"Execution continues at 
+CLIC 8675ec,Return from handler,mret,"Execution continues at
 P = mcause.mpp
 pc = mepc
 L = mcause.mpil
@@ -270,9 +270,9 @@ CLIC 8675ec,WFI,Wakeup conditions,"A pending-and-enabled interrupt i causes the 
  • has the same privilege mode as the current privilege mode and
  • the interrupt priority reduction tree selects interrupt i as the maximum across all pending-and-enabled interrupts and
  • the interrupt i level is greater than max(xintstatus.xil, xintthresh.th )",Test that interrupts of higher privilege level than the current privilege level can wake the core from WFI,Check against RM,Constrained-Random,Functional Coverage,
-CLIC 8675ec,WFI,Wakeup conditions,"A pending-and-enabled interrupt i causes the hart to resume execution if interrupt i 
-• has a lower privilege mode than the current privilege mode and 
-• the interrupt priority reduction tree selects interrupt i as the maximum across all pending-and-enabled interrupts and 
+CLIC 8675ec,WFI,Wakeup conditions,"A pending-and-enabled interrupt i causes the hart to resume execution if interrupt i
+• has a lower privilege mode than the current privilege mode and
+• the interrupt priority reduction tree selects interrupt i as the maximum across all pending-and-enabled interrupts and
 • the interrupt i level is not equal to 0.","nP < P cannot occur as we assume clic_irq_lvl = 2'b11
 
 No test/assertion applicable, should be covered by clic_irq_lvl assertion ensuring that an interrupt with irq_lvl != 2'b11 never occurs",N/A,N/A,N/A,
@@ -284,7 +284,7 @@ CLIC 8675ec,Synchronous exception handling,Horizontal synchronous exception trap
 (Can only occur in machine mode)",Assertion Check,"ENV capability, not specific test",Functional Coverage,
 CLIC 8675ec,Synchronous exception handling,Vertical synchronous exception traps,"Serviced at higher privilege mode at interrupt level 0 in the higher privilege mode
 
-(CV32E40S)",Assert that user mode traps are taken in machine mode with interrupt level 0,Assertion Check,"ENV capability, not specific test",Functional Coverage,
+(CV32E40X)",Assert that user mode traps are taken in machine mode with interrupt level 0,Assertion Check,"ENV capability, not specific test",Functional Coverage,
 UM v0.3.0 Common,Trap priority,Interrupt + WFI,Proper interactions between interrupts and WFI,"Corner case
 
 Test random combinations of streams containing WFI-instructions with random interrupt requests",Check against RM,Constrained-Random,Functional Coverage,
@@ -307,7 +307,7 @@ Test random streams of instructions interrupted by random interrupt requests and
 Note, these potential corners are deliberately mentioned separately to be able to more easily pinpoint any bugs that may occur in regressions - thus ideally should be implemented with different tests.",Check against RM,Constrained-Random,Functional Coverage,
 UM v0.3.0 Common,Trap priority,Interrupt + Debug + Bus Error,"Correct interaction between interrupts, debug and bus errors
 ","Corner case
-Test random streams of instructions, 
+Test random streams of instructions,
 
 Note, these potential corners are deliberately mentioned separately to be able to more easily pinpoint any bugs that may occur in regressions - thus ideally should be implemented with different tests.",Check against RM,Constrained-Random,Functional Coverage,
 UM v0.3.0 Common,Trap priority,Interrupt + Debug + WFI,"Correct interaction between interrupts, debug and WFI

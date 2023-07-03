@@ -70,7 +70,7 @@ module tb_top
             if($test$plusargs("verbose"))
                 $display("[TESTBENCH] @ t=%0t: loading firmware %0s",
                          $time, firmware);
-            $readmemh(firmware, cv32e40s_tb_wrapper_i.ram_i.dp_ram_i.mem);
+            $readmemh(firmware, cv32e40x_tb_wrapper_i.ram_i.dp_ram_i.mem);
         end else begin
             $display("No firmware specified");
             $finish;
@@ -144,14 +144,14 @@ module tb_top
         end
     end
 
-    // wrapper for CV32E40S, the memory system and stdout peripheral
-    cv32e40s_tb_wrapper
+    // wrapper for CV32E40X, the memory system and stdout peripheral
+    cv32e40x_tb_wrapper
         #(
           .INSTR_RDATA_WIDTH (INSTR_RDATA_WIDTH),
           .RAM_ADDR_WIDTH    (RAM_ADDR_WIDTH),
           .BOOT_ADDR         (BOOT_ADDR)
          )
-    cv32e40s_tb_wrapper_i
+    cv32e40x_tb_wrapper_i
         (
          .clk_i          ( core_clk     ),
          .rst_ni         ( core_rst_n   ),

@@ -4,7 +4,7 @@
 #
 # You can restore this configuration with:
 #
-#      xrun -l xrun-hello-world.log -64bit -R -input ../xrun/restore.tcl +UVM_VERBOSITY=UVM_LOW +=+USE_ISS -sv_lib /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../vendor_lib/imperas/riscv_CV32E40S_OVPsim/bin/Linux64/riscv_CV32E40S.dpi.so +elf_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.elf +nm_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.nm +UVM_TESTNAME=uvmt_cv32_firmware_test_c +firmware=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.hex -input /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/xrun/restore.tcl
+#      xrun -l xrun-hello-world.log -64bit -R -input ../xrun/restore.tcl +UVM_VERBOSITY=UVM_LOW +=+USE_ISS -sv_lib /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../vendor_lib/imperas/riscv_CV32E40X_OVPsim/bin/Linux64/riscv_CV32E40X.dpi.so +elf_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.elf +nm_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.nm +UVM_TESTNAME=uvmt_cv32_firmware_test_c +firmware=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.hex -input /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/xrun/restore.tcl
 #
 
 
@@ -90,7 +90,7 @@ preferences set toolbar-sendToIndago-WaveWindow {
 # Simulator
 #
 database require simulator -hints {
-	simulator "xrun -l xrun-hello-world.log -64bit -R -gui -input ../xrun/restore.tcl +UVM_VERBOSITY=UVM_LOW +=+USE_ISS -sv_lib /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../vendor_lib/imperas/riscv_CV32E40S_OVPsim/bin/Linux64/riscv_CV32E40S.dpi.so +elf_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.elf +nm_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.nm +UVM_TESTNAME=uvmt_cv32_firmware_test_c +firmware=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.hex -input restore.tcl"
+	simulator "xrun -l xrun-hello-world.log -64bit -R -gui -input ../xrun/restore.tcl +UVM_VERBOSITY=UVM_LOW +=+USE_ISS -sv_lib /wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../vendor_lib/imperas/riscv_CV32E40X_OVPsim/bin/Linux64/riscv_CV32E40X.dpi.so +elf_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.elf +nm_file=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.nm +UVM_TESTNAME=uvmt_cv32_firmware_test_c +firmware=/wrk/gtumbush/mcu/OpenHW/iss_integration_fork/cv32/sim/uvmt_cv32/../../../cv32/tests/core/custom/illegal.hex -input restore.tcl"
 }
 
 #
@@ -129,7 +129,7 @@ group insert \
      {simulator::uvmt_cv32_tb.iss_wrap.cpu.CSR["mepc"]}  \
      {simulator::uvmt_cv32_tb.iss_wrap.cpu.CSR["misa"]}  \
      {simulator::uvmt_cv32_tb.iss_wrap.cpu.CSR["mstatus"]}  \
-     {simulator::uvmt_cv32_tb.iss_wrap.cpu.CSR["mtvec"]} 
+     {simulator::uvmt_cv32_tb.iss_wrap.cpu.CSR["mtvec"]}
 group using RTL
 group set -overlay 0
 group set -comment {}
@@ -146,7 +146,7 @@ group insert \
      simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.id_stage_i.decoder_i.csr_illegal  \
      {simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.id_stage_i.decoder_i.instr_rdata_i[31:0]}  \
      simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.id_stage_i.decoder_i.illegal_insn_o  \
-     simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.id_stage_i.decoder_i.illegal_c_insn_i 
+     simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.id_stage_i.decoder_i.illegal_c_insn_i
 group using step_compare_if
 group set -overlay 0
 group set -comment {}
@@ -162,7 +162,7 @@ group insert \
      simulator::uvmt_cv32_tb.step_compare_if.ovp_cpu_retire  \
      simulator::uvmt_cv32_tb.step_compare_if.reg_t  \
      simulator::uvmt_cv32_tb.step_compare_if.riscv_retire  \
-     {simulator::uvmt_cv32_tb.step_compare_if.riscy_GPR[31:0]} 
+     {simulator::uvmt_cv32_tb.step_compare_if.riscy_GPR[31:0]}
 group using clknrst_if
 group set -overlay 0
 group set -comment {}
@@ -172,7 +172,7 @@ group insert \
      simulator::uvmt_cv32_tb.clknrst_if.clk  \
      simulator::uvmt_cv32_tb.clknrst_if.clk_active  \
      simulator::uvmt_cv32_tb.clknrst_if.reset_n  \
-     simulator::uvmt_cv32_tb.clknrst_if.clk_period 
+     simulator::uvmt_cv32_tb.clknrst_if.clk_period
 group using {RISCV RAM}
 group set -overlay 0
 group set -comment {}
@@ -190,7 +190,7 @@ group insert \
      {simulator::uvmt_cv32_tb.dut_wrap.ram_i.pc_core_id_i[31:0]}  \
      simulator::uvmt_cv32_tb.dut_wrap.ram_i.rst_ni  \
      simulator::uvmt_cv32_tb.dut_wrap.ram_i.tests_failed_o  \
-     simulator::uvmt_cv32_tb.dut_wrap.ram_i.tests_passed_o 
+     simulator::uvmt_cv32_tb.dut_wrap.ram_i.tests_passed_o
 group using instr_bus
 group set -overlay 0
 group set -comment {}
@@ -200,7 +200,7 @@ group insert \
      {simulator::uvmt_cv32_tb.dut_wrap.ram_i.instr_addr_i[19:0]}  \
      simulator::uvmt_cv32_tb.dut_wrap.ram_i.instr_req_i  \
      simulator::uvmt_cv32_tb.dut_wrap.ram_i.instr_gnt_o  \
-     simulator::uvmt_cv32_tb.dut_wrap.ram_i.instr_rvalid_o 
+     simulator::uvmt_cv32_tb.dut_wrap.ram_i.instr_rvalid_o
 group using registers
 group set -overlay 0
 group set -comment {}
@@ -220,7 +220,7 @@ group insert \
      {simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.cs_registers_i.mepc_q[31:0]}  \
      {simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.cs_registers_i.MISA_VALUE[31:0]}  \
      simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.cs_registers_i.mstatus_q  \
-     {simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.cs_registers_i.mtvec_q[23:0]} 
+     {simulator::uvmt_cv32_tb.dut_wrap.riscv_core_i.cs_registers_i.mtvec_q[23:0]}
 group using {ISS RAM}
 group set -overlay 0
 group set -comment {}
@@ -240,7 +240,7 @@ group insert \
      simulator::uvmt_cv32_tb.iss_wrap.b1.Dbe  \
      simulator::uvmt_cv32_tb.iss_wrap.b1.Drd  \
      simulator::uvmt_cv32_tb.iss_wrap.b1.Dwr  \
-     simulator::uvmt_cv32_tb.iss_wrap.b1.DData 
+     simulator::uvmt_cv32_tb.iss_wrap.b1.DData
 group using {inst _bus}
 group set -overlay 0
 group set -comment {}
@@ -251,7 +251,7 @@ group insert \
      simulator::uvmt_cv32_tb.iss_wrap.b1.IData  \
      simulator::uvmt_cv32_tb.iss_wrap.b1.ISize  \
      simulator::uvmt_cv32_tb.iss_wrap.b1.Ibe  \
-     simulator::uvmt_cv32_tb.iss_wrap.b1.Ird 
+     simulator::uvmt_cv32_tb.iss_wrap.b1.Ird
 
 #
 # Mnemonic Maps
@@ -278,10 +278,10 @@ if {[catch {window new WatchList -name "Design Browser 1" -geometry 856x639+893+
 }
 window target "Design Browser 1" on
 browser using {Design Browser 1}
-browser set -scope  simulator::uvmt_cv32_tb.iss_wrap.ram 
+browser set -scope  simulator::uvmt_cv32_tb.iss_wrap.ram
 browser set \
     -signalsort name
-browser yview see  simulator::uvmt_cv32_tb.iss_wrap.ram 
+browser yview see  simulator::uvmt_cv32_tb.iss_wrap.ram
 browser timecontrol set -lock 0
 
 #

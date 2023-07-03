@@ -280,7 +280,7 @@ void mscratch_reliable_check(void){
 }
 
 /*
- * Catch-all function for registers which should not exist according to the intern v-plan (Summer 2022) for the cv32e40s core.
+ * Catch-all function for registers which should not exist according to the intern v-plan (Summer 2022) for the cv32e40x core.
  * vplan:NExt
  * vplan:Mcounteren
  * vplan:MedelegMideleg

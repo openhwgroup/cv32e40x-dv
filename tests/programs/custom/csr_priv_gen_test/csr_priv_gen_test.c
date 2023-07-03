@@ -26,7 +26,7 @@ extern volatile void  setup_pmp();
 extern volatile uint32_t csr_loop();
 volatile uint32_t exception_trap_increment_counter;
 
-// Assert function 
+// Assert function
 static __inline__ void assert_or_die(uint32_t actual, uint32_t expect, char *msg) {
   if (actual != expect) {
     printf(msg);
@@ -35,8 +35,8 @@ static __inline__ void assert_or_die(uint32_t actual, uint32_t expect, char *msg
   }
 }
 
-/* 
-Tests U-mode access to various custom functions which will not be implemented on the cv32e40s. Should all trap.
+/*
+Tests U-mode access to various custom functions which will not be implemented on the cv32e40x. Should all trap.
 */
 int main(void) {
     setup_pmp(); // set the pmp regions for U-mode.
@@ -50,7 +50,7 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    // The assert number stems from the 'csr_privilege_gen.py' script. The number is printed in the terminal once writing is complete.   
+    // The assert number stems from the 'csr_privilege_gen.py' script. The number is printed in the terminal once writing is complete.
     assert_or_die(exception_trap_increment_counter, ILLEGALLY_GENERATED_INSN, "error: not all illegal csr instructions triggered the trap handler\n");
 }
 

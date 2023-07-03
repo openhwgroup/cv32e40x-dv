@@ -25,7 +25,7 @@ class uvme_debug_covg extends uvm_component;
     /*
     * Class members
     */
-    uvme_cv32e40s_cntxt_c  cntxt;
+    uvme_cv32e40x_cntxt_c  cntxt;
 
 
     `uvm_component_utils(uvme_debug_covg);
@@ -300,10 +300,10 @@ class uvme_debug_covg extends uvm_component;
             bins hit       = {1};
         }
         op : coverpoint cntxt.debug_cov_vif.mon_cb.csr_op {
-            bins read      = {cv32e40s_pkg::CSR_OP_READ};
-            bins write     = {cv32e40s_pkg::CSR_OP_WRITE};
-            bins set       = {cv32e40s_pkg::CSR_OP_SET};
-            bins clear     = {cv32e40s_pkg::CSR_OP_CLEAR};
+            bins read      = {cv32e40x_pkg::CSR_OP_READ};
+            bins write     = {cv32e40x_pkg::CSR_OP_WRITE};
+            bins set       = {cv32e40x_pkg::CSR_OP_SET};
+            bins clear     = {cv32e40x_pkg::CSR_OP_CLEAR};
         }
         addr : coverpoint cntxt.debug_cov_vif.mon_cb.wb_stage_instr_rdata_i[31:20] { // csr addr not updated if illegal access
             bins dcsr      = {'h7B0};
@@ -324,10 +324,10 @@ class uvme_debug_covg extends uvm_component;
             bins hit       = {1};
         }
         op : coverpoint cntxt.debug_cov_vif.mon_cb.csr_op {
-            bins read      = {cv32e40s_pkg::CSR_OP_READ};
-            bins write     = {cv32e40s_pkg::CSR_OP_WRITE};
-            bins set       = {cv32e40s_pkg::CSR_OP_SET};
-            bins clear     = {cv32e40s_pkg::CSR_OP_CLEAR};
+            bins read      = {cv32e40x_pkg::CSR_OP_READ};
+            bins write     = {cv32e40x_pkg::CSR_OP_WRITE};
+            bins set       = {cv32e40x_pkg::CSR_OP_SET};
+            bins clear     = {cv32e40x_pkg::CSR_OP_CLEAR};
         }
         addr : coverpoint cntxt.debug_cov_vif.mon_cb.wb_stage_instr_rdata_i[31:20] { // csr addr not updated if illegal access
             bins dcsr      = {'h7B0};
@@ -347,10 +347,10 @@ class uvme_debug_covg extends uvm_component;
             bins hit    = {1};
         }
         op : coverpoint cntxt.debug_cov_vif.mon_cb.csr_op {
-            bins read   = {cv32e40s_pkg::CSR_OP_READ};
-            bins write  = {cv32e40s_pkg::CSR_OP_WRITE};
-            bins set    = {cv32e40s_pkg::CSR_OP_SET};
-            bins clear  = {cv32e40s_pkg::CSR_OP_CLEAR};
+            bins read   = {cv32e40x_pkg::CSR_OP_READ};
+            bins write  = {cv32e40x_pkg::CSR_OP_WRITE};
+            bins set    = {cv32e40x_pkg::CSR_OP_SET};
+            bins clear  = {cv32e40x_pkg::CSR_OP_CLEAR};
         }
         addr : coverpoint cntxt.debug_cov_vif.mon_cb.wb_stage_instr_rdata_i[31:20] { // csr addr not updated if illegal access
             bins tsel   = {'h7A0};
@@ -372,7 +372,7 @@ class uvme_debug_covg extends uvm_component;
     covergroup cg_debug_at_reset;
         `per_instance_fcov
         state : coverpoint cntxt.debug_cov_vif.mon_cb.ctrl_fsm_cs {
-            bins reset= {cv32e40s_pkg::RESET};
+            bins reset= {cv32e40x_pkg::RESET};
         }
          dbg : coverpoint cntxt.debug_cov_vif.mon_cb.debug_req_i {
             bins active= {1'b1};
@@ -457,7 +457,7 @@ endfunction : new
 function void uvme_debug_covg::build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-    void'(uvm_config_db#(uvme_cv32e40s_cntxt_c)::get(this, "", "cntxt", cntxt));
+    void'(uvm_config_db#(uvme_cv32e40x_cntxt_c)::get(this, "", "cntxt", cntxt));
     if (cntxt == null) begin
         `uvm_fatal("DEBUGCOVG", "No cntxt object passed to model");
     end

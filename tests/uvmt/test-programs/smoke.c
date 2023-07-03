@@ -16,7 +16,7 @@
 **
 *******************************************************************************
 **
-** Smoke test for the CV32E40S core.  Prints and quits
+** Smoke test for the CV32E40X core.  Prints and quits
 **
 *******************************************************************************
 */
@@ -27,6 +27,6 @@
 int main(int argc, char *argv[])
 {
     /* Print a banner to stdout and die */
-    printf("\nThis is the OpenHW Group CV32E40S RISC-V processor core.\n\n");
+    printf("\nThis is the OpenHW Group CV32E40X RISC-V processor core.\n\n");
     return EXIT_SUCCESS;
 }

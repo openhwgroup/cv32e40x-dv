@@ -19,7 +19,7 @@
 //
 // riscv_gnt_stall.sv
 //
-// OBI Grant stalling module for CV32E40S
+// OBI Grant stalling module for CV32E40X
 //
 // Author: Steve Richmond
 //   email: steve.richmond@silabs.com

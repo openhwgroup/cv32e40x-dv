@@ -6,14 +6,14 @@
 #                Set to 'master' to pull the master branch.
 #      *_HASH:   Value of the specific hash you wish to clone;
 #                Set to 'head' to pull the head of the branch you want.
-# THe CV32E40S repo also has a variable to clone a specific tag:
+# THe CV32E40X repo also has a variable to clone a specific tag:
 #      *_TAG:    Value of the specific tag you wish to clone;
 #                Will override the HASH unless set to "none".
 #
 
 export SHELL = /bin/bash
 
-CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40s
+CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40x
 CV_CORE_BRANCH ?= master
 CV_CORE_HASH   ?= 8e560bf57d39800a15bdd1be6a19b25ec3f57b36
 CV_CORE_TAG    ?= none

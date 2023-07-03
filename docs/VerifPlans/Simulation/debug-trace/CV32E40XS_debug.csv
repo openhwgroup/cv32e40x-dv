@@ -96,7 +96,7 @@ A: uvmt_cv32_tb.u_debug_assert.a_dpc_dbg_haltreq
 A: uvmt_cv32_tb.u_debug_assert.a_debug_req_taken",,,,,,,,,
 "CV32E40P doc rev 46711ac
 
-RISCV-V External Debug Support Version 0.13.2","Debug chapter 
+RISCV-V External Debug Support Version 0.13.2","Debug chapter
 
 
 
@@ -119,7 +119,7 @@ A:  uvmt_cv32_tb.u_debug_assert.a_dpc_dbg_trigger
 A:  uvmt_cv32_tb.u_debug_assert.a_enter_debug",?,?,?,,,,,,
 "CV32E40P doc rev 46711ac
 
-RISCV-V External Debug Support Version 0.13.2","Debug chapter 
+RISCV-V External Debug Support Version 0.13.2","Debug chapter
 
 
 
@@ -239,7 +239,7 @@ RISC-V External Debug Support Version 0.13.2,4.1 Debug mode pt8,Program Buffer,P
 ,,,,,,Check against ISS,Constrained-Random,Functional Coverage,"CG: uvm_pkg.uvm_test_top.env.cov_model.debug_covg.cg_ebreak_with_ebreakm (.ebreak_in_debug)
 CG: uvm_pkg.uvm_test_top.env.cov_model.debug_covg.cg_cebreak_with_ebreakm (.ebreak_in_debug)
 A:   uvmt_cv32_tb.u_debug_assert.a_ebreak_during_debug_mode",,,,,,,,,
-RISC-V External Debug Support Version 0.13.2,4.1 Debug mode pt9,Program Buffer,Fence instructions,Completing program buffer execution is considered output for the purpose of the fence instruction.,"TBD - need to understand the fence instruction in cv32e40s. Is ""completing program buffer execution"" the same as executing dret? [PZ] waiting for more clarity from RISCV Foundation debug task group (see https://lists.riscv.org/g/tech-debug/topic/clarification_request/75725318?p=,,,20,0,0,0::recentpostdate%2Fsticky,,,20,2,0,75725318 )
+RISC-V External Debug Support Version 0.13.2,4.1 Debug mode pt9,Program Buffer,Fence instructions,Completing program buffer execution is considered output for the purpose of the fence instruction.,"TBD - need to understand the fence instruction in cv32e40x. Is ""completing program buffer execution"" the same as executing dret? [PZ] waiting for more clarity from RISCV Foundation debug task group (see https://lists.riscv.org/g/tech-debug/topic/clarification_request/75725318?p=,,,20,0,0,0::recentpostdate%2Fsticky,,,20,2,0,75725318 )
 
 Nothing to do. That sentence was retracted here https://github.com/riscv/riscv-debug-spec/pull/601/files . Now it seems they just recommend debug software to do a fence when completing abstract commands.",,,,N/A,What are we doing here?,Added N/A disclaimer. Striking it.,,,,,,,
 RISC-V External Debug Support Version 0.13.2,4.1 Debug mode pt10,Program Buffer,Ctrl. Transfer instr.,"All control transfer instructions may act as illegal instructions if destination is within program buffer. If one does, all must.",N/A for CV32E40s : need Arjan/Davide to sign-off on this. [PZ] This is not supported and it is mentioned in the CV32E40s debug spec. No verification needed to prove nor dis-prove this behavior,,,,N/A,,"Fix ""40p""",,,,,,,
@@ -260,7 +260,7 @@ A:   uvmt_cv32_tb.u_debug_assert.a_single_step
 A:   uvmt_cv32_tb.u_debug_assert.a_enter_debug",,,,,,,,,
 RISC-V External Debug Support Version 0.13.2,4.4 Single step,Debug mode,Single stepping,"If the instruction being fetched or executed in a single step casues an exception, debug mode is entered immediately after the PC is changed to the exception handler and registers tval and cause are updated.
 
-Note: CV32E40S does not support tval (this might be supported in future cores)","Perform a single step. Make sure the instruction executed in the step will cause an exception. PC must jump to the exception handler address and update tval and cause and then immediately enter debug mode.
+Note: CV32E40X does not support tval (this might be supported in future cores)","Perform a single step. Make sure the instruction executed in the step will cause an exception. PC must jump to the exception handler address and update tval and cause and then immediately enter debug mode.
 
 Check tval==0",Self Checking Test,Directed Self-Checking,Testcase,"Covered in DTC ""debug_test""","Update to reflect that we are now checking ""future cores""",,,,,,,,
 ,,,,,,Check against ISS,Constrained-Random,Functional Coverage,"CG: uvm_pkg.uvm_test_top.env.cov_model.debug_covg.cg_single_step (.mmode_step_illegal)
@@ -286,7 +286,7 @@ RISC-V External Debug Support Version 0.13.2,4.6 dret instruction,Debug mode,dre
 Can be tested in the same test as for debug entry",Self Checking Test,Directed Self-Checking,Testcase,"Covered in DTC ""debug_test""",,,,,,,,,
 ,,,,,,Check against ISS,Constrained-Random,Functional Coverage,"CG: uvm_pkg.uvm_test_top.env.cov_model.debug_covg.cg_mmode_dret
 A:  uvmt_cv32_tb.u_debug_assert.a_mumode_dret",,,,,,,,,
-RISC-V External Debug Support Version 0.13.2,4.6 dret instruction,Debug mode,dret instruction,Executing dret while in debug mode will restore PC to the value in dpc and exit debug mode.,"Bring hart into debug mode. Execute a dret instruction and observe that the hart resumes executing from the correct address as given by dpc. 
+RISC-V External Debug Support Version 0.13.2,4.6 dret instruction,Debug mode,dret instruction,Executing dret while in debug mode will restore PC to the value in dpc and exit debug mode.,"Bring hart into debug mode. Execute a dret instruction and observe that the hart resumes executing from the correct address as given by dpc.
 Can be tested in the same test as for debug entry.",Self Checking Test,Directed Self-Checking,Testcase,"Covered in DTC ""debug_test""","remove note, this is covered or 40s (U-Mode) in the next point",,,,,,,,
 ,,,,,,Check against ISS,Constrained-Random,Functional Coverage,"CG: uvm_pkg.uvm_test_top.env.cov_model.debug_covg.cg_mmode_dret
 A:   uvmt_cv32_tb.u_debug_assert.a_dmode_dret",,,,,,,,,
@@ -313,7 +313,7 @@ srai x0, x0, 7 # NOP encoding the semihosting call number 7
 
 A:   uvmt_cv32_tb.u_debug_assert.a_dcsr_cause
 A:   uvmt_cv32_tb.u_debug_assert.a_dpc_dbg_trigger",,,,,,,,,
-,,"Trigger, single step",Exception handling,"If the trigger matches on an illegal instruction, PC must be set to the exception handler prior to entering debug mode.","Set up the trigger to match on an address containing an illegal instruction. 
+,,"Trigger, single step",Exception handling,"If the trigger matches on an illegal instruction, PC must be set to the exception handler prior to entering debug mode.","Set up the trigger to match on an address containing an illegal instruction.
 Set up single stepping such that the match address will be executed in the next step.
 When the trigger fires, ensure that cause=0x2(trigger) and that PC is set to the exception handler before entering debug mode.",Self Checking Test,Directed Self-Checking,Testcase,With timing=0 the core will not attempt to execute instruction at trigger address,,,,,,,,,
 ,,,,,,Check against ISS,Constrained-Random,Functional Coverage,"With timing=0 the core will not attempt to execute instruction at trigger address

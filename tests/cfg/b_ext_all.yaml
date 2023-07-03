@@ -1,5 +1,5 @@
 name: b_ext_all
-description: Enables the B extensions ZBA_ZBB_ZBC_ZBS in the cv32e40s
+description: Enables the B extensions ZBA_ZBB_ZBC_ZBS in the cv32e40x
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
 ovpsim: >

@@ -29,15 +29,15 @@
 
 // Packages
 
-package uvmt_cv32e40s_pkg;
-  `include "uvmt_cv32e40s_constants.sv"
-  `include "uvmt_cv32e40s_tdefs.sv"
+package uvmt_cv32e40x_pkg;
+  `include "uvmt_cv32e40x_constants.sv"
+  `include "uvmt_cv32e40x_tdefs.sv"
 
-  import cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
 endpackage
 
-package uvme_cv32e40s_pkg;
-  `include "uvme_cv32e40s_constants.sv"
+package uvme_cv32e40x_pkg;
+  `include "uvme_cv32e40x_constants.sv"
 endpackage
 
 package uvma_rvfi_pkg;

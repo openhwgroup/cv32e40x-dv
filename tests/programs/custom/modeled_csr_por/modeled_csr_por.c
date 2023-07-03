@@ -23,7 +23,7 @@
 **       2. read value does not match the documented PoR value.
 **
 ** This is a manually written prototype of a (planned) generated test-program.
-** The primary goals of this test-program is to get proof of life from all CV32E40S
+** The primary goals of this test-program is to get proof of life from all CV32E40X
 ** CSRs and asertain the status of CSR modeling in the OVPsim Reference Model.
 ** In this prototype, all addresses and expected values are hand-coded.
 **
