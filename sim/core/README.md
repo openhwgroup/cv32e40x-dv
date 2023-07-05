@@ -16,7 +16,7 @@ to support Icarus in the future.
 
 RISC-V GCC Compiler "Toolchain"
 -------------------------------
-Pointers to the recommended toolchain for CV32E40X are in `../TOOLCHAIN`.
+See the `TOOLCHAIN.md` in `core-v-verif/mk/` to choose the recommended toolchain for CV32E40X .
 
 Running your own C programs
 ---------------------
