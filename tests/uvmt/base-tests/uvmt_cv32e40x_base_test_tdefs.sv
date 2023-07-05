@@ -37,20 +37,6 @@ typedef enum {
 } fetch_toggle_t;
 
 
-
-
-/**
- * Test Program Type.  See the Verification Strategy for a discussion of this.
- */
-typedef enum {
-              PREEXISTING_SELFCHECKING,
-              PREEXISTING_NOTSELFCHECKING,
-              GENERATED_SELFCHECKING,
-              GENERATED_NOTSELFCHECKING,
-              NO_TEST_PROGRAM
-             } test_program_type;
-
-
 /**
  * PMA Status
  */

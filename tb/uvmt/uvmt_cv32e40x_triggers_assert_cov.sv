@@ -27,7 +27,6 @@ module uvmt_cv32e40x_triggers_assert_cov
   import uvmt_cv32e40x_pkg::*;
   (
     input logic [31:0] tdata1_array[CORE_PARAM_DBG_NUM_TRIGGERS+1],
-    input privlvl_t priv_lvl,
 
     uvma_rvfi_instr_if_t rvfi_if,
     uvma_clknrst_if_t clknrst_if,
@@ -176,10 +175,6 @@ module uvmt_cv32e40x_triggers_assert_cov
       && !rvfi_if.rvfi_dbg_mode
       && rvfi_if.is_mmode;
 
-  logic valid_instr_in_umode;
-  assign valid_instr_in_umode = rvfi_if.rvfi_valid
-      && !rvfi_if.rvfi_dbg_mode
-      && rvfi_if.is_umode;
 
   logic valid_instr_in_dmode;
   assign valid_instr_in_dmode = rvfi_if.rvfi_valid
@@ -253,10 +248,9 @@ module uvmt_cv32e40x_triggers_assert_cov
     && rvfi_if.rvfi_trap.debug_cause == DBG_CAUSE_TRIGGER);
   endproperty
 
-  property p_etrigger_hit(t, priv_lvl, exception);
+  property p_etrigger_hit(t, exception);
     support_if.trigger_match_exception[t]
     && !rvfi_if.rvfi_dbg_mode
-    && priv_lvl
     && rvfi_if.rvfi_trap.exception_cause == exception
     |->
     rvfi_if.rvfi_trap.debug;
@@ -709,7 +703,7 @@ module uvmt_cv32e40x_triggers_assert_cov
     //2) Check the WARL fields
 
 
-    //1) see a_dt_exception_trigger_hit_*, a_dt_enter_dbg_reason
+    //1) Not relevant for cv32e40x
 
     //2)
     a_dt_warl_tselect: assert property (
@@ -895,17 +889,7 @@ module uvmt_cv32e40x_triggers_assert_cov
 
 
     //3)
-    a_dt_no_access_to_tdata_in_umode: assert property (
-
-      valid_instr_in_umode
-
-      && (rvfi_if.is_csr_instr(ADDR_TDATA1)
-      || rvfi_if.is_csr_instr(ADDR_TDATA2))
-
-      |->
-      rvfi_if.rvfi_trap.trap
-    ) else `uvm_error(info_tag, "Access to the t-CSRs in user mode.\n");
-
+    //Not relevant for cv32e40x
 
     //- Vplan:
     //Write 0 to "tdata1", ensure that its state becomes disabled (type 15). Write values to "tdata2" (addresses and/or exception causes)
@@ -1003,114 +987,44 @@ module uvmt_cv32e40x_triggers_assert_cov
       a_dt_exception_trigger_hit_m_instr_access_fault: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_INSTR_FAULT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_instr_access_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_INSTR_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, instruction fault) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_illegal_instr: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_ILLEGAL_INSN)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, illegal instruction) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_illegal_instr: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_ILLEGAL_INSN)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, illegal instruction) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_breakpoint: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_BREAKPOINT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, breakpoint in machine mode) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_breakpoint: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_BREAKPOINT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, breakpoint in user mode) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_load_access_fault: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_LOAD_FAULT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, load access fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_load_access_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_LOAD_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, load access fault) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_store_AMO_access_fault: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_STORE_FAULT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, stor/AMO access fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_store_AMO_access_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_STORE_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, stor/AMO access fault) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_mecall: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_ECALL_MMODE)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, ecall in machine mode) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_uecall: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_ECALL_UMODE)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, ecall in user mode) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_instr_bus_fault: assert property(
         p_etrigger_hit(
           t,
-          rvfi_if.is_mmode,
           EXC_CAUSE_INSTR_BUS_FAULT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction bus fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_instr_bus_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_INSTR_BUS_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, instruction bus fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_m_instr_integrity_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_mmode,
-          EXC_CAUSE_INSTR_INTEGRITY_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction integrity fault) does not send the core into debug mode.\n");
-
-      a_dt_exception_trigger_hit_u_instr_integrity_fault: assert property(
-        p_etrigger_hit(
-          t,
-          rvfi_if.is_umode,
-          EXC_CAUSE_INSTR_INTEGRITY_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, user mode, instruction integrity fault) does not send the core into debug mode.\n");
 
       //2) see a_dt_enter_dbg_reason
 
@@ -1123,65 +1037,34 @@ module uvmt_cv32e40x_triggers_assert_cov
       //However, to reduce convergence time we verify this trigger feature with several more constricted assertions:
 
       a_dt_instr_trigger_hit_mmode_match_when_equal: assert property (
-        rvfi_if.is_mmode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
+        tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
         && support_if.trigger_match_execute[t]
         && !rvfi_if.rvfi_dbg_mode
         |->
         rvfi_if.rvfi_trap.debug
       ) else `uvm_error(info_tag, "The trigger match (instruction match, machine mode, match when equal) does not send the core into debug mode.\n");
 
-      a_dt_instr_trigger_hit_umode_match_when_equal: assert property (
-        rvfi_if.is_umode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
-        && support_if.trigger_match_execute[t]
-        && !rvfi_if.rvfi_dbg_mode
-        |->
-        rvfi_if.rvfi_trap.debug
-      ) else `uvm_error(info_tag, "The trigger match (instruction match, user mode, match when equal) does not send the core into debug mode.\n");
-
       a_dt_instr_trigger_hit_mmode_match_when_equal_or_greater: assert property (
-        rvfi_if.is_mmode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
+        tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
         && support_if.trigger_match_execute[t]
         && !rvfi_if.rvfi_dbg_mode
         |->
         rvfi_if.rvfi_trap.debug
       ) else `uvm_error(info_tag, "The trigger match (instruction match, machine mode, match when greater or equal) does not send the core into debug mode.\n");
 
-      a_dt_instr_trigger_hit_umode_match_when_equal_or_greater: assert property (
-        rvfi_if.is_umode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
-        && support_if.trigger_match_execute[t]
-        && !rvfi_if.rvfi_dbg_mode
-        |->
-        rvfi_if.rvfi_trap.debug
-      ) else `uvm_error(info_tag, "The trigger match (instruction match, user mode, match when greater or equal) does not send the core into debug mode.\n");
-
       a_dt_instr_trigger_hit_mmode_match_when_lesser: assert property (
-        rvfi_if.is_mmode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
+        tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
         && support_if.trigger_match_execute[t]
         && !rvfi_if.rvfi_dbg_mode
         |->
         rvfi_if.rvfi_trap.debug
       ) else `uvm_error(info_tag, "The trigger match (instruction match, machine mode, match when lesser) does not send the core into debug mode.\n");
 
-      a_dt_instr_trigger_hit_umode_match_when_lesser: assert property (
-        rvfi_if.is_umode
-        && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
-        && support_if.trigger_match_execute[t]
-        && !rvfi_if.rvfi_dbg_mode
-        |->
-        rvfi_if.rvfi_trap.debug
-      ) else `uvm_error(info_tag, "The trigger match (instruction match, user mode, match when lesser) does not send the core into debug mode.\n");
-
 
       for (genvar n = 0; n < MAX_MEM_ACCESS; n++) begin
 
         a_dt_load_trigger_hit_mmode_match_when_equal: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
           && rvfi_if.is_load_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
@@ -1189,19 +1072,8 @@ module uvmt_cv32e40x_triggers_assert_cov
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (load match, machine mode, match when equal) does not send the core into debug mode.\n");
 
-        a_dt_load_trigger_hit_umode_match_when_equal: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
-          && rvfi_if.is_load_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (load match, user mode, match when equal) does not send the core into debug mode.\n");
-
         a_dt_load_trigger_hit_mmode_match_when_equal_or_greater: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
           && rvfi_if.is_load_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
@@ -1209,19 +1081,8 @@ module uvmt_cv32e40x_triggers_assert_cov
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (load match, machine mode, match when greater or equal) does not send the core into debug mode.\n");
 
-        a_dt_load_trigger_hit_umode_match_when_equal_or_greater: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
-          && rvfi_if.is_load_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (load match, user mode, match when greater or equal) does not send the core into debug mode.\n");
-
         a_dt_load_trigger_hit_mmode_match_when_lesser: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
           && rvfi_if.is_load_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
@@ -1229,20 +1090,9 @@ module uvmt_cv32e40x_triggers_assert_cov
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (load match, machine mode, match when lesser) does not send the core into debug mode.\n");
 
-        a_dt_load_trigger_hit_umode_match_when_lesser: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
-          && rvfi_if.is_load_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (load match, user mode, match when lesser) does not send the core into debug mode.\n");
-
         //Store:
         a_dt_store_trigger_hit_mmode_match_when_equal: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
           && rvfi_if.is_store_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
@@ -1250,19 +1100,8 @@ module uvmt_cv32e40x_triggers_assert_cov
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (store match, machine mode, match when equal) does not send the core into debug mode.\n");
 
-        a_dt_store_trigger_hit_umode_match_when_equal: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_EQUAL
-          && rvfi_if.is_store_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (store match, user mode, match when equal) does not send the core into debug mode.\n");
-
         a_dt_store_trigger_hit_mmode_match_when_equal_or_greater: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
           && rvfi_if.is_store_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
@@ -1270,35 +1109,14 @@ module uvmt_cv32e40x_triggers_assert_cov
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (store match, machine mode, match when greater or equal) does not send the core into debug mode.\n");
 
-        a_dt_store_trigger_hit_umode_match_when_equal_or_greater: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_GREATER_OR_EQUAL
-          && rvfi_if.is_store_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (store match, user mode, match when greater or equal) does not send the core into debug mode.\n");
-
         a_dt_store_trigger_hit_mmode_match_when_lesser: assert property (
-          rvfi_if.is_mmode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
+          tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
           && rvfi_if.is_store_instr
           && support_if.trigger_match_mem[t]
           && !rvfi_if.rvfi_dbg_mode
           |->
           rvfi_if.rvfi_trap.debug
         ) else `uvm_error(info_tag, "The trigger match (store match, machine mode, match when lesser) does not send the core into debug mode.\n");
-
-        a_dt_store_trigger_hit_umode_match_when_lesser: assert property (
-          rvfi_if.is_umode
-          && tdata1_array[t][MSB_MATCH:LSB_MATCH] == MATCH_WHEN_LESSER
-          && rvfi_if.is_store_instr
-          && support_if.trigger_match_mem[t]
-          && !rvfi_if.rvfi_dbg_mode
-          |->
-          rvfi_if.rvfi_trap.debug
-        ) else `uvm_error(info_tag, "The trigger match (store match, user mode, match when lesser) does not send the core into debug mode.\n");
 
       end
     end

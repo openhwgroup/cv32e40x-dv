@@ -903,7 +903,6 @@ module uvmt_cv32e40x_tb;
 
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
       .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
-      .priv_lvl (core_i.priv_lvl),
       .rvfi_if (rvfi_instr_if),
       .clknrst_if (dut_wrap.clknrst_if),
       .support_if (support_logic_module_o_if.slave_mp),
