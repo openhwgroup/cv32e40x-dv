@@ -19,6 +19,16 @@
 `define __UVMT_CV32E40X_BASE_TEST_TDEFS_SV__
 
 
+/**
+ * Test Program Type.  See the Verification Strategy for a discussion of this.
+ */
+typedef enum {
+  PREEXISTING_SELFCHECKING,
+  PREEXISTING_NOTSELFCHECKING,
+  GENERATED_SELFCHECKING,
+  GENERATED_NOTSELFCHECKING,
+  NO_TEST_PROGRAM
+} test_program_type;
 
 typedef enum {
     FETCH_CONSTANT,

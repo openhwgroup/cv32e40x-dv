@@ -1,7 +1,6 @@
 //
 // Copyright 2022 OpenHW Group
 // Copyright 2022 Imperas
-// Copyright 2023 Imperas
 //
 // Licensed under the Solderpad Hardware Licence, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +37,7 @@
     assign rvvi.csr[0][0][``CSR_ADDR]    = csr_``CSR_NAME``_w | csr_``CSR_NAME``_r; \
     assign rvvi.csr_wb[0][0][``CSR_ADDR] = csr_``CSR_NAME``_wb; \
     always @(rvvi.csr[0][0][``CSR_ADDR]) begin \
-      if (`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask ) begin \
+      if ((`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask) && `RVFI_IF.rvfi_valid) begin \
         csr_``CSR_NAME``_wb = 1; \
       end \
     end \
@@ -499,7 +498,6 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MARCHID_ADDR,       marchid       )
    `RVVI_SET_CSR( `CSR_MIMPID_ADDR,        mimpid        )
    `RVVI_SET_CSR( `CSR_MHARTID_ADDR,       mhartid       )
-
    `RVVI_SET_CSR( `CSR_MCONFIGPTR_ADDR,    mconfigptr    )
 
    `RVVI_SET_CSR( `CSR_MCYCLEH_ADDR,       mcycleh       )

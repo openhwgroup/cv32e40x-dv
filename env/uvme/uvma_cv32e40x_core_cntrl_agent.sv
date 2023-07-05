@@ -85,7 +85,7 @@ function void uvma_cv32e40x_core_cntrl_agent_c::retrieve_vif();
    $cast(e40x_cntxt, cntxt);
 
    // Core control interface
-   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if_t)::get(this, "", $sformatf("core_cntrl_vif"), e40x_cntxt.core_cntrl_vif)) begin
+   if (!uvm_config_db#(virtual uvme_cv32e40x_core_cntrl_if_t)::get(this, "", $sformatf("core_cntrl_vif"), e40s_cntxt.core_cntrl_vif)) begin
       `uvm_fatal("VIF", $sformatf("Could not find vif handle of type %s in uvm_config_db",
                                     $typename(e40x_cntxt.core_cntrl_vif)))
    end
@@ -169,6 +169,7 @@ function void uvma_cv32e40x_core_cntrl_agent_c::configure_iss();
   $fwrite(fh, $sformatf("--override %s/nmi_address=0x%08x\n", refpath, cfg.nmi_addr));
   $fwrite(fh, $sformatf("--override %s/debug_address=0x%08x\n", refpath, cfg.dm_halt_addr));
   $fwrite(fh, $sformatf("--override %s/dexc_address=0x%08x\n", refpath, cfg.dm_exception_addr));
+  $fwrite(fh, $sformatf("--override %s/extension_*/tdata1_reset=0x%08x\n", refpath, 'h28001000));
 
   if (cfg.ext_zca_supported) begin
     $fwrite(fh, $sformatf("--override %s/Zca=1\n", refpath));
