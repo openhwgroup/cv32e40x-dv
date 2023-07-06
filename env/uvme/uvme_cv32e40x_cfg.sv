@@ -402,10 +402,6 @@ function uvme_cv32e40x_cfg_c::new(string name="uvme_cv32e40x_cfg");
      basic_interrupt_enable = 0;
    end
 
-   isacov_cfg = uvma_isacov_cfg_c::type_id::create("isacov_cfg");
-   clknrst_cfg  = uvma_clknrst_cfg_c::type_id::create("clknrst_cfg");
-   interrupt_cfg = uvma_interrupt_cfg_c::type_id::create("interrupt_cfg");
-   debug_cfg = uvma_debug_cfg_c::type_id::create("debug_cfg");
    isacov_cfg           = uvma_isacov_cfg_c::type_id::create("isacov_cfg");
    clknrst_cfg          = uvma_clknrst_cfg_c::type_id::create("clknrst_cfg");
    interrupt_cfg        = uvma_interrupt_cfg_c::type_id::create("interrupt_cfg");

@@ -22,14 +22,11 @@
 `ifndef __UVMT_CV32E40X_TB_SV__
 `define __UVMT_CV32E40X_TB_SV__
 
-
-`default_nettype none
-
-
 /**
  * Module encapsulating the CV32E40X DUT wrapper, and associated SV interfaces.
  * Also provide UVM environment entry and exit points.
  */
+`default_nettype none
 module uvmt_cv32e40x_tb;
 
    import uvm_pkg::*;
@@ -110,9 +107,6 @@ module uvmt_cv32e40x_tb;
    */
    uvmt_cv32e40x_dut_wrap  #(
                              .B_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
-                             .CLIC                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-                             .CLIC_ID_WIDTH        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-                             .CLIC_INTTHRESHBITS   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_INTTHRESHBITS),
                              .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
                              .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
                              .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
@@ -121,6 +115,8 @@ module uvmt_cv32e40x_tb;
                              .PMA_CFG              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
                              .PMA_NUM_REGIONS      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
                              .RV32                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
+                             .CLIC                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+                             .CLIC_ID_WIDTH        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
                              .INSTR_ADDR_WIDTH     (ENV_PARAM_INSTR_ADDR_WIDTH),
                              .INSTR_RDATA_WIDTH    (ENV_PARAM_INSTR_DATA_WIDTH),
                              .RAM_ADDR_WIDTH       (ENV_PARAM_RAM_ADDR_WIDTH)
@@ -198,16 +194,6 @@ module uvmt_cv32e40x_tb;
   `RVFI_CSR_BIND(mip)
   `RVFI_CSR_BIND(misa)
   `RVFI_CSR_BIND(mscratch)
-  `RVFI_CSR_BIND(mseccfg)
-  `RVFI_CSR_BIND(mseccfgh)
-  `RVFI_CSR_BIND(mstateen0)
-  `RVFI_CSR_BIND(mstateen0h)
-  `RVFI_CSR_BIND(mstateen1)
-  `RVFI_CSR_BIND(mstateen1h)
-  `RVFI_CSR_BIND(mstateen2)
-  `RVFI_CSR_BIND(mstateen2h)
-  `RVFI_CSR_BIND(mstateen3)
-  `RVFI_CSR_BIND(mstateen3h)
   `RVFI_CSR_BIND(mstatus)
   `RVFI_CSR_BIND(mstatush)
   `RVFI_CSR_BIND(mtval)
@@ -659,20 +645,7 @@ module uvmt_cv32e40x_tb;
       .pc_set                 (core_i.ctrl_fsm.pc_set),
       .boot_addr_i            (core_i.boot_addr_i),
 
-      .rvfi_valid             (rvfi_i.rvfi_valid),
-      .rvfi_insn              (rvfi_i.rvfi_insn),
-      .rvfi_intr              (rvfi_i.rvfi_intr),
-      .rvfi_dbg               (rvfi_i.rvfi_dbg),
-      .rvfi_dbg_mode          (rvfi_i.rvfi_dbg_mode),
-      .rvfi_pc_wdata          (rvfi_i.rvfi_pc_wdata),
-      .rvfi_pc_rdata          (rvfi_i.rvfi_pc_rdata),
-      .rvfi_csr_dpc_rdata     (rvfi_i.rvfi_csr_dpc_rdata),
-      .rvfi_csr_mepc_wdata    (rvfi_i.rvfi_csr_mepc_wdata),
-      .rvfi_csr_mepc_wmask    (rvfi_i.rvfi_csr_mepc_wmask),
-      .rvfi_csr_mepc_rdata    (rvfi_i.rvfi_csr_mepc_rdata),
-
       .is_wfi                 (),
-      .in_wfi                 (),
       .dpc_will_hit           (),
       .addr_match             (),
       .is_ebreak              (),
@@ -685,10 +658,30 @@ module uvmt_cv32e40x_tb;
     );
 
 
+    logic [31:0] tdata1_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
+    logic [31:0] tdata2_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
+
+    if (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS > 0) begin
+      for (genvar t = 0; t < uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS; t++) begin
+        assign tdata1_array[t] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.debug_triggers_i.gen_triggers.tdata1_rdata[t];
+        assign tdata2_array[t] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.debug_triggers_i.gen_triggers.tdata2_rdata[t];
+      end
+      assign tdata1_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS] = '0;
+      assign tdata2_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS] = '0;
+
+    end else begin
+      assign tdata1_array = {'0};
+      assign tdata2_array = {'0};
+    end
+
+
     bind cv32e40x_wrapper
       uvmt_cv32e40x_support_logic_module_i_if_t support_logic_module_i_if (
         .clk     (core_i.clk),
         .rst_n (rst_ni),
+
+        .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
+        .tdata2_array (uvmt_cv32e40x_tb.tdata2_array),
 
         .ctrl_fsm_o (core_i.controller_i.controller_fsm_i.ctrl_fsm_o),
 
@@ -789,7 +782,7 @@ module uvmt_cv32e40x_tb;
         .dbg                  (rvfi_instr_if.rvfi_dbg_mode),
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
-        .misaligned_access_i  (rvfi_instr_if.is_split_datatrans),
+        .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
         .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte)
       );
 
@@ -804,11 +797,12 @@ module uvmt_cv32e40x_tb;
         .clk                  (clknrst_if.clk),
         .rst_n                (clknrst_if.reset_n),
         .addr_i               (rvfi_instr_if.rvfi_mem_addr_word0highbyte),
+          // TODO:WARNING:silabs-robin Should use "instr_mem_addr_word0highbyte"?
         .core_trans_pushpop_i (rvfi_instr_if.is_pushpop),
         .dbg                  (rvfi_instr_if.rvfi_dbg_mode),
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
-        .misaligned_access_i  (rvfi_instr_if.is_split_datatrans),
+        .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
         .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte)
       );
 
@@ -879,7 +873,7 @@ module uvmt_cv32e40x_tb;
 
     // Support Logic
 
-    bind cv32e40x_wrapper uvmt_cv32e40x_support_logic u_support_logic(.rvfi(rvfi_instr_if),
+    bind cv32e40x_wrapper uvmt_cv32e40x_support_logic u_support_logic(.rvfi (rvfi_instr_if),
                                                                       .in_support_if (support_logic_module_i_if.driver_mp),
                                                                       .out_support_if (support_logic_module_o_if.master_mp)
                                                                       );
@@ -903,29 +897,17 @@ module uvmt_cv32e40x_tb;
                                                                     );
 
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
-                                                                    .wb_valid (core_i.wb_stage_i.wb_valid_o),
-                                                                    .wb_exception_code (core_i.controller_i.controller_fsm_i.exception_cause_wb),
-                                                                    .wb_tdata1 (core_i.cs_registers_i.tdata1_rdata),
-                                                                    .wb_tdata2 (core_i.cs_registers_i.tdata2_rdata),
-                                                                    .priv_lvl (core_i.priv_lvl),
-                                                                    .wb_dbg_mode (rvfi_i.debug_mode[3]),
-                                                                    .wb_last_op (rvfi_i.last_op_wb_i),
-                                                                    .wb_tselect (rvfi_i.rvfi_csr_rdata_d.tselect),
-                                                                    .wb_exception (core_i.controller_i.controller_fsm_i.exception_in_wb),
-
-                                                                    .rvfi_if (rvfi_instr_if),
-                                                                    .clknrst_if (dut_wrap.clknrst_if),
-                                                                    .support_if (support_logic_module_o_if.slave_mp),
-
-                                                                    .tdata1 (rvfi_csr_tdata1_if),
-                                                                    .tdata2 (rvfi_csr_tdata2_if),
-                                                                    .tinfo (rvfi_csr_tinfo_if),
-                                                                    .tselect (rvfi_csr_tselect_if),
-                                                                    .dcsr (rvfi_csr_dcsr_if),
-                                                                    .dpc (rvfi_csr_dpc_if)
-                                                                    );
-
-
+      .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
+      .rvfi_if (rvfi_instr_if),
+      .clknrst_if (dut_wrap.clknrst_if),
+      .support_if (support_logic_module_o_if.slave_mp),
+      .tdata1_if (rvfi_csr_tdata1_if),
+      .tdata2_if (rvfi_csr_tdata2_if),
+      .tinfo_if (rvfi_csr_tinfo_if),
+      .tselect_if (rvfi_csr_tselect_if),
+      .dcsr_if (rvfi_csr_dcsr_if),
+      .dpc_if (rvfi_csr_dpc_if)
+    );
 
 
     bind cv32e40x_wrapper uvmt_cv32e40x_zc_assert u_zc_assert(.rvfi(rvfi_instr_if),
@@ -1007,16 +989,6 @@ module uvmt_cv32e40x_tb;
      `RVFI_CSR_UVM_CONFIG_DB_SET(mip)
      `RVFI_CSR_UVM_CONFIG_DB_SET(misa)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mscratch)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mseccfg)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mseccfgh)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen0)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen0h)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen1)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen1h)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen2)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen2h)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen3)
-     `RVFI_CSR_UVM_CONFIG_DB_SET(mstateen3h)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mstatus)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mstatush)
      `RVFI_CSR_UVM_CONFIG_DB_SET(mtval)
@@ -1283,6 +1255,12 @@ module uvmt_cv32e40x_tb;
             $display("    --------------------------------------------------------");
          end
       end
+      // If there are any liveness assertions still pending at this time,
+      // kill all of them to prevent false failures after end of test.
+      // Actual failures _should_ have been caught and logged at this time
+      // This is needed as the core is not necessarily terminated by software,
+      // and there may be outstanding transactions.
+      $assertkill();
    end
    `endif
 

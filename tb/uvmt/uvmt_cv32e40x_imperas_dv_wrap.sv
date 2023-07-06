@@ -1,7 +1,6 @@
 //
 // Copyright 2022 OpenHW Group
 // Copyright 2022 Imperas
-// Copyright 2023 Imperas
 //
 // Licensed under the Solderpad Hardware Licence, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +37,7 @@
     assign rvvi.csr[0][0][``CSR_ADDR]    = csr_``CSR_NAME``_w | csr_``CSR_NAME``_r; \
     assign rvvi.csr_wb[0][0][``CSR_ADDR] = csr_``CSR_NAME``_wb; \
     always @(rvvi.csr[0][0][``CSR_ADDR]) begin \
-      if (`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask ) begin \
+      if ((`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask) && `RVFI_IF.rvfi_valid) begin \
         csr_``CSR_NAME``_wb = 1; \
       end \
     end \
@@ -187,14 +186,6 @@
 `define CSR_MSECCFGH            32'h757
 `define CSR_MSECCFGH_ADDR       32'h757
 `define CSR_MSECCFG_ADDR        32'h747
-`define CSR_MSTATEEN0H_ADDR     32'h31C
-`define CSR_MSTATEEN0_ADDR      32'h30C
-`define CSR_MSTATEEN1H_ADDR     32'h31D
-`define CSR_MSTATEEN1_ADDR      32'h30D
-`define CSR_MSTATEEN2H_ADDR     32'h31E
-`define CSR_MSTATEEN2_ADDR      32'h30E
-`define CSR_MSTATEEN3H_ADDR     32'h31F
-`define CSR_MSTATEEN3_ADDR      32'h30F
 `define CSR_MSTATUSH_ADDR       32'h310
 `define CSR_MSTATUS_ADDR        32'h300
 `define CSR_MTVAL_ADDR          32'h343
@@ -371,19 +362,9 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MTVEC_ADDR,         mtvec         )
    `RVVI_SET_CSR( `CSR_MCOUNTEREN_ADDR,    mcounteren    )
    `RVVI_SET_CSR( `CSR_MENVCFG_ADDR,       menvcfg       )
-   `RVVI_SET_CSR( `CSR_MSTATEEN0_ADDR,     mstateen0     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN1_ADDR,     mstateen1     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN2_ADDR,     mstateen2     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN3_ADDR,     mstateen3     )
-
    `RVVI_SET_CSR( `CSR_MSTATUSH_ADDR,      mstatush      )
    `RVVI_SET_CSR( `CSR_MENVCFGH_ADDR,      menvcfgh      )
-   `RVVI_SET_CSR( `CSR_MSTATEEN0H_ADDR,    mstateen0h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN1H_ADDR,    mstateen1h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN2H_ADDR,    mstateen2h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN3H_ADDR,    mstateen3h    )
    `RVVI_SET_CSR( `CSR_MCOUNTINHIBIT_ADDR, mcountinhibit )
-
    `RVVI_SET_CSR( `CSR_MHPMEVENT3_ADDR,    mhpmevent3    )
    `RVVI_SET_CSR( `CSR_MHPMEVENT4_ADDR,    mhpmevent4    )
    `RVVI_SET_CSR( `CSR_MHPMEVENT5_ADDR,    mhpmevent5    )
@@ -499,7 +480,6 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MARCHID_ADDR,       marchid       )
    `RVVI_SET_CSR( `CSR_MIMPID_ADDR,        mimpid        )
    `RVVI_SET_CSR( `CSR_MHARTID_ADDR,       mhartid       )
-
    `RVVI_SET_CSR( `CSR_MCONFIGPTR_ADDR,    mconfigptr    )
 
    `RVVI_SET_CSR( `CSR_MCYCLEH_ADDR,       mcycleh       )

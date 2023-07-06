@@ -172,8 +172,7 @@ module uvmt_cv32e40x_dut_wrap
                       .PMA_NUM_REGIONS      (PMA_NUM_REGIONS),
                       .RV32                 (RV32),
                       .CLIC                 (CLIC),
-                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH),
-                      .CLIC_INTTHRESHBITS   (CLIC_INTTHRESHBITS)
+                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH)
                       )
     cv32e40x_wrapper_i
         (
