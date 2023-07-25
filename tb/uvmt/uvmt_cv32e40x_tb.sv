@@ -106,6 +106,7 @@ module uvmt_cv32e40x_tb;
    * a few mods to bring unused ports from the CORE to this level using SV interfaces.
    */
    uvmt_cv32e40x_dut_wrap  #(
+                             .A_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_A_EXT),
                              .B_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
                              .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
                              .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
