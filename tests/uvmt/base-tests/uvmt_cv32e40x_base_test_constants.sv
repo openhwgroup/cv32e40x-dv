@@ -133,6 +133,20 @@ parameter logic CLIC = CORE_PARAM_CLIC;
    parameter int  CORE_PARAM_CLIC_ID_WIDTH = 5;
 `endif
 
+// A-ext
+
+`ifdef PARAM_SET_0 //TODO: krdosvik, file does not exist for 40X
+   // Sat from the include file
+`elsif PARAM_SET_1 //TODO: krdosvik, file does not exist for 40X
+   // Sat from the include file
+`elsif ZALRSC
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::ZALRSC;
+`elsif A
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::A;
+`else
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::A_NONE;
+`endif
+
 
 // B-ext
 
