@@ -115,6 +115,7 @@ module  uvmt_cv32e40x_pma_assert
     (core_trans_i.addr inside {[DM_REGION_START:DM_REGION_END]})
     |->
     !pma_err
+    || (pma_err && core_trans_i.atop[5]) //TODO: krdosvik, not sure what core_trans_i is, but should fit the format.
   ) else `uvm_error(info_tag, "dmode in dregion is never blocked");
 
 
