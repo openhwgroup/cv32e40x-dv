@@ -47,6 +47,7 @@ module uvmt_cv32e40x_dut_wrap
     parameter logic [31:0]           DM_REGION_START                     = 32'hF0000000,
     parameter logic [31:0]           DM_REGION_END                       = 32'hF0003FFF,
     parameter m_ext_e                M_EXT                               = M,
+    parameter cv32e40x_pkg::a_ext_e  A_EXT                               = cv32e40x_pkg::A_NONE,
     parameter cv32e40x_pkg::b_ext_e  B_EXT                               = cv32e40x_pkg::B_NONE,
     parameter cv32e40x_pkg::a_ext_e  A_EXT                               = cv32e40x_pkg::A,
     parameter int                    PMA_NUM_REGIONS                     = 0,

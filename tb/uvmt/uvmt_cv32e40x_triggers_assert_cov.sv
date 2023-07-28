@@ -585,11 +585,9 @@ module uvmt_cv32e40x_triggers_assert_cov
       && tdata1_pre_state[MSB_TYPE:LSB_TYPE] == TTYPE_ETRIGGER
 
       |->
-      !tdata2_pre_state[31:26]
+      !tdata2_pre_state[31:25]
       && !tdata2_pre_state[23:12]
-      && !tdata2_pre_state[10:9]
-      && !tdata2_pre_state[6]
-      && !tdata2_pre_state[4]
+      && !tdata2_pre_state[10:8]
       && !tdata2_pre_state[0]
     ) else `uvm_error(info_tag, "There is a problem with tdata2-etrigger's tied off fields.\n");
 
@@ -794,11 +792,9 @@ module uvmt_cv32e40x_triggers_assert_cov
       && |tdata2_if.rvfi_csr_wmask != 0
       && tdata1_post_state[MSB_TYPE:LSB_TYPE] == TTYPE_ETRIGGER
       |->
-      !tdata2_post_state[31:26]
+      !tdata2_post_state[31:25]
       && !tdata2_post_state[23:12]
-      && !tdata2_post_state[10:9]
-      && !tdata2_post_state[6]
-      && !tdata2_post_state[4]
+      && !tdata2_post_state[10:8]
       && !tdata2_post_state[0]
     ) else `uvm_error(info_tag, "There is a problem with tdata1-etrigger's WARL fields.\n");
 
