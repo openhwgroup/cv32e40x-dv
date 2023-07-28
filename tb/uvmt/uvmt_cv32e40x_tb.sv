@@ -660,7 +660,7 @@ module uvmt_cv32e40x_tb;
 
 
     // Atomic assert
-    bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
+    bind  dut_wrap.cv32e40x_wrapper_i
     uvmt_cv32e40x_atomic_assert #(
     ) atomic_assert_i (
       .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
@@ -672,6 +672,8 @@ module uvmt_cv32e40x_tb;
       .id_valid                (core_i.id_valid),
       .ex_valid                (core_i.ex_valid),
       .wb_valid                (core_i.wb_valid),
+      .clk                     (clknrst_if.clk),
+      .rst_n                   (clknrst_if.reset_n),
       .*
     );
 
