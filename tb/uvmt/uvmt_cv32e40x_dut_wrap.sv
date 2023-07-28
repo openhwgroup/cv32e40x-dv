@@ -48,6 +48,7 @@ module uvmt_cv32e40x_dut_wrap
     parameter logic [31:0]           DM_REGION_END                       = 32'hF0003FFF,
     parameter m_ext_e                M_EXT                               = M,
     parameter cv32e40x_pkg::b_ext_e  B_EXT                               = cv32e40x_pkg::B_NONE,
+    parameter cv32e40x_pkg::a_ext_e  A_EXT                               = cv32e40x_pkg::A,
     parameter int                    PMA_NUM_REGIONS                     = 0,
     parameter pma_cfg_t              PMA_CFG[PMA_NUM_REGIONS-1 : 0]      = '{default:PMA_R_DEFAULT},
     parameter logic                  CLIC                                = 0,
@@ -163,6 +164,7 @@ module uvmt_cv32e40x_dut_wrap
     // instantiate the core
     cv32e40x_wrapper #(
                       .NUM_MHPMCOUNTERS (NUM_MHPMCOUNTERS),
+                      .A_EXT                (A_EXT),
                       .B_EXT                (B_EXT),
                       .DBG_NUM_TRIGGERS     (DBG_NUM_TRIGGERS),
                       .DM_REGION_END        (DM_REGION_END),
