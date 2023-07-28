@@ -659,6 +659,24 @@ module uvmt_cv32e40x_tb;
     );
 
 
+    // Atomic assert
+    bind  dut_wrap.cv32e40x_wrapper_i
+    uvmt_cv32e40x_atomic_assert #(
+    ) atomic_assert_i (
+      .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+      .data_obi                (dut_wrap.obi_data_if),
+      .id_stage_instr_rdata_i  (core_i.if_id_pipe.instr.bus_resp.rdata),
+      .ex_stage_instr_rdata_i  (core_i.id_ex_pipe.instr.bus_resp.rdata),
+      .wb_stage_instr_rdata_i  (core_i.ex_wb_pipe.instr.bus_resp.rdata),
+      .if_valid                (core_i.if_valid),
+      .id_valid                (core_i.id_valid),
+      .ex_valid                (core_i.ex_valid),
+      .wb_valid                (core_i.wb_valid),
+      .clk                     (clknrst_if.clk),
+      .rst_n                   (clknrst_if.reset_n),
+      .*
+    );
+
     logic [31:0] tdata1_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
     logic [31:0] tdata2_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
 
