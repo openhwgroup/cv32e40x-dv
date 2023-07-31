@@ -37,8 +37,7 @@ module  uvmt_cv32e40x_pma_assert
   parameter logic [31:0]  DM_REGION_END,
   parameter logic         IS_INSTR_SIDE,
   parameter int           PMA_NUM_REGIONS,
-  parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0],
-  parameter a_ext_e       A_EXT
+  parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0]
 )(
   input wire  clk,
   input wire  rst_n,
