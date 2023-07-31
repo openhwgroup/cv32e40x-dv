@@ -18,7 +18,7 @@
 
 
 `default_nettype none
-
+//TODO: krdosvik, when disassembler PR is in.
 
 module  uvmt_cv32e40x_pma_model
   import cv32e40x_pkg::*;
@@ -108,7 +108,7 @@ module  uvmt_cv32e40x_pma_model
   wire logic  allow_data;
   assign  allow_data =
     cfg_effective.main  ||
-    (!misaligned_access_i && !core_trans_pushpop_i);
+    (!misaligned_access_i && !core_trans_pushpop_i);// && !core_trans_amo_i); //AMO instructions are modifiable (one operation includes both read and write of memory)
 
   wire logic  accesses_jvt;
   assign  accesses_jvt =
@@ -116,7 +116,7 @@ module  uvmt_cv32e40x_pma_model
     (addr_i <= (jvt_q + (4 * 8'b 1111_1111)));
 
   assign  pma_status_o.allow =
-    override_dm  ||
+    (override_dm) || // && !cfg_effective.atomic) ||
     (IS_INSTR_SIDE ? allow_instr : allow_data);
   assign  pma_status_o.main              = cfg_effective.main;
   assign  pma_status_o.bufferable        = cfg_effective.bufferable;

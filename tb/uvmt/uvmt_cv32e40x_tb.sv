@@ -840,6 +840,7 @@ module uvmt_cv32e40x_tb;
         .writebuf_trans_i ('0),
         .writebuf_trans_o ('0),
         .pma_status_i     (uvmt_cv32e40x_tb.pma_status_instr),
+        .core_trans_atop  ('0),
         .*
       );
 
@@ -858,6 +859,7 @@ module uvmt_cv32e40x_tb;
         .writebuf_trans_i (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.trans_i),
         .writebuf_trans_o (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.trans_o),
         .pma_status_i     (uvmt_cv32e40x_tb.pma_status_data),
+        .core_trans_atop  (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i.pma_assert_data_i.core_trans_i.atop),
         .*
       );
 

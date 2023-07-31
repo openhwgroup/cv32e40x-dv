@@ -224,7 +224,7 @@ module uvmt_cv32e40x_dut_wrap
          .mcycle_o               ( /*todo: connect */             ),
 
          .irq_i                  ( interrupt_if.irq               ),
-         .wu_wfe_i               ( 1'b0                           ), // todo: hook up
+         .wu_wfe_i               (                                ), // todo: hook up (krdosvik, henrik have a fix)
          .clic_irq_i             ( clic_if.clic_irq               ),
          .clic_irq_id_i          ( clic_if.clic_irq_id            ),
          .clic_irq_level_i       ( clic_if.clic_irq_level         ),
