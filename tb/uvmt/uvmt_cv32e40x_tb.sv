@@ -814,8 +814,7 @@ module uvmt_cv32e40x_tb;
         .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (1),
         .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
-        .A_EXT           (cv32e40x_pkg::A_NONE)
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_assert_instr_i (
         .obi_memory_if    (dut_wrap.obi_instr_if),
         .rvfi_instr_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
@@ -834,8 +833,7 @@ module uvmt_cv32e40x_tb;
         .DM_REGION_START (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
         .IS_INSTR_SIDE   (0),
         .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
-        .A_EXT           (cv32e40x_pkg::A)
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
       ) pma_assert_data_i (
         .obi_memory_if    (dut_wrap.obi_data_if),
         .rvfi_instr_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
