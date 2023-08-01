@@ -44,7 +44,7 @@ module  uvmt_cv32e40x_pma_assert
 
   // Interface from Core
   input CORE_REQ_TYPE  core_trans_i,
-  input logic [5:0]    core_trans_atop,
+  input wire logic [5:0]    core_trans_atop,
 
   // Interface towards OBI
   input CORE_REQ_TYPE  bus_trans_o,
