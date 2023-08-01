@@ -37,15 +37,14 @@ module  uvmt_cv32e40x_pma_assert
   parameter logic [31:0]  DM_REGION_END,
   parameter logic         IS_INSTR_SIDE,
   parameter int           PMA_NUM_REGIONS,
-  parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0],
-  parameter a_ext_e       A_EXT
+  parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0]
 )(
   input wire  clk,
   input wire  rst_n,
 
   // Interface from Core
   input CORE_REQ_TYPE  core_trans_i,
-  input logic [5:0]    core_trans_atop,
+  input wire logic [5:0]    core_trans_atop,
 
   // Interface towards OBI
   input CORE_REQ_TYPE  bus_trans_o,
@@ -115,11 +114,10 @@ module  uvmt_cv32e40x_pma_assert
   a_dm_region: assert property (
     core_trans_i.dbg  &&
     (core_trans_i.addr inside {[DM_REGION_START:DM_REGION_END]})
-
     |->
     !pma_err
-    || (pma_err && core_trans_atop[ATOMIC_MEM_OP])
-  ) else `uvm_error(info_tag, "dmode in dregion is never blocked, and atomic memory operation is enabled");
+    || (pma_err && core_trans_atop[ATOMIC_MEM_OP] && !pma_status_i.atomic)
+  ) else `uvm_error(info_tag, "dmode in dregion is never blocked (given no atomic operation)");
 
 
   // Writebuffer usage must be bufferable  (vplan:WriteBuffer)
