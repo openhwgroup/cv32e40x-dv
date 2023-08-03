@@ -140,7 +140,7 @@ function void uvme_cv32e40x_vp_fencei_tamper_seq_c::write_rtl_mem();
 
 endfunction : write_rtl_mem
 
-function void uvme_cv32e40s_vp_fencei_tamper_seq_c::write_iss_mem();
+function void uvme_cv32e40x_vp_fencei_tamper_seq_c::write_iss_mem();
 
   if ($test$plusargs("USE_ISS")) begin
     rvviRefMemoryWrite(0, addr, data, 4);

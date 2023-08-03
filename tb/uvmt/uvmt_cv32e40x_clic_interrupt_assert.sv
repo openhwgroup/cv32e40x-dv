@@ -33,7 +33,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
 
     // interfaces
     uvmt_cv32e40x_support_logic_module_o_if_t.slave_mp  support_if,
-    uvmt_cv32e40s_support_logic_module_o_if_t.slave_mp  support_if,
     uvma_rvfi_instr_if_t                                rvfi_if,
     uvma_rvfi_csr_if_t                                  csr_mepc_if,
     uvma_rvfi_csr_if_t                                  csr_mcause_if,

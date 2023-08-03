@@ -32,7 +32,7 @@ module uvmt_cv32e40x_rvfi_assert
   import cv32e40x_pkg::*;
   import uvm_pkg::*;
   import uvma_rvfi_pkg::*;
-  import uvmt_cv32ex_base_test_pkg::*;
+  import uvmt_cv32e40x_base_test_pkg::*;
   import support_pkg::*;
 #(
   parameter logic  CLIC,

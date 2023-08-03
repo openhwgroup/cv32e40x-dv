@@ -679,13 +679,13 @@ module uvmt_cv32e40x_imperas_dv_wrap
        end
    end: Monitor_RVFI
 
-endmodule : uvmt_cv32e40s_imperas_dv_wrap
+endmodule : uvmt_cv32e40x_imperas_dv_wrap
 
 interface uvmt_imperas_dv_if_t;
   import uvm_pkg::*;
-  import cv32e40s_pkg::*;
-  import uvmt_cv32e40s_base_test_pkg::*;
-  import uvme_cv32e40s_pkg::*;
+  import cv32e40x_pkg::*;
+  import uvmt_cv32e40x_base_test_pkg::*;
+  import uvme_cv32e40x_pkg::*;
   import rvviApiPkg::*;
 
   string info_tag = "ImperasDV_if";
