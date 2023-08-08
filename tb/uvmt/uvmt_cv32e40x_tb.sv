@@ -111,7 +111,7 @@ module uvmt_cv32e40x_tb;
                              .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
                              .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
                              .M_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
-                             .NUM_MHPMCOUNTERS (CORE_PARAM_NUM_MHPMCOUNTERS),
+                             .NUM_MHPMCOUNTERS     (CORE_PARAM_NUM_MHPMCOUNTERS),
                              .PMA_CFG              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
                              .PMA_NUM_REGIONS      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
                              .RV32                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
