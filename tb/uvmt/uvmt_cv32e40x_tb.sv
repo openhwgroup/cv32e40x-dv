@@ -33,8 +33,17 @@ module uvmt_cv32e40x_tb;
    import cv32e40x_pkg::*;
    import uvmt_cv32e40x_base_test_pkg::*;
    import uvmt_cv32e40x_pkg::*;
+   `ifdef USE_ISS
    `ifndef FORMAL
    import rvviApiPkg::*;
+   `endif
+   `endif
+
+      // CORE parameters
+   `ifdef SET_NUM_MHPMCOUNTERS
+      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
+   `else
+      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
    `endif
 
    // Capture regs for test status from Virtual Peripheral in dut_wrap.mem_i
@@ -102,6 +111,7 @@ module uvmt_cv32e40x_tb;
                              .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
                              .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
                              .M_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
+                             .NUM_MHPMCOUNTERS (CORE_PARAM_NUM_MHPMCOUNTERS),
                              .PMA_CFG              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
                              .PMA_NUM_REGIONS      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
                              .RV32                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
@@ -1146,6 +1156,7 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(bit[31:0])::set(.cntxt(null), .inst_name("*"), .field_name("evalue"), .value(32'h00000000));
 
      // DUT and ENV parameters
+     uvm_config_db#(int)::set(.cntxt(null), .inst_name("*"), .field_name("CORE_PARAM_NUM_MHPMCOUNTERS"), .value(CORE_PARAM_NUM_MHPMCOUNTERS));
      uvm_config_db#(int)::set(.cntxt(null), .inst_name("*"), .field_name("ENV_PARAM_INSTR_ADDR_WIDTH"),  .value(ENV_PARAM_INSTR_ADDR_WIDTH) );
      uvm_config_db#(int)::set(.cntxt(null), .inst_name("*"), .field_name("ENV_PARAM_INSTR_DATA_WIDTH"),  .value(ENV_PARAM_INSTR_DATA_WIDTH) );
      uvm_config_db#(int)::set(.cntxt(null), .inst_name("*"), .field_name("ENV_PARAM_RAM_ADDR_WIDTH"),    .value(ENV_PARAM_RAM_ADDR_WIDTH)   );
