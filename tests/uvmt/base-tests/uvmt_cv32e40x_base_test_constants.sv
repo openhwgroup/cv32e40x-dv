@@ -127,9 +127,9 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 
 // A-ext
 
-`ifdef PARAM_SET_0 //TODO: krdosvik, file does not exist for 40X
+`ifdef PARAM_SET_0
    // Sat from the include file
-`elsif PARAM_SET_1 //TODO: krdosvik, file does not exist for 40X
+`elsif PARAM_SET_1
    // Sat from the include file
 `elsif ZALRSC
    parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::ZALRSC;
