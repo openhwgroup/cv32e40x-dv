@@ -37,6 +37,8 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
    bit                              irq_min_limit_plusarg_valid             = 0;
    bit                              single_step_min_limit_plusarg_valid     = 0;
    bit                              irq_single_step_threshold_plusarg_valid = 0;
+   bit                              clic_irq_clear_on_ack_plusarg_valid     = 0;
+   rand bit                         clic_irq_clear_on_ack;
    rand bit                         buserr_scoreboarding_enabled            = 1;
    rand int unsigned                fetch_toggle_initial_delay;
    rand int unsigned                nmi_timeout_instr;
@@ -101,6 +103,7 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
       soft irq_min_limit                   == 0; // no timeout
       soft single_step_min_limit           == 0; // no timeout
       soft irq_single_step_threshold       == 0; // no timeout
+      soft clic_irq_clear_on_ack           == 1;
    }
 
    constraint cv32e40x_riscv_cons {
@@ -168,14 +171,15 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
    }
 
    constraint default_cv32e40x_boot_cons {
-      (!mhartid_plusarg_valid)           -> (mhartid           == 'h0000_0000);
-      (!mimpid_patch_plusarg_valid)      -> (mimpid_patch      == 'h0        );
-      (!mimpid_plusarg_valid)            -> (mimpid            == {12'b0, MIMPID_MAJOR, 4'b0, MIMPID_MINOR, 4'b0, mimpid_patch[3:0]});
-      (!boot_addr_plusarg_valid)         -> (boot_addr         == 'h0000_0080);
-      (!mtvec_addr_plusarg_valid)        -> (mtvec_addr        == 'h0000_0000);
-      (!nmi_addr_plusarg_valid)          -> (nmi_addr          == 'h0010_0000);
-      (!dm_halt_addr_plusarg_valid)      -> (dm_halt_addr      == 'h1a11_0800);
-      (!dm_exception_addr_plusarg_valid) -> (dm_exception_addr == 'h1a11_1000);
+      (!mhartid_plusarg_valid)               -> (mhartid               == 'h0000_0000);
+      (!mimpid_patch_plusarg_valid)          -> (mimpid_patch          == 'h0        );
+      (!mimpid_plusarg_valid)                -> (mimpid                == {12'b0, MIMPID_MAJOR, 4'b0, MIMPID_MINOR, 4'b0, mimpid_patch[3:0]});
+      (!boot_addr_plusarg_valid)             -> (boot_addr             == 'h0000_0080);
+      (!mtvec_addr_plusarg_valid)            -> (mtvec_addr            == 'h0000_0000);
+      (!nmi_addr_plusarg_valid)              -> (nmi_addr              == 'h0010_0000);
+      (!dm_halt_addr_plusarg_valid)          -> (dm_halt_addr          == 'h1a11_0800);
+      (!dm_exception_addr_plusarg_valid)     -> (dm_exception_addr     == 'h1a11_1000);
+      (!clic_irq_clear_on_ack_plusarg_valid) -> (clic_irq_clear_on_ack == 1'b1);
       solve mimpid_patch before mimpid;
    }
 
@@ -192,13 +196,14 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
       }
 
       clic_cfg.is_mmode_irq_only         == 1;
+      clic_cfg.clear_irq_on_ack          == clic_irq_clear_on_ack;
 
       obi_memory_data_cfg.clic_interrupts_enabled   == clic_interrupt_enable;
       obi_memory_instr_cfg.clic_interrupts_enabled  == clic_interrupt_enable;
       obi_memory_data_cfg.basic_interrupts_enabled  == basic_interrupt_enable;
       obi_memory_instr_cfg.basic_interrupts_enabled == basic_interrupt_enable;
 
-      obi_memory_instr_cfg.version       == UVMA_OBI_MEMORY_VERSION_1P2;
+      obi_memory_instr_cfg.version       == UVMA_OBI_MEMORY_VERSION_1P3;
       obi_memory_instr_cfg.drv_mode      == UVMA_OBI_MEMORY_MODE_SLV;
       obi_memory_instr_cfg.write_enabled == 0;
       obi_memory_instr_cfg.addr_width    == XLEN;
@@ -212,7 +217,7 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
       soft obi_memory_instr_cfg.drv_slv_gnt_random_latency_max    <= 3;
       soft obi_memory_instr_cfg.drv_slv_rvalid_random_latency_max <= 6;
 
-      obi_memory_data_cfg.version        == UVMA_OBI_MEMORY_VERSION_1P2;
+      obi_memory_data_cfg.version        == UVMA_OBI_MEMORY_VERSION_1P3;
       obi_memory_data_cfg.drv_mode       == UVMA_OBI_MEMORY_MODE_SLV;
       obi_memory_data_cfg.addr_width     == XLEN;
       obi_memory_data_cfg.data_width     == XLEN;
@@ -232,6 +237,8 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
       isacov_cfg.seq_instr_x2_enabled       == 1;
       isacov_cfg.reg_crosses_enabled        == 0;
       isacov_cfg.reg_hazards_enabled        == 1;
+      isacov_cfg.decoder                    == ISA_SUPPORT;
+
 
       rvfi_cfg.nret                    == RVFI_NRET;
       rvfi_cfg.nmi_load_fault_enabled  == 1;
@@ -402,6 +409,12 @@ function uvme_cv32e40x_cfg_c::new(string name="uvme_cv32e40x_cfg");
      basic_interrupt_enable = 0;
    end
 
+   if ($value$plusargs("clic_irq_clear_on_ack=%0d", clic_irq_clear_on_ack)) begin
+     clic_irq_clear_on_ack_plusarg_valid = 1;
+     clic_irq_clear_on_ack.rand_mode(0);
+   end
+
+
    isacov_cfg           = uvma_isacov_cfg_c::type_id::create("isacov_cfg");
    clknrst_cfg          = uvma_clknrst_cfg_c::type_id::create("clknrst_cfg");
    interrupt_cfg        = uvma_interrupt_cfg_c::type_id::create("interrupt_cfg");
@@ -466,7 +479,17 @@ function void uvme_cv32e40x_cfg_c::sample_parameters(uvma_core_cntrl_cntxt_c cnt
    foreach (pma_cfg.regions[i])
       pma_cfg.regions[i] = pma_regions[i];
 
-endfunction : sample_parameters
+   // Debug region overrides
+   pma_cfg.region_override_condition = uvma_pma_cfg_c#(ILEN,XLEN)::PMA_OVERRIDE_DEBUG;
+   pma_cfg.region_overrides = new[1];
+   pma_cfg.region_overrides[0] = uvma_core_cntrl_pma_region_c::type_id::create("debug_pma_region_override");
+   pma_cfg.region_overrides[0].word_addr_low  = CORE_PARAM_DM_REGION_START >> 2;
+   pma_cfg.region_overrides[0].word_addr_high = CORE_PARAM_DM_REGION_END >> 2;
+   pma_cfg.region_overrides[0].main = 1;
+   pma_cfg.region_overrides[0].bufferable = 0;
+   pma_cfg.region_overrides[0].cacheable = 0;
+   pma_cfg.region_overrides[0].atomic = 0;
+endfunction: sample_parameters
 
 function bit uvme_cv32e40x_cfg_c::is_csr_check_disabled(string name);
 

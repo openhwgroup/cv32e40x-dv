@@ -39,12 +39,12 @@ module uvmt_cv32e40x_tb;
    `endif
    `endif
 
-   // CORE parameters
-`ifdef SET_NUM_MHPMCOUNTERS
-   parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
-`else
-   parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
-`endif
+      // CORE parameters
+   `ifdef SET_NUM_MHPMCOUNTERS
+      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
+   `else
+      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
+   `endif
 
    // Capture regs for test status from Virtual Peripheral in dut_wrap.mem_i
    bit        tp;
@@ -94,10 +94,9 @@ module uvmt_cv32e40x_tb;
                                                    .sec_lvl());     // Core status outputs
 
    // RVVI SystemVerilog Interface
-   `ifdef USE_ISS
    `ifndef FORMAL
       rvviTrace #( .NHART(1), .RETIRE(1)) rvvi_if();
-   `endif
+      uvmt_imperas_dv_if_t imperas_dv_if();
    `endif
 
   /**
@@ -132,8 +131,7 @@ module uvmt_cv32e40x_tb;
                               .obi_data_if(obi_data_if),
                               .fencei_if(fencei_if),
                               .clic_if(clic_if),
-                              .*
-                            );
+                              .*);
 
   bind cv32e40x_wrapper
     uvma_rvfi_instr_if_t#(uvmt_cv32e40x_base_test_pkg::ILEN,
@@ -429,6 +427,21 @@ module uvmt_cv32e40x_tb;
         .CLIC (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
         .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
       ) clic_assert_i(
+        .support_if (cv32e40x_wrapper.support_logic_module_o_if.slave_mp),
+        .rvfi_if(cv32e40x_wrapper.rvfi_instr_if),
+        .csr_mepc_if(cv32e40x_wrapper.rvfi_csr_mepc_if),
+        .csr_mcause_if(cv32e40x_wrapper.rvfi_csr_mcause_if),
+        .csr_mintthresh_if(cv32e40x_wrapper.rvfi_csr_mintthresh_if),
+        .csr_mintstatus_if(cv32e40x_wrapper.rvfi_csr_mintstatus_if),
+        //.csr_dcsr(rvfi_csr_dcsr_if),
+        //.csr_dpc(rvfi_csr_dpc_if),
+        //.csr_dscratch0(rvfi_csr_dscratch0_if),
+        //.csr_dscratch1(rvfi_csr_dscratch1_if),
+        //.csr_mstatus(rvfi_csr_mstatus_if),
+        //.csr_mtvec(rvfi_csr_mtvec_if),
+        //.csr_tdata1(rvfi_csr_tdata1_if),
+        //.csr_tdata2(rvfi_csr_tdata2_if),
+
         .dpc                 (cs_registers_i.dpc_rdata),
         .mintstatus          (cs_registers_i.mintstatus_rdata),
         .mintthresh          (cs_registers_i.mintthresh_rdata),
@@ -738,11 +751,10 @@ module uvmt_cv32e40x_tb;
         .lrfodi_bus_req (core_i.load_store_unit_i.buffer_trans_valid),
         .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready),
 
-        .req_is_store (core_i.load_store_unit_i.bus_trans.we),
+        .req_is_store (core_i.m_c_obi_data_if.req_payload.we),
         //TODO:ERROR:silabs-robin  .req_instr_integrity (core_i.if_stage_i.mpu_i.bus_trans_integrity),
         //TODO:ERROR:silabs-robin  .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
         .instr_req_pc ({core_i.m_c_obi_instr_if.req_payload.addr[31:2], 2'b0})
-
     );
 
     bind cv32e40x_wrapper
@@ -939,10 +951,8 @@ module uvmt_cv32e40x_tb;
     //uvmt_cv32e40x_rvvi_handcar u_rvvi_handcar();
 
     // IMPERAS DV
-    `ifdef USE_ISS
     `ifndef FORMAL
       uvmt_cv32e40x_imperas_dv_wrap imperas_dv (rvvi_if);
-    `endif
     `endif
 
    /**
@@ -954,6 +964,7 @@ module uvmt_cv32e40x_tb;
      // Specify time format for simulation (units_number, precision_number, suffix_string, minimum_field_width)
      $timeformat(-9, 3, " ns", 8);
 
+     uvm_config_db#(virtual uvmt_imperas_dv_if_t)::set(.cntxt(null), .inst_name("uvm_test_top"), .field_name("idv_support_vif"), .value(imperas_dv_if));
      // Add interfaces handles to uvm_config_db
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env.debug_agent"),            .field_name("vif"),           .value(debug_if));
      uvm_config_db#(virtual uvma_clknrst_if_t           )::set(.cntxt(null), .inst_name("*.env.clknrst_agent"),          .field_name("vif"),           .value(clknrst_if));
@@ -1127,9 +1138,9 @@ module uvmt_cv32e40x_tb;
      `endif
 
      // IMPERAS_DV interface
-     `ifdef USE_ISS
-     uvm_config_db#(virtual rvviTrace)::set(.cntxt(null), .inst_name("*.env.rvvi_agent"), .field_name("rvvi_vif"), .value(rvvi_if));
-     `endif
+     if ($test$plusargs("USE_ISS")) begin
+       uvm_config_db#(virtual rvviTrace)::set(.cntxt(null), .inst_name("*.env.rvvi_agent"), .field_name("rvvi_vif"), .value(rvvi_if));
+     end
 
      // Virtual Peripheral Status interface
      uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if_t              )::set(.cntxt(null), .inst_name("*"), .field_name("vp_status_vif"),       .value(vp_status_if)      );
@@ -1158,21 +1169,6 @@ module uvmt_cv32e40x_tb;
    `endif
 
    assign core_cntrl_if.clk = clknrst_if.clk;
-
-
-   // Informational print message on loading of OVPSIM ISS to benchmark some elf image loading times
-   // OVPSIM runs its initialization at the #1ns timestamp, and should dominate the initial startup time
-   `ifdef USE_ISS
-   `ifndef FORMAL // Formal ignores initial blocks, avoids unnecessary warning
-   // overcome race
-   initial begin
-     if ($test$plusargs("USE_ISS")) begin
-       #0.9ns;
-       imperas_dv.ref_init();
-     end
-   end
-   `endif
-   `endif
 
    // Capture the test status and exit pulse flags
    // TODO: put this logic in the vp_status_if (makes it easier to pass to ENV)
@@ -1227,15 +1223,11 @@ module uvmt_cv32e40x_tb;
       warning_count = rs.get_severity_count(UVM_WARNING);
       fatal_count   = rs.get_severity_count(UVM_FATAL);
 
-      void'(uvm_config_db#(bit)::get(null, "", "sim_finished", sim_finished));
-
-      // Shutdown the Reference Model
-      `ifdef USE_ISS
       if ($test$plusargs("USE_ISS")) begin
-         // Exit handler for ImperasDV
-         void'(rvviRefShutdown());
+         void'(rvviApiPkg::rvviRefShutdown());
       end
-      `endif
+
+      void'(uvm_config_db#(bit)::get(null, "", "sim_finished", sim_finished));
 
       `uvm_info("DV_WRAP", $sformatf("\n%m: *** Test Summary ***\n"), UVM_DEBUG);
 
