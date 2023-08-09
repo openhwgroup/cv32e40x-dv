@@ -102,6 +102,7 @@ parameter CV_VP_FENCEI_TAMPER_BASE     = CV_VP_REGISTER_BASE + CV_VP_FENCEI_TAMP
    parameter CORE_PARAM_DBG_NUM_TRIGGERS = 1;
 `endif
 
+
 // CLIC
 
 `ifdef PARAM_SET_0
@@ -122,6 +123,7 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `else
    parameter int  CORE_PARAM_CLIC_ID_WIDTH = 5;
 `endif
+
 
 // A-ext
 
@@ -153,17 +155,6 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `endif
 
 
-// M-ext
-
-`ifdef PARAM_SET_0
-   // Sat from the include file
-`elsif PARAM_SET_1
-   // Sat from the include file
-`else
-   parameter cv32e40x_pkg::m_ext_e CORE_PARAM_M_EXT = cv32e40x_pkg::M;
-`endif
-
-
 // I-base & E-base
 
 `ifdef PARAM_SET_0
@@ -176,6 +167,19 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `else
    parameter cv32e40x_pkg::rv32_e CORE_PARAM_RV32              = cv32e40x_pkg::RV32I;
    parameter                      CORE_PARAM_REGFILE_NUM_WORDS = 32;
+`endif
+
+
+// Event Counters
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`elsif SET_NUM_MHPMCOUNTERS
+  parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
+`else
+  parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
 `endif
 
 
@@ -360,6 +364,27 @@ parameter int  PMA_MAX_REGIONS = 16;
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[-1:0] = '{default:cv32e40x_pkg::PMA_R_DEFAULT};
 `endif
 
+
+// Misc  (Not controlled by any define.)
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`else
+   parameter cv32e40x_pkg::m_ext_e  CORE_PARAM_M_EXT           = cv32e40x_pkg::M;  // No defines control this.
+   parameter int                    CORE_PARAM_CORE_LOG_ENABLE = 1;                // The default is 1 in the RTL repo.
+   parameter int                    CORE_PARAM_DEBUG           = 1;                // Debug is supported by default.
+   parameter int                    CORE_PARAM_LIB             = 0;                // "LIB" doesn't matter.
+   parameter bit                    CORE_PARAM_X_EXT           = 0;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_NUM_RS        = 2;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_ID_WIDTH      = 4;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_MEM_WIDTH     = 32;               // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_RFR_WIDTH     = 32;               // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_RFW_WIDTH     = 32;               // Default from RTL repo.
+   parameter logic [31:0]           CORE_PARAM_X_MISA          = 32'h 00000000;    // Default from RTL repo.
+   parameter logic [1:0]            CORE_PARAM_X_ECS_XS        = 2'b 00;           // Default from RTL repo.
+`endif
 
 
 `endif //__UVMT_CV32E40X_BASE_TEST_CONSTANTS_SV__
