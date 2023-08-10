@@ -39,13 +39,6 @@ module uvmt_cv32e40x_tb;
    `endif
    `endif
 
-      // CORE parameters
-   `ifdef SET_NUM_MHPMCOUNTERS
-      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
-   `else
-      parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
-   `endif
-
    // Capture regs for test status from Virtual Peripheral in dut_wrap.mem_i
    bit        tp;
    bit        tf;
@@ -105,22 +98,33 @@ module uvmt_cv32e40x_tb;
    * a few mods to bring unused ports from the CORE to this level using SV interfaces.
    */
    uvmt_cv32e40x_dut_wrap  #(
-                             .A_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_A_EXT),
-                             .B_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
-                             .DBG_NUM_TRIGGERS     (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
-                             .DM_REGION_END        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
-                             .DM_REGION_START      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
-                             .M_EXT                (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
-                             .NUM_MHPMCOUNTERS     (CORE_PARAM_NUM_MHPMCOUNTERS),
-                             .PMA_CFG              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
-                             .PMA_NUM_REGIONS      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-                             .RV32                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
-                             .CLIC                 (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-                             .CLIC_ID_WIDTH        (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-                             .INSTR_ADDR_WIDTH     (ENV_PARAM_INSTR_ADDR_WIDTH),
-                             .INSTR_RDATA_WIDTH    (ENV_PARAM_INSTR_DATA_WIDTH),
-                             .RAM_ADDR_WIDTH       (ENV_PARAM_RAM_ADDR_WIDTH)
-                            )
+      .A_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_A_EXT),
+      .B_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
+      .CLIC             (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+      .CLIC_ID_WIDTH    (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
+      .CORE_LOG_ENABLE  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CORE_LOG_ENABLE),
+      .DBG_NUM_TRIGGERS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
+      .DEBUG            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DEBUG),
+      .DM_REGION_END    (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
+      .DM_REGION_START  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
+      .LIB              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_LIB),
+      .M_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
+      .NUM_MHPMCOUNTERS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_NUM_MHPMCOUNTERS),
+      .PMA_CFG          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
+      .PMA_NUM_REGIONS  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+      .RV32             (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
+      .X_ECS_XS         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_ECS_XS),
+      .X_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_EXT),
+      .X_ID_WIDTH       (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_ID_WIDTH),
+      .X_MEM_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_MEM_WIDTH),
+      .X_MISA           (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_MISA),
+      .X_NUM_RS         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_NUM_RS),
+      .X_RFR_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_RFR_WIDTH),
+      .X_RFW_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_RFW_WIDTH),
+      .INSTR_ADDR_WIDTH  (ENV_PARAM_INSTR_ADDR_WIDTH),
+      .INSTR_RDATA_WIDTH (ENV_PARAM_INSTR_DATA_WIDTH),
+      .RAM_ADDR_WIDTH    (ENV_PARAM_RAM_ADDR_WIDTH)
+      )
                             dut_wrap (
                               .clknrst_if(clknrst_if),
                               .interrupt_if(interrupt_if),
