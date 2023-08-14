@@ -43,23 +43,34 @@ module uvmt_cv32e40x_dut_wrap
   import cv32e40x_pkg::*;
 #(
     // DUT (riscv_core) parameters.
-    parameter NUM_MHPMCOUNTERS    =  1,
-    parameter logic [31:0]           DM_REGION_START                     = 32'hF0000000,
-    parameter logic [31:0]           DM_REGION_END                       = 32'hF0003FFF,
-    parameter m_ext_e                M_EXT                               = M,
-    parameter cv32e40x_pkg::b_ext_e  B_EXT                               = cv32e40x_pkg::B_NONE,
-    parameter int                    PMA_NUM_REGIONS                     = 0,
-    parameter pma_cfg_t              PMA_CFG[PMA_NUM_REGIONS-1 : 0]      = '{default:PMA_R_DEFAULT},
-    parameter logic                  CLIC                                = 0,
-    parameter int                    CLIC_ID_WIDTH                       = 5,
-    parameter int                    CLIC_INTTHRESHBITS                  = 8,
-    parameter int                    DBG_NUM_TRIGGERS                    = 1,
-    parameter rv32_e                 RV32                                = RV32I,
+    parameter              LIB,
+    parameter a_ext_e      A_EXT,
+    parameter b_ext_e      B_EXT,
+    parameter bit          CLIC,
+    parameter bit          CORE_LOG_ENABLE,
+    parameter bit          DEBUG,
+    parameter bit          X_EXT,
+    parameter int          DBG_NUM_TRIGGERS,
+    parameter int          PMA_NUM_REGIONS,
+    parameter int unsigned CLIC_ID_WIDTH,
+    parameter int unsigned NUM_MHPMCOUNTERS,
+    parameter int unsigned X_ID_WIDTH,
+    parameter int unsigned X_MEM_WIDTH,
+    parameter int unsigned X_NUM_RS,
+    parameter int unsigned X_RFR_WIDTH,
+    parameter int unsigned X_RFW_WIDTH,
+    parameter logic [1:0]  X_ECS_XS,
+    parameter logic [31:0] DM_REGION_END,
+    parameter logic [31:0] DM_REGION_START,
+    parameter logic [31:0] X_MISA,
+    parameter m_ext_e      M_EXT,
+    parameter pma_cfg_t    PMA_CFG[PMA_NUM_REGIONS-1:0],
+    parameter rv32_e       RV32,
 
     // Remaining parameters are used by TB components only
-    parameter INSTR_ADDR_WIDTH    =  32,
-    parameter INSTR_RDATA_WIDTH   =  32,
-    parameter RAM_ADDR_WIDTH      =  20
+    parameter INSTR_ADDR_WIDTH,
+    parameter INSTR_RDATA_WIDTH,
+    parameter RAM_ADDR_WIDTH
   )
   (
     uvma_clknrst_if_t               clknrst_if,
@@ -103,7 +114,7 @@ module uvmt_cv32e40x_dut_wrap
     // todo: Connect to TB when implemented.
     // Included to allow core-v-verif to compile with RTL including
     // interface definition.
-    if_xif xif();
+    cv32e40x_if_xif xif();
 
     assign debug_if.clk      = clknrst_if.clk;
     assign debug_if.reset_n  = clknrst_if.reset_n;
@@ -162,18 +173,29 @@ module uvmt_cv32e40x_dut_wrap
     // --------------------------------------------
     // instantiate the core
     cv32e40x_wrapper #(
-                      .NUM_MHPMCOUNTERS (NUM_MHPMCOUNTERS),
-                      .B_EXT                (B_EXT),
-                      .DBG_NUM_TRIGGERS     (DBG_NUM_TRIGGERS),
-                      .DM_REGION_END        (DM_REGION_END),
-                      .DM_REGION_START      (DM_REGION_START),
-                      .M_EXT                (M_EXT),
-                      .PMA_CFG              (PMA_CFG),
-                      .PMA_NUM_REGIONS      (PMA_NUM_REGIONS),
-                      .RV32                 (RV32),
-                      .CLIC                 (CLIC),
-                      .CLIC_ID_WIDTH        (CLIC_ID_WIDTH),
-                      .CLIC_INTTHRESHBITS   (CLIC_INTTHRESHBITS)
+      .A_EXT            (A_EXT),
+      .B_EXT            (B_EXT),
+      .CLIC             (CLIC),
+      .CLIC_ID_WIDTH    (CLIC_ID_WIDTH),
+      .CORE_LOG_ENABLE  (CORE_LOG_ENABLE),
+      .DBG_NUM_TRIGGERS (DBG_NUM_TRIGGERS),
+      .DEBUG            (DEBUG),
+      .DM_REGION_END    (DM_REGION_END),
+      .DM_REGION_START  (DM_REGION_START),
+      .LIB              (LIB),
+      .M_EXT            (M_EXT),
+      .NUM_MHPMCOUNTERS (NUM_MHPMCOUNTERS),
+      .PMA_CFG          (PMA_CFG),
+      .PMA_NUM_REGIONS  (PMA_NUM_REGIONS),
+      .RV32             (RV32),
+      .X_ECS_XS         (X_ECS_XS),
+      .X_EXT            (X_EXT),
+      .X_ID_WIDTH       (X_ID_WIDTH),
+      .X_MEM_WIDTH      (X_MEM_WIDTH),
+      .X_MISA           (X_MISA),
+      .X_NUM_RS         (X_NUM_RS),
+      .X_RFR_WIDTH      (X_RFR_WIDTH),
+      .X_RFW_WIDTH      (X_RFW_WIDTH)
                       )
     cv32e40x_wrapper_i
         (
@@ -223,7 +245,7 @@ module uvmt_cv32e40x_dut_wrap
          .mcycle_o               ( /*todo: connect */             ),
 
          .irq_i                  ( interrupt_if.irq               ),
-         .wu_wfe_i               ( 1'b0                           ), // todo: hook up
+         .wu_wfe_i               (                                ), // todo: hook up (krdosvik, henrik have a fix)
          .clic_irq_i             ( clic_if.clic_irq               ),
          .clic_irq_id_i          ( clic_if.clic_irq_id            ),
          .clic_irq_level_i       ( clic_if.clic_irq_level         ),

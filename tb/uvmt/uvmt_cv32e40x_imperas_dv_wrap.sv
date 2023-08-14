@@ -1,7 +1,6 @@
 //
 // Copyright 2022 OpenHW Group
 // Copyright 2022 Imperas
-// Copyright 2023 Imperas
 //
 // Licensed under the Solderpad Hardware Licence, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +37,7 @@
     assign rvvi.csr[0][0][``CSR_ADDR]    = csr_``CSR_NAME``_w | csr_``CSR_NAME``_r; \
     assign rvvi.csr_wb[0][0][``CSR_ADDR] = csr_``CSR_NAME``_wb; \
     always @(rvvi.csr[0][0][``CSR_ADDR]) begin \
-      if (`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask ) begin \
+      if ((`DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_rmask || `DUT_PATH.rvfi_csr_``CSR_NAME``_if.rvfi_csr_wmask) && `RVFI_IF.rvfi_valid) begin \
         csr_``CSR_NAME``_wb = 1; \
       end \
     end \
@@ -185,20 +184,94 @@
 `define CSR_MSCRATCH_ADDR       32'h340
 `define CSR_MSECCFG             32'h747
 `define CSR_MSECCFGH            32'h757
-`define CSR_MSTATEEN0H_ADDR     32'h31C
-`define CSR_MSTATEEN0_ADDR      32'h30C
-`define CSR_MSTATEEN1H_ADDR     32'h31D
-`define CSR_MSTATEEN1_ADDR      32'h30D
-`define CSR_MSTATEEN2H_ADDR     32'h31E
-`define CSR_MSTATEEN2_ADDR      32'h30E
-`define CSR_MSTATEEN3H_ADDR     32'h31F
-`define CSR_MSTATEEN3_ADDR      32'h30F
+`define CSR_MSECCFGH_ADDR       32'h757
+`define CSR_MSECCFG_ADDR        32'h747
 `define CSR_MSTATUSH_ADDR       32'h310
 `define CSR_MSTATUS_ADDR        32'h300
 `define CSR_MTVAL_ADDR          32'h343
 `define CSR_MTVEC_ADDR          32'h305
 `define CSR_MTVT_ADDR           32'h307 // only available when CLIC=1
 `define CSR_MVENDORID_ADDR      32'hF11
+`define CSR_PMPADDR0_ADDR       32'h3B0
+`define CSR_PMPADDR10_ADDR      32'h3BA
+`define CSR_PMPADDR11_ADDR      32'h3BB
+`define CSR_PMPADDR12_ADDR      32'h3BC
+`define CSR_PMPADDR13_ADDR      32'h3BD
+`define CSR_PMPADDR14_ADDR      32'h3BE
+`define CSR_PMPADDR15_ADDR      32'h3BF
+`define CSR_PMPADDR16_ADDR      32'h3C0
+`define CSR_PMPADDR17_ADDR      32'h3C1
+`define CSR_PMPADDR18_ADDR      32'h3C2
+`define CSR_PMPADDR19_ADDR      32'h3C3
+`define CSR_PMPADDR1_ADDR       32'h3B1
+`define CSR_PMPADDR20_ADDR      32'h3C4
+`define CSR_PMPADDR21_ADDR      32'h3C5
+`define CSR_PMPADDR22_ADDR      32'h3C6
+`define CSR_PMPADDR23_ADDR      32'h3C7
+`define CSR_PMPADDR24_ADDR      32'h3C8
+`define CSR_PMPADDR25_ADDR      32'h3C9
+`define CSR_PMPADDR26_ADDR      32'h3CA
+`define CSR_PMPADDR27_ADDR      32'h3CB
+`define CSR_PMPADDR28_ADDR      32'h3CC
+`define CSR_PMPADDR29_ADDR      32'h3CD
+`define CSR_PMPADDR2_ADDR       32'h3B2
+`define CSR_PMPADDR30_ADDR      32'h3CE
+`define CSR_PMPADDR31_ADDR      32'h3CF
+`define CSR_PMPADDR32_ADDR      32'h3D0
+`define CSR_PMPADDR33_ADDR      32'h3D1
+`define CSR_PMPADDR34_ADDR      32'h3D2
+`define CSR_PMPADDR35_ADDR      32'h3D3
+`define CSR_PMPADDR36_ADDR      32'h3D4
+`define CSR_PMPADDR37_ADDR      32'h3D5
+`define CSR_PMPADDR38_ADDR      32'h3D6
+`define CSR_PMPADDR39_ADDR      32'h3D7
+`define CSR_PMPADDR3_ADDR       32'h3B3
+`define CSR_PMPADDR40_ADDR      32'h3D8
+`define CSR_PMPADDR41_ADDR      32'h3D9
+`define CSR_PMPADDR42_ADDR      32'h3DA
+`define CSR_PMPADDR43_ADDR      32'h3DB
+`define CSR_PMPADDR44_ADDR      32'h3DC
+`define CSR_PMPADDR45_ADDR      32'h3DD
+`define CSR_PMPADDR46_ADDR      32'h3DE
+`define CSR_PMPADDR47_ADDR      32'h3DF
+`define CSR_PMPADDR48_ADDR      32'h3E0
+`define CSR_PMPADDR49_ADDR      32'h3E1
+`define CSR_PMPADDR4_ADDR       32'h3B4
+`define CSR_PMPADDR50_ADDR      32'h3E2
+`define CSR_PMPADDR51_ADDR      32'h3E3
+`define CSR_PMPADDR52_ADDR      32'h3E4
+`define CSR_PMPADDR53_ADDR      32'h3E5
+`define CSR_PMPADDR54_ADDR      32'h3E6
+`define CSR_PMPADDR55_ADDR      32'h3E7
+`define CSR_PMPADDR56_ADDR      32'h3E8
+`define CSR_PMPADDR57_ADDR      32'h3E9
+`define CSR_PMPADDR58_ADDR      32'h3EA
+`define CSR_PMPADDR59_ADDR      32'h3EB
+`define CSR_PMPADDR5_ADDR       32'h3B5
+`define CSR_PMPADDR60_ADDR      32'h3EC
+`define CSR_PMPADDR61_ADDR      32'h3ED
+`define CSR_PMPADDR62_ADDR      32'h3EE
+`define CSR_PMPADDR63_ADDR      32'h3EF
+`define CSR_PMPADDR6_ADDR       32'h3B6
+`define CSR_PMPADDR7_ADDR       32'h3B7
+`define CSR_PMPADDR8_ADDR       32'h3B8
+`define CSR_PMPADDR9_ADDR       32'h3B9
+`define CSR_PMPCFG0_ADDR        32'h3A0
+`define CSR_PMPCFG10_ADDR       32'h3AA
+`define CSR_PMPCFG11_ADDR       32'h3AB
+`define CSR_PMPCFG12_ADDR       32'h3AC
+`define CSR_PMPCFG13_ADDR       32'h3AD
+`define CSR_PMPCFG14_ADDR       32'h3AE
+`define CSR_PMPCFG15_ADDR       32'h3AF
+`define CSR_PMPCFG1_ADDR        32'h3A1
+`define CSR_PMPCFG2_ADDR        32'h3A2
+`define CSR_PMPCFG3_ADDR        32'h3A3
+`define CSR_PMPCFG4_ADDR        32'h3A4
+`define CSR_PMPCFG5_ADDR        32'h3A5
+`define CSR_PMPCFG6_ADDR        32'h3A6
+`define CSR_PMPCFG7_ADDR        32'h3A7
+`define CSR_PMPCFG8_ADDR        32'h3A8
+`define CSR_PMPCFG9_ADDR        32'h3A9
 `define CSR_SCONTEXT_ADDR       32'h7AA
 `define CSR_TCONTROL_ADDR       32'h7A5 // only when DBG_NUM_TRIGGERS > 0
 `define CSR_TDATA1_ADDR         32'h7A1 // only when DBG_NUM_TRIGGERS > 0
@@ -212,7 +285,7 @@
 ////////////////////////////////////////////////////////////////////////////
 `ifdef USE_IMPERASDV
 
-`include "rvvi/imperasDV.svh" // located in $IMPERAS_HOME/ImpProprietary/include/host
+`include "idv/idv.svh" // located in $IMPERAS_HOME/ImpProprietary/include/host
 
 module uvmt_cv32e40x_imperas_dv_wrap
   import uvm_pkg::*;
@@ -224,7 +297,7 @@ module uvmt_cv32e40x_imperas_dv_wrap
    )
 
    (
-           rvviTrace  rvvi // RVVI SystemVerilog Interface
+           rvviTrace rvvi // RVVI SystemVerilog Interface
    );
 
    trace2api       #(.CMP_PC      (1),
@@ -289,19 +362,9 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MTVEC_ADDR,         mtvec         )
    `RVVI_SET_CSR( `CSR_MCOUNTEREN_ADDR,    mcounteren    )
    `RVVI_SET_CSR( `CSR_MENVCFG_ADDR,       menvcfg       )
-   `RVVI_SET_CSR( `CSR_MSTATEEN0_ADDR,     mstateen0     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN1_ADDR,     mstateen1     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN2_ADDR,     mstateen2     )
-   `RVVI_SET_CSR( `CSR_MSTATEEN3_ADDR,     mstateen3     )
-
    `RVVI_SET_CSR( `CSR_MSTATUSH_ADDR,      mstatush      )
    `RVVI_SET_CSR( `CSR_MENVCFGH_ADDR,      menvcfgh      )
-   `RVVI_SET_CSR( `CSR_MSTATEEN0H_ADDR,    mstateen0h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN1H_ADDR,    mstateen1h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN2H_ADDR,    mstateen2h    )
-   `RVVI_SET_CSR( `CSR_MSTATEEN3H_ADDR,    mstateen3h    )
    `RVVI_SET_CSR( `CSR_MCOUNTINHIBIT_ADDR, mcountinhibit )
-
    `RVVI_SET_CSR( `CSR_MHPMEVENT3_ADDR,    mhpmevent3    )
    `RVVI_SET_CSR( `CSR_MHPMEVENT4_ADDR,    mhpmevent4    )
    `RVVI_SET_CSR( `CSR_MHPMEVENT5_ADDR,    mhpmevent5    )
@@ -342,9 +405,7 @@ module uvmt_cv32e40x_imperas_dv_wrap
      `RVVI_SET_CSR( `CSR_TSELECT_ADDR,       tselect       )
      `RVVI_SET_CSR( `CSR_TDATA1_ADDR,        tdata1        )
      `RVVI_SET_CSR( `CSR_TDATA2_ADDR,        tdata2        )
-     `RVVI_SET_CSR( `CSR_TDATA3_ADDR,        tdata3        )
      `RVVI_SET_CSR( `CSR_TINFO_ADDR,         tinfo         )
-     `RVVI_SET_CSR( `CSR_TCONTROL_ADDR,      tcontrol      )
    end
 
    `RVVI_SET_CSR( `CSR_DCSR_ADDR,          dcsr          )
@@ -419,7 +480,6 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MARCHID_ADDR,       marchid       )
    `RVVI_SET_CSR( `CSR_MIMPID_ADDR,        mimpid        )
    `RVVI_SET_CSR( `CSR_MHARTID_ADDR,       mhartid       )
-
    `RVVI_SET_CSR( `CSR_MCONFIGPTR_ADDR,    mconfigptr    )
 
    `RVVI_SET_CSR( `CSR_MCYCLEH_ADDR,       mcycleh       )
@@ -619,12 +679,20 @@ module uvmt_cv32e40x_imperas_dv_wrap
        end
    end: Monitor_RVFI
 
-  /////////////////////////////////////////////////////////////////////////////
-  // REF control
-  /////////////////////////////////////////////////////////////////////////////
+endmodule : uvmt_cv32e40x_imperas_dv_wrap
+
+interface uvmt_imperas_dv_if_t;
+  import uvm_pkg::*;
+  import cv32e40x_pkg::*;
+  import uvmt_cv32e40x_base_test_pkg::*;
+  import uvme_cv32e40x_pkg::*;
+  import rvviApiPkg::*;
+
+  string info_tag = "ImperasDV_if";
+
   task ref_init;
     string test_program_elf;
-    reg [31:0] hart_id;
+    logic [31:0] hart_id;
 
     // Select processor name
     void'(rvviRefConfigSetString(IDV_CONFIG_MODEL_NAME, "CVE4X"));
@@ -764,10 +832,12 @@ module uvmt_cv32e40x_imperas_dv_wrap
     rvviRefCsrCompareEnable(hart_id, `CSR_MIP_ADDR, RVVI_FALSE);
     void'(rvviRefCsrSetVolatileMask(hart_id, `CSR_DCSR_ADDR, 'h8));
 
+    // TODO: Set these as volatiles as a temporary fix until
+    // we have a proper fix implemented in the ISS
     if (CORE_PARAM_CLIC == 1) begin
-      rvviRefCsrCompareEnable(hart_id, `CSR_MNXTI_ADDR, RVVI_FALSE);
-      rvviRefCsrCompareEnable(hart_id, `CSR_MSCRATCHCSW_ADDR, RVVI_FALSE);
-      rvviRefCsrCompareEnable(hart_id, `CSR_MSCRATCHCSWL_ADDR, RVVI_FALSE);
+      void'(rvviRefCsrSetVolatile(hart_id, `CSR_MNXTI_ADDR));
+      void'(rvviRefCsrSetVolatile(hart_id, `CSR_MSCRATCHCSW_ADDR));
+      void'(rvviRefCsrSetVolatile(hart_id, `CSR_MSCRATCHCSWL_ADDR));
     end
 
     // define asynchronous grouping
@@ -815,25 +885,7 @@ module uvmt_cv32e40x_imperas_dv_wrap
 
     `uvm_info(info_tag, "ref_init() complete", UVM_LOW)
   endtask // ref_init
-
-endmodule : uvmt_cv32e40x_imperas_dv_wrap
-
-`else // ! USE_IMPERASDV
-
-    module uvmt_cv32e40x_imperas_dv_wrap
-      import uvm_pkg::*;
-      import uvmt_cv32e40x_base_test_pkg::*;
-      import uvme_cv32e40x_pkg::*;
-      #(
-       )
-
-       (
-               rvviTrace  rvvi // RVVI SystemVerilog Interface
-       );
-
-       task ref_init;
-       endtask
-endmodule : uvmt_cv32e40x_imperas_dv_wrap
+endinterface : uvmt_imperas_dv_if_t
 
 `endif  // USE_IMPERASDV
 

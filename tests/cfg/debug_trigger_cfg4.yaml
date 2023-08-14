@@ -1,14 +1,13 @@
 name: debug_trigger_cfg4
 description: Configuration for 4 triggers in CV32E40X simulations
 compile_flags: >
-    +define+PMP_ENABLE_64
     +define+DBG_NUM_TRIG_4
     +define+ZBA_ZBB_ZBC_ZBS
 ovpsim: >
     --override cpu/trigger_num=4
-    --override cpu/PMP_registers=64
     # --showoverrides
 cflags: >
+    -Wl,--nmagic
 plusargs: >
     +enable_zba_extension=1
     +enable_zbb_extension=1

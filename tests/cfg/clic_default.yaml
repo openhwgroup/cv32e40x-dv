@@ -3,7 +3,6 @@ description: Default clic configuration for CV32E40X simulations
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN
-    +define+PMP_ENABLE_64
 ovpsim: >
     --override cpu/CLICLEVELS=256
     --override cpu/CLICXCSW=T
@@ -12,13 +11,13 @@ ovpsim: >
     --override cpu/CLICINTCTLBITS=8
     --override cpu/CLIC_version=master
     --override cpu/externalCLIC=T
-    --override cpu/PMP_registers=64
     --override cpu/mtvt_mask=0xffffffffffffff80
     #--trace
     #--tracechange
     #--showoverrides
     # --trace --tracechange --traceshowicount --monitornets
 cflags: >
+    -Wl,--nmagic
 plusargs: >
     +enable_clic=1
     +enable_zba_extension=1

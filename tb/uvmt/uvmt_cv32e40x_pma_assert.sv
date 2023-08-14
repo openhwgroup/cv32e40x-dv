@@ -44,6 +44,7 @@ module  uvmt_cv32e40x_pma_assert
 
   // Interface from Core
   input CORE_REQ_TYPE  core_trans_i,
+  input wire logic [5:0]    core_trans_atop,
 
   // Interface towards OBI
   input CORE_REQ_TYPE  bus_trans_o,
@@ -74,7 +75,7 @@ module  uvmt_cv32e40x_pma_assert
   string info_tag = "CV32E40X_PMA_ASSERT";
 
   enum {BIT_IDX_BUFFERABLE=0} memtype_bit_idx_e;
-
+  localparam ATOMIC_MEM_OP = 5;
 
   // Helper logic
 
@@ -115,7 +116,8 @@ module  uvmt_cv32e40x_pma_assert
     (core_trans_i.addr inside {[DM_REGION_START:DM_REGION_END]})
     |->
     !pma_err
-  ) else `uvm_error(info_tag, "dmode in dregion is never blocked");
+    || (pma_err && core_trans_atop[ATOMIC_MEM_OP] && !pma_status_i.atomic)
+  ) else `uvm_error(info_tag, "dmode in dregion is never blocked (given no atomic operation)");
 
 
   // Writebuffer usage must be bufferable  (vplan:WriteBuffer)

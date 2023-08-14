@@ -319,7 +319,6 @@ module uvmt_cv32e40x_debug_assert
         else `uvm_error(info_tag, "dcsr.cause was not as expected");
 
 
-
     // check that a stable debug_req is actually taken within reasonable time
     a_debug_req_taken: assert property(stable_req_vs_valid_cnt <= 3)
         else `uvm_error(info_tag, "External debug request not taken in reasonable time");
@@ -336,21 +335,8 @@ module uvmt_cv32e40x_debug_assert
             rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_EBREAK);
     endproperty
 
-    property p_ebreak_umode_exception;
-        rvfi.is_ebreak &&
-        !rvfi.rvfi_dbg_mode &&
-        rvfi.is_umode &&
-        !csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKU_POS]
-        |-> rvfi.rvfi_trap.trap && rvfi.rvfi_trap.exception
-            or
-            rvfi.rvfi_trap.trap && rvfi.rvfi_trap.debug && !(rvfi.rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_EBREAK);
-    endproperty
-
     a_ebreak_mmode_exception: assert property(p_ebreak_mmode_exception)
         else `uvm_error(info_tag, $sformatf("Exception not entered correctly after ebreak with dcsr.ebreakm=0 in mmode"));
-
-    a_ebreak_umode_exception: assert property(p_ebreak_umode_exception)
-        else `uvm_error(info_tag, $sformatf("Exception not entered correctly after ebreak with dcsr.ebreaku=0 in umode"));
 
 
     // ebreak and cebreak during debug mode results in relaunch
@@ -567,7 +553,6 @@ module uvmt_cv32e40x_debug_assert
 
 
     // dret in D-mode will place dpc in mepc if re-entry is interrupted (excluding nmi)
-    //TODO:MT fails due to irregular behaviour in RVFI. Await 40X bug issue 414 before changing
     property p_dmode_dret_pc_int;
         int dpc;
         (rvfi.is_dret && rvfi.rvfi_dbg_mode,
@@ -1055,7 +1040,7 @@ module uvmt_cv32e40x_debug_assert
         end
     end
 
-    assign ebreak_allowed = (rvfi.is_mmode && csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKM_POS]) || (rvfi.is_umode && csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKU_POS]);
+    assign ebreak_allowed = (rvfi.is_mmode && csr_dcsr.rvfi_csr_rdata[DCSR_EBREAKM_POS]);
 
 
     // count the number of rvalids while debug_req is stable

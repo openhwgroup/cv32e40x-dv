@@ -44,6 +44,9 @@
 #define TIMER_VAL_ADDR         ((volatile uint32_t * volatile) (CV_VP_INTR_TIMER_BASE + 4))
 #define DEBUG_REQ_CONTROL_REG *((volatile uint32_t * volatile) (CV_VP_DEBUG_CONTROL_BASE))
 
+#define MARCHID_CV32E40X 0x14
+#define MARCHID_CV32E40S 0x15
+
 // __FUNCTION__ is C99 and newer, -Wpedantic flags a warning that
 // this is not ISO C, thus we wrap this instatiation in a macro
 // ignoring this GCC warning to avoid a long list of warnings during
@@ -279,7 +282,8 @@ typedef union {
 typedef union {
   struct {
     volatile uint16_t info      : 16;
-    volatile uint16_t res_31_16 : 16;
+    volatile uint16_t res_23_16 : 8;
+    volatile uint16_t version   : 8;
   } __attribute__((packed)) volatile fields;
   volatile uint32_t raw;
 } __attribute__((packed)) tinfo_t;
@@ -927,7 +931,8 @@ uint32_t trigger_default_val(uint32_t index, uint8_t report_name) {
 
   // Below are volatile for type consistency, ideally should be declared as const
   volatile tinfo_t tinfo_reset = {
-    .fields.info = 0x8064
+    .fields.version = 0x1,
+    .fields.info    = 0x8064
   };
 
   volatile tdata1_t tdata1_reset = {
@@ -973,23 +978,17 @@ uint32_t trigger_default_val(uint32_t index, uint8_t report_name) {
     cvprintf(V_MEDIUM, "tdata2 exp: 0x0, got: 0x%0x\n", readback_val);
   }
 
-  // tdata3 default value
-  __asm__ volatile ( R"( csrrs %[tdata3], tdata3, zero )" : [tdata3] "=r"(readback_val) : : );
-  test_fail += (readback_val != 0);
-  if (ABORT_ON_ERROR_IMMEDIATE) { assert(test_fail == 0); }
-  if (test_fail) {
-    cvprintf(V_MEDIUM, "tdata3 exp: 0x0, got: 0x%0x\n", readback_val);
-  }
-
   // tinfo default value
   __asm__ volatile ( R"( csrrs %[tinfo], tinfo, zero )" : [tinfo] "=r"(readback_val) : : );
   tinfo = (void *)&readback_val;
-  test_fail += (  tinfo->fields.info != tinfo_reset.fields.info
-               || tinfo->fields.res_31_16 != 0);
+  test_fail += (  tinfo->fields.info      != tinfo_reset.fields.info
+               || tinfo->fields.res_23_16 != 0
+               || tinfo->fields.version   != tinfo_reset.fields.version);
   if (ABORT_ON_ERROR_IMMEDIATE) { assert(test_fail == 0); }
   if (test_fail) {
-    cvprintf(V_MEDIUM, "tinfo exp: info: 0x%0x, zero: 0x%0x, got: info: 0x%0x, zero: 0x%0x\n",
-           tinfo_reset.fields.info, tinfo_reset.fields.res_31_16, tinfo->fields.info, tinfo->fields.res_31_16);
+    cvprintf(V_MEDIUM, "tinfo exp: info: 0x%0x, zero: 0x%0x, version: 0x%0x, got: info: 0x%0x, zero: 0x%0x, version: 0x%0x\n",
+           tinfo_reset.fields.info, tinfo_reset.fields.res_23_16, tinfo_reset.fields.version,
+           tinfo->fields.info, tinfo->fields.res_23_16, tinfo->fields.version);
   }
 
   if (test_fail) {
@@ -1695,7 +1694,6 @@ void csr_access_default_val_dbg(void) {
   volatile uint32_t dpc;
   volatile uint32_t tdata1;
   volatile uint32_t tdata2;
-  volatile uint32_t tdata3;
 
   __asm__ volatile ( R"(
     # access
@@ -1718,7 +1716,6 @@ void csr_access_default_val_dbg(void) {
     csrrs %[dpc], dpc, zero
     csrrs %[tdata1], tdata1, zero
     csrrs %[tdata2], tdata2, zero
-    csrrs %[tdata3], tdata3, zero
   )"
   : [mvendorid] "=r"(mvendorid),
     [marchid]   "=r"(marchid),
@@ -1736,8 +1733,7 @@ void csr_access_default_val_dbg(void) {
     [dcsr]      "=r"(dcsr.raw),
     [dpc]       "=r"(dpc),
     [tdata1]    "=r"(tdata1),
-    [tdata2]    "=r"(tdata2),
-    [tdata3]    "=r"(tdata3)
+    [tdata2]    "=r"(tdata2)
   ::);
 
   dcsr_default.raw = 0x00000000;
@@ -3122,6 +3118,21 @@ void single_step_basic_dbg(void) {
 uint32_t has_pmp_configured(void) {
   volatile uint32_t pmpaddr0 = 0xffffffff;
   volatile uint32_t pmpaddr0_backup = 0;
+  volatile uint32_t marchid = 0x0;
+
+  __asm__ volatile (R"(
+    csrrs %[marchid], marchid, zero
+  )":[marchid] "=r"(marchid));
+
+  // CV32E40X does not support PMP, skip test
+  switch (marchid) {
+    case (MARCHID_CV32E40X):
+      return 0;
+      break;
+    case (MARCHID_CV32E40S):
+      ;; // Do nothing and continue execution
+      break;
+  }
 
   __asm__ volatile (R"(
     csrrw %[pmpaddr0_backup] , pmpaddr0, %[pmpaddr0]
@@ -3151,7 +3162,7 @@ uint32_t mprv_dret_to_umode(uint32_t index, uint8_t report_name) {
 
   // Check if there are configured pmp-regions:
   if (!has_pmp_configured()) {
-    cvprintf(V_LOW, "Skipping test: 0 PMP regions, cannot enter user mode\n");
+    cvprintf(V_LOW, "Skipping test: 0 PMP regions or PMP not supported, cannot enter user mode\n");
     return 0;
   }
 

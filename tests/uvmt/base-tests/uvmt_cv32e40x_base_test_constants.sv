@@ -18,7 +18,6 @@
 `define __UVMT_CV32E40X_BASE_TEST_CONSTANTS_SV__
 
 
-
 parameter uvme_cv32e40x_sys_default_clk_period   =  1_500; // 10ns
 parameter uvme_cv32e40x_debug_default_clk_period = 10_000; // 10ns
 
@@ -103,15 +102,6 @@ parameter CV_VP_FENCEI_TAMPER_BASE     = CV_VP_REGISTER_BASE + CV_VP_FENCEI_TAMP
    parameter CORE_PARAM_DBG_NUM_TRIGGERS = 1;
 `endif
 
-`ifdef PARAM_SET_0
-   // Sat from the include file
-`elsif PARAM_SET_1
-   // Sat from the include file
-`else
-   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'hF0000000;
-   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'hF0003FFF;
-`endif
-
 
 // CLIC
 
@@ -131,8 +121,22 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `elsif PARAM_SET_1
    // Sat from the include file
 `else
-   parameter int  CORE_PARAM_CLIC_INTTHRESHBITS = 8;
    parameter int  CORE_PARAM_CLIC_ID_WIDTH = 5;
+`endif
+
+
+// A-ext
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`elsif ZALRSC
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::ZALRSC;
+`elsif A
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::A;
+`else
+   parameter cv32e40x_pkg::a_ext_e CORE_PARAM_A_EXT = cv32e40x_pkg::A_NONE;
 `endif
 
 
@@ -151,17 +155,6 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `endif
 
 
-// M-ext
-
-`ifdef PARAM_SET_0
-   // Sat from the include file
-`elsif PARAM_SET_1
-   // Sat from the include file
-`else
-   parameter cv32e40x_pkg::m_ext_e CORE_PARAM_M_EXT = cv32e40x_pkg::M;
-`endif
-
-
 // I-base & E-base
 
 `ifdef PARAM_SET_0
@@ -177,6 +170,19 @@ parameter logic CLIC = CORE_PARAM_CLIC;
 `endif
 
 
+// Event Counters
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`elsif SET_NUM_MHPMCOUNTERS
+  parameter int CORE_PARAM_NUM_MHPMCOUNTERS = `SET_NUM_MHPMCOUNTERS;
+`else
+  parameter int CORE_PARAM_NUM_MHPMCOUNTERS = 1;
+`endif
+
+
 // PMA
 
 parameter int  PMA_MAX_REGIONS = 16;
@@ -187,7 +193,10 @@ parameter int  PMA_MAX_REGIONS = 16;
    // Sat from the include file
 `elsif PMA_CUSTOM_CFG
    const string pma_cfg_name = "pma_custom_cfg";
-   parameter int unsigned            CORE_PARAM_PMA_NUM_REGIONS = 3;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 3;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
       // Overlap "shadow" of main code (.text), for testing overlap priority
       cv32e40x_pkg::pma_cfg_t'{
@@ -216,7 +225,10 @@ parameter int  PMA_MAX_REGIONS = 16;
       };
 `elsif PMA_DEBUG_CFG
    const string pma_cfg_name = "pma_debug_cfg";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 2;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 2;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
       // Everything is initially executable
       cv32e40x_pkg::pma_cfg_t'{
@@ -237,13 +249,19 @@ parameter int  PMA_MAX_REGIONS = 16;
       };
 `elsif PMA_TEST_CFG_1
    const string pma_cfg_name = "pma_test_cfg_1";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 1;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 1;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[0:CORE_PARAM_PMA_NUM_REGIONS-1] = '{
      '{word_addr_low : 32'h0000_0000>>2, word_addr_high : 32'h7FFF_FFFF>>2, main : 1'b1, bufferable : 1'b1, cacheable : 1'b1, atomic : 1'b1}
    };
 `elsif PMA_TEST_CFG_2
    const string pma_cfg_name = "pma_test_cfg_2";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 7;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 7;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
      '{word_addr_low : 32'hE010_0000>>2, word_addr_high : 32'hFFFF_FFFF>>2, main : 1'b0, bufferable : 1'b1, cacheable : 1'b0, atomic : 1'b1},
      '{word_addr_low : 32'hE000_0000>>2, word_addr_high : 32'hE00F_FFFF>>2, main : 1'b0, bufferable : 1'b0, cacheable : 1'b0, atomic : 1'b0},
@@ -255,7 +273,10 @@ parameter int  PMA_MAX_REGIONS = 16;
      };
 `elsif PMA_TEST_CFG_3
    const string pma_cfg_name = "pma_test_cfg_3";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 16;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 16;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
      '{word_addr_low : 32'h0000_A000>>2, word_addr_high : 32'hFFFE_FFFF>>2, main : 1'b1, bufferable : 1'b1, cacheable : 1'b1, atomic : 1'b1},
      '{word_addr_low : 32'h0200_0000>>2, word_addr_high : 32'hEFFF_FFFF>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b0, atomic : 1'b1},
@@ -276,7 +297,10 @@ parameter int  PMA_MAX_REGIONS = 16;
      };
 `elsif PMA_TEST_CFG_4
    const string pma_cfg_name = "pma_test_cfg_4";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 16;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h3201_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h3201_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 16;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
      '{word_addr_low : 32'hE700_EF00>>2, word_addr_high : 32'hE9FF_FFFF>>2, main : 1'b0, bufferable : 1'b1, cacheable : 1'b0, atomic : 1'b1},
      '{word_addr_low : 32'hC000_0000>>2, word_addr_high : 32'hDFFF_FFFF>>2, main : 1'b0, bufferable : 1'b0, cacheable : 1'b0, atomic : 1'b1},
@@ -297,7 +321,10 @@ parameter int  PMA_MAX_REGIONS = 16;
      };
 `elsif PMA_TEST_CFG_5
    const string pma_cfg_name = "pma_test_cfg_5";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 16;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h0030_1000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h0030_2000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 16;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
      '{word_addr_low : 32'h0000_0000>>2, word_addr_high : 32'hFFFF_FFFF>>2, main : 1'b1, bufferable : 1'b1, cacheable : 1'b1, atomic : 1'b1},
      '{word_addr_low : 32'h1249_2492>>2, word_addr_high : 32'h1249_2492>>2, main : 1'b0, bufferable : 1'b0, cacheable : 1'b0, atomic : 1'b0},
@@ -318,7 +345,10 @@ parameter int  PMA_MAX_REGIONS = 16;
      };
 `elsif PMA_TEST_CFG_X1 // Used for memory layout generator debug
    const string pma_cfg_name = "pma_test_cfg_x1";
-   parameter int unsigned               CORE_PARAM_PMA_NUM_REGIONS = 5;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h0030_1000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h0030_2000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 5;
+
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
      '{word_addr_low : 32'h00000000>>2, word_addr_high : 32'h20000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
      '{word_addr_low : 32'h30000000>>2, word_addr_high : 32'h40000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
@@ -328,10 +358,34 @@ parameter int  PMA_MAX_REGIONS = 16;
      };
 `else
    const string pma_cfg_name = "pma_noregion";
-   parameter int unsigned            CORE_PARAM_PMA_NUM_REGIONS = 0;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h1A11_1000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 0;
    parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[-1:0] = '{default:cv32e40x_pkg::PMA_R_DEFAULT};
 `endif
 
 
+// Misc  (Not controlled by any define.)
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`else
+   parameter cv32e40x_pkg::m_ext_e  CORE_PARAM_M_EXT           = cv32e40x_pkg::M;  // No defines control this.
+   parameter int                    CORE_PARAM_CORE_LOG_ENABLE = 1;                // The default is 1 in the RTL repo.
+   parameter int                    CORE_PARAM_DEBUG           = 1;                // Debug is supported by default.
+   parameter int                    CORE_PARAM_LIB             = 0;                // "LIB" doesn't matter.
+   parameter bit                    CORE_PARAM_X_EXT           = 0;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_NUM_RS        = 2;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_ID_WIDTH      = 4;                // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_MEM_WIDTH     = 32;               // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_RFR_WIDTH     = 32;               // Default from RTL repo.
+   parameter int unsigned           CORE_PARAM_X_RFW_WIDTH     = 32;               // Default from RTL repo.
+   parameter logic [31:0]           CORE_PARAM_X_MISA          = 32'h 00000000;    // Default from RTL repo.
+   parameter logic [1:0]            CORE_PARAM_X_ECS_XS        = 2'b 00;           // Default from RTL repo.
+`endif
+
 
 `endif //__UVMT_CV32E40X_BASE_TEST_CONSTANTS_SV__
+

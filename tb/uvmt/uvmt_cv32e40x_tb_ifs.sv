@@ -140,19 +140,6 @@ interface uvmt_cv32e40x_debug_cov_assert_if_t
 
     // Core signals
     input  [31:0] boot_addr_i,
-    input         fetch_enable_i,
-
-    input         rvfi_valid,
-    input  [31:0] rvfi_insn,
-    input         rvfi_intr,
-    input  [2:0]  rvfi_dbg,
-    input         rvfi_dbg_mode,
-    input  [31:0] rvfi_pc_wdata,
-    input  [31:0] rvfi_pc_rdata,
-    input  [31:0] rvfi_csr_dpc_rdata,
-    input  [31:0] rvfi_csr_mepc_rdata,
-    input  [31:0] rvfi_csr_mepc_wdata,
-    input  [31:0] rvfi_csr_mepc_wmask,
 
     // Debug signals
     input         debug_req_i, // From controller
@@ -201,7 +188,6 @@ interface uvmt_cv32e40x_debug_cov_assert_if_t
     input  csr_we_int,
 
     output logic is_wfi,
-    output logic in_wfi,
     output logic dpc_will_hit,
     output logic addr_match,
     output logic is_ebreak,
@@ -230,13 +216,11 @@ interface uvmt_cv32e40x_debug_cov_assert_if_t
     sys_en_i,
     sys_ecall_insn_i,
     boot_addr_i,
-    dcsr_q,
-    debug_mode_q,
     debug_req_i,
-    dpc_n,
+    debug_mode_q,
+    dcsr_q,
     dpc_q,
-    rvfi_pc_rdata,
-    rvfi_pc_wdata,
+    dpc_n,
     dm_halt_addr_i,
     dm_exception_addr_i,
     mcause_q,
@@ -258,7 +242,6 @@ interface uvmt_cv32e40x_debug_cov_assert_if_t
     csr_op,
     csr_addr,
     is_wfi,
-    in_wfi,
     dpc_will_hit,
     addr_match,
     is_ebreak,
@@ -275,6 +258,7 @@ endinterface : uvmt_cv32e40x_debug_cov_assert_if_t
 interface uvmt_cv32e40x_support_logic_module_i_if_t
    import cv32e40x_pkg::*;
    import cv32e40x_rvfi_pkg::*;
+   import uvmt_cv32e40x_base_test_pkg::*;
    (
 
    /* obi bus protocol signal information:
@@ -297,6 +281,8 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
    input logic [31:0] wb_tselect,
    input logic [31:0] wb_tdata1,
    input logic [31:0] wb_tdata2,
+   input logic [31:0] tdata1_array[CORE_PARAM_DBG_NUM_TRIGGERS+1],
+   input logic [31:0] tdata2_array[CORE_PARAM_DBG_NUM_TRIGGERS+1],
 
    //Obi signals:
 
@@ -338,6 +324,9 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
    modport driver_mp (
      input  clk,
       rst_n,
+
+      tdata1_array,
+      tdata2_array,
 
       ctrl_fsm_o,
 
@@ -383,16 +372,16 @@ endinterface : uvmt_cv32e40x_support_logic_module_i_if_t
 interface uvmt_cv32e40x_support_logic_module_o_if_t;
    import cv32e40x_pkg::*;
    import cv32e40x_rvfi_pkg::*;
+   import uvmt_cv32e40x_base_test_pkg::*;
 
    // Indicates that a new obi data req arrives after an exception is triggered.
    // Used to verify exception timing with multiop instruction
    logic req_after_exception;
-   logic is_trigger_match_exception;
-   logic is_trigger_match_load;
-   logic is_trigger_match_store;
-   logic is_trigger_match_execute;
-   logic [4:0][31:0] tdata1_array;
-   logic [4:0][31:0] tdata2_array;
+   logic [CORE_PARAM_DBG_NUM_TRIGGERS:0] trigger_match_mem;
+   logic [CORE_PARAM_DBG_NUM_TRIGGERS:0] trigger_match_execute;
+   logic [CORE_PARAM_DBG_NUM_TRIGGERS:0] trigger_match_exception;
+   logic [CORE_PARAM_DBG_NUM_TRIGGERS:0] is_trigger_match;
+
 
    // support logic signals for the obi bus protocol:
 
@@ -444,12 +433,10 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
 
    modport master_mp (
       output req_after_exception,
-         is_trigger_match_exception,
-         is_trigger_match_load,
-         is_trigger_match_store,
-         is_trigger_match_execute,
-         tdata1_array,
-         tdata2_array,
+         trigger_match_mem,
+         trigger_match_execute,
+         trigger_match_exception,
+         is_trigger_match,
 
          data_bus_addr_ph_cont,
          data_bus_resp_ph_cont,
@@ -487,12 +474,10 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
 
    modport slave_mp (
       input req_after_exception,
-          is_trigger_match_exception,
-         is_trigger_match_load,
-         is_trigger_match_store,
-         is_trigger_match_execute,
-         tdata1_array,
-         tdata2_array,
+         trigger_match_mem,
+         trigger_match_execute,
+         trigger_match_exception,
+         is_trigger_match,
 
          data_bus_addr_ph_cont,
          data_bus_resp_ph_cont,
