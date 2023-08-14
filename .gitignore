@@ -1,4 +1,6 @@
 *~
+*.swp
+vmgr_sessions
 *.nm
 *.elf
 *.hex
