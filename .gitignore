@@ -1,6 +1,6 @@
+*~
 *.swp
 vmgr_sessions
-*~
 *.nm
 *.elf
 *.hex
@@ -17,13 +17,16 @@ vmgr_sessions
 test_build
 dsim.env
 dsim.log
+dsim_results
 metrics.db
 metrics_history.db
+xrun_results
+vsim_results
 vmgr_sessions
 __pycache__
 *.swp
-.cproject
-.project
+/.cproject
+/.project
 .dvt/
 dvt_build.log
 xrun.history
@@ -33,8 +36,9 @@ waves.shm/
 *.log
 stdout.txt
 .vscode
-vendor_lib/dpi_dasm_spike/
-vendor_lib/verilab/svlib/
+riviera_results/
+*/vendor_lib/dpi_dasm_spike/
+*/vendor_lib/verilab/svlib/
 work*
 vsim.dbg
 *.wlf
@@ -42,5 +46,5 @@ transcript
 .lib-rtl
 .opt-rtl
 tools/spike
-tools/verilator
+tools/verilator*
 *_results/
