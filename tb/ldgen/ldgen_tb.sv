@@ -24,7 +24,7 @@ import uvmt_cv32e40x_base_test_pkg::*;
 `include "cv32e40x_ldgen.sv"
 
 module ldgen_tb;
-  cv32e40s_ldgen_c linker_generator;
+  cv32e40x_ldgen_c linker_generator;
 
   initial begin : ldgen_start
     linker_generator = new();
