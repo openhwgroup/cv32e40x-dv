@@ -49,6 +49,7 @@ module uvmt_cv32e40x_tb;
    uvma_clknrst_if_t            clknrst_if(); // clock and resets from the clknrst agent
    uvma_clknrst_if_t            clknrst_if_iss();
    uvma_debug_if_t              debug_if();
+   uvma_wfe_wu_if_t             wfe_wu_if();
    uvma_interrupt_if_t          interrupt_if();
    uvma_clic_if_t#(
      .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
@@ -92,50 +93,80 @@ module uvmt_cv32e40x_tb;
       uvmt_imperas_dv_if_t imperas_dv_if();
    `endif
 
-  /**
-   * DUT WRAPPER instance:
-   * This is an update of the riscv_wrapper.sv from PULP-Platform RI5CY project with
-   * a few mods to bring unused ports from the CORE to this level using SV interfaces.
-   */
-   uvmt_cv32e40x_dut_wrap  #(
-      .A_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_A_EXT),
-      .B_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT),
-      .CLIC             (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-      .CLIC_ID_WIDTH    (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-      .CORE_LOG_ENABLE  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CORE_LOG_ENABLE),
-      .DBG_NUM_TRIGGERS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS),
-      .DEBUG            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DEBUG),
-      .DM_REGION_END    (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
-      .DM_REGION_START  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_START),
-      .LIB              (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_LIB),
-      .M_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_M_EXT),
-      .NUM_MHPMCOUNTERS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_NUM_MHPMCOUNTERS),
-      .PMA_CFG          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
-      .PMA_NUM_REGIONS  (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-      .RV32             (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32),
-      .X_ECS_XS         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_ECS_XS),
-      .X_EXT            (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_EXT),
-      .X_ID_WIDTH       (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_ID_WIDTH),
-      .X_MEM_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_MEM_WIDTH),
-      .X_MISA           (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_MISA),
-      .X_NUM_RS         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_NUM_RS),
-      .X_RFR_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_RFR_WIDTH),
-      .X_RFW_WIDTH      (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_X_RFW_WIDTH),
-      .INSTR_ADDR_WIDTH  (ENV_PARAM_INSTR_ADDR_WIDTH),
-      .INSTR_RDATA_WIDTH (ENV_PARAM_INSTR_DATA_WIDTH),
-      .RAM_ADDR_WIDTH    (ENV_PARAM_RAM_ADDR_WIDTH)
-      )
-                            dut_wrap (
-                              .clknrst_if(clknrst_if),
-                              .interrupt_if(interrupt_if),
-                              .vp_status_if(vp_status_if),
-                              .core_cntrl_if(core_cntrl_if),
-                              .core_status_if(core_status_if),
-                              .obi_instr_if(obi_instr_if),
-                              .obi_data_if(obi_data_if),
-                              .fencei_if(fencei_if),
-                              .clic_if(clic_if),
-                              .*);
+
+  // "dut_wrap"
+
+  uvmt_cv32e40x_dut_wrap  #(
+    .INSTR_ADDR_WIDTH  (ENV_PARAM_INSTR_ADDR_WIDTH),
+    .INSTR_RDATA_WIDTH (ENV_PARAM_INSTR_DATA_WIDTH),
+    .RAM_ADDR_WIDTH    (ENV_PARAM_RAM_ADDR_WIDTH)
+  ) dut_wrap (
+    .clknrst_if     (clknrst_if),
+    .interrupt_if   (interrupt_if),
+    .vp_status_if   (vp_status_if),
+    .core_cntrl_if  (core_cntrl_if),
+    .core_status_if (core_status_if),
+    .obi_instr_if   (obi_instr_if),
+    .obi_data_if    (obi_data_if),
+    .fencei_if      (fencei_if),
+    .clic_if        (clic_if),
+    .*
+  );
+
+  assign debug_if.clk     = clknrst_if.clk;
+  assign debug_if.reset_n = clknrst_if.reset_n;
+
+  // OBI Instruction agent v1.2 signal tie-offs
+  assign obi_instr_if.we        = 'b0;
+  assign obi_instr_if.be        = 'hf; // Always assumes 32-bit full bus reads on instruction OBI
+  assign obi_instr_if.auser     = 'b0;
+  assign obi_instr_if.wuser     = 'b0;
+  assign obi_instr_if.aid       = 'b0;
+  assign obi_instr_if.wdata     = 'b0;
+  assign obi_instr_if.reqpar    = ~obi_instr_if.req;
+  assign obi_instr_if.rready    = 1'b1;
+  assign obi_instr_if.rreadypar = 1'b0;
+
+  // OBI Data agent v1.2 signal tie-offs
+  assign obi_data_if.auser     = 'b0;
+  assign obi_data_if.wuser     = 'b0;
+  assign obi_data_if.aid       = 'b0;
+  assign obi_data_if.reqpar    = ~obi_data_if.req;
+  assign obi_data_if.rready    = 1'b1;
+  assign obi_data_if.rreadypar = 1'b0;
+
+  // Connect to uvma_interrupt_if
+  assign interrupt_if.clk     = clknrst_if.clk;
+  assign interrupt_if.reset_n = clknrst_if.reset_n;
+  assign interrupt_if.irq_id  = $bits(interrupt_if.irq_id)'(dut_wrap.cv32e40x_wrapper_i.core_i.irq_id); // cast to avoid the warning with clic (TODO: tieoff with clic instead?)
+  assign interrupt_if.irq_ack = dut_wrap.cv32e40x_wrapper_i.core_i.irq_ack;
+
+  assign clic_if.clk     = clknrst_if.clk;
+  assign clic_if.reset_n = clknrst_if.reset_n;
+  assign clic_if.irq_ack = dut_wrap.cv32e40x_wrapper_i.core_i.irq_ack;
+
+  assign wfe_wu_if.clk     = clknrst_if.clk;
+  assign wfe_wu_if.reset_n = clknrst_if.reset_n;
+
+  // Connect to core_cntrl_if
+  assign core_cntrl_if.b_ext            = uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT;
+  assign core_cntrl_if.num_mhpmcounters = uvmt_cv32e40x_base_test_pkg::CORE_PARAM_NUM_MHPMCOUNTERS;
+  `ifndef FORMAL
+    initial begin
+      core_cntrl_if.pma_cfg = new[CORE_PARAM_PMA_NUM_REGIONS];
+      foreach (core_cntrl_if.pma_cfg[i]) begin
+        core_cntrl_if.pma_cfg[i].word_addr_low  = CORE_PARAM_PMA_CFG[i].word_addr_low;
+        core_cntrl_if.pma_cfg[i].word_addr_high = CORE_PARAM_PMA_CFG[i].word_addr_high;
+        core_cntrl_if.pma_cfg[i].main           = CORE_PARAM_PMA_CFG[i].main;
+        core_cntrl_if.pma_cfg[i].bufferable     = CORE_PARAM_PMA_CFG[i].bufferable;
+        core_cntrl_if.pma_cfg[i].cacheable      = CORE_PARAM_PMA_CFG[i].cacheable;
+        core_cntrl_if.pma_cfg[i].atomic         = CORE_PARAM_PMA_CFG[i].atomic;
+      end
+    end
+  `endif
+
+
+  // "rvfi_instr_if"
 
   bind cv32e40x_wrapper
     uvma_rvfi_instr_if_t#(uvmt_cv32e40x_base_test_pkg::ILEN,
@@ -973,6 +1004,7 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env.debug_agent"),            .field_name("vif"),           .value(debug_if));
      uvm_config_db#(virtual uvma_clknrst_if_t           )::set(.cntxt(null), .inst_name("*.env.clknrst_agent"),          .field_name("vif"),           .value(clknrst_if));
      uvm_config_db#(virtual uvma_interrupt_if_t         )::set(.cntxt(null), .inst_name("*.env.interrupt_agent"),        .field_name("vif"),           .value(interrupt_if));
+     uvm_config_db#(virtual uvma_wfe_wu_if_t            )::set(.cntxt(null), .inst_name("*.env.wfe_wu_agent"),           .field_name("vif"),           .value(wfe_wu_if));
      uvm_config_db#(virtual uvma_clic_if_t#(
        .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
      ))::set(.cntxt(null), .inst_name("*.env.clic_agent"), .field_name("vif"), .value(clic_if));
@@ -1002,10 +1034,11 @@ module uvmt_cv32e40x_tb;
      uvm_config_db#(virtual uvma_fencei_if_t            )::set(.cntxt(null), .inst_name("*.env.fencei_agent"),           .field_name("fencei_vif"),    .value(fencei_if)  );
      uvm_config_db#(virtual uvmt_cv32e40x_vp_status_if_t)::set(.cntxt(null), .inst_name("*"),                            .field_name("vp_status_vif"), .value(vp_status_if) );
      uvm_config_db#(virtual uvma_interrupt_if_t         )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("intr_vif"),      .value(interrupt_if) );
+     uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("debug_vif"),     .value(debug_if)     );
+     uvm_config_db#(virtual uvma_wfe_wu_if_t            )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("wfe_wu_vif"),    .value(wfe_wu_if)     );
      uvm_config_db#(virtual uvma_clic_if_t#(
        .CLIC_ID_WIDTH(uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
      ))::set(.cntxt(null), .inst_name("*.env"), .field_name("clic_vif"), .value(clic_if) );
-     uvm_config_db#(virtual uvma_debug_if_t             )::set(.cntxt(null), .inst_name("*.env"),                        .field_name("debug_vif"),     .value(debug_if)     );
 //     uvm_config_db#(virtual uvmt_cv32e40x_debug_cov_assert_if_t)::set(.cntxt(null), .inst_name("*.env"),                 .field_name("debug_cov_vif"),    .value(debug_cov_assert_if));
      `RVFI_CSR_UVM_CONFIG_DB_SET(jvt)
      `RVFI_CSR_UVM_CONFIG_DB_SET(marchid)

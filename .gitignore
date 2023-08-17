@@ -37,8 +37,8 @@ waves.shm/
 stdout.txt
 .vscode
 riviera_results/
-*/vendor_lib/dpi_dasm_spike/
-*/vendor_lib/verilab/svlib/
+vendor_lib/dpi_dasm_spike/
+vendor_lib/verilab/svlib/
 work*
 vsim.dbg
 *.wlf
