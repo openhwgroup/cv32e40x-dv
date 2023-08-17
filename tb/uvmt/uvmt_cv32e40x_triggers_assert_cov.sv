@@ -14,9 +14,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.0
 
-//The assertions written in this file are denoted with a number.
-//You will find this number in the file vplan_coverage.txt,
-//and they describe what vplan tasks the assertions aim to cover.
 
 
 module uvmt_cv32e40x_triggers_assert_cov
