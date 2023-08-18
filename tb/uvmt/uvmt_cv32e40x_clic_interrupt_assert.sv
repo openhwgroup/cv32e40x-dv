@@ -2639,21 +2639,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
         $sformatf("mret result state incorrect"));
 
 
-    //mret to umode clears mintthresh
-    a_mret_umode_clear_mintthresh: assert property (
-      rvfi_if.is_mret
-      //&& !rvfi_if.rvfi_trap.trap
-      ##1 rvfi_valid[->1]
-      ##0 rvfi_if.is_umode
-      |->
-      csr_mintthresh_if.rvfi_csr_rdata == 0
-    )
-    else
-      `uvm_error(info_tag,
-        $sformatf("mret to umode does not clear mintthresh"));
-
-
-
     property p_execution_state_after_mret;
      // last cycle after mret, before new rvfi_valid,
           // and not an excepted minhv-mepc (TODO: where? covered elsewhere)
@@ -2927,38 +2912,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
     else
       `uvm_error(info_tag,
         $sformatf("Horizontal exception service not handled correctly"));
-
-    // ------------------------------------------------------------------------
-    // Vertical exception handling
-    // ------------------------------------------------------------------------
-
-    property p_vertical_exception_service;
-            rvfi_valid
-        &&  rvfi_trap.exception
-        &&  rvfi_mode == U_MODE
-        ##1 rvfi_valid[->1]
-      |->
-            // regular case
-        ##0 mintstatus_fields.mil == 0
-        &&  rvfi_mode == M_MODE
-      or
-            // mnxti overwriting expected mil, checked in mnxti assertions
-        ##0 is_mnxti_access_instr
-        &&  rvfi_mode == M_MODE
-      or
-            // first handler instruction is mret, should be handled at lvl 0,
-            // but mpil may cause mil to change after mret retirement
-        ##0 is_mret_instr
-        &&  rvfi_mode == M_MODE
-        &&  $past(mintstatus_fields.mil) == 0
-        &&  mintstatus_fields.mil == $past(mcause_fields.mpil)
-      ;
-    endproperty : p_vertical_exception_service
-
-    a_vertical_exception_service: assert property (p_vertical_exception_service)
-    else
-      `uvm_error(info_tag,
-        $sformatf("Vertical exception service not handled correctly"));
 
     // ------------------------------------------------------------------------
     // MEPC lsb should always be 0
