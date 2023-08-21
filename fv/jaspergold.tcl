@@ -31,10 +31,12 @@ proc cvfv_rerun {} {
   set_message -info VERI-2418
   ## Allow empty port in module declaration
   set_message -info VERI-8026
+  ## Allow multiplier blackboxing
+  set_message -info WNL018
 
   # Analyze & Elaborate
   analyze  -sv12  -f fv.flist
-  elaborate  -top uvmt_cv32e40x_tb
+  elaborate  -top uvmt_cv32e40x_tb  -extract_covergroup
 
   # Clock & Reset
   clock  clknrst_if.clk
@@ -42,6 +44,7 @@ proc cvfv_rerun {} {
 
   # Assumes
   assume  -from_assert  {*_memory_assert_i.u_assert.a_r_after_a}
+  assume  -from_assert  {*.obi_*_memory_assert_i.*.a_*par}
   assume  -from_assert  {*integration_assert_i.a_stable_*}
   assume  -from_assert  {*integration_assert_i.a_aligned_*}
   assume  -from_assert  {*integration_assert_i.a_no_scan_cg}
