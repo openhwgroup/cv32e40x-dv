@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define EXP_MISA 0x40001104
+#define EXP_MISA 0x40801104
 
 int main(int argc, char *argv[])
 {
@@ -43,16 +43,16 @@ int main(int argc, char *argv[])
   // unsigned int lpstart0_rval, lpend0_rval, lpcount0_rval, lpstart1_rval, lpend1_rval, lpcount1_rval;
   // unsigned int fprec_rval, privlv_rval, uhartid_rval;
   // Machine CSRs
-  unsigned int mstatus_rval, misa_rval, mie_rval, mtvec_rval;
-  unsigned int mcounteren_rval, mcountinhibit_rval, mphmevent_rval[32];
-  unsigned int mscratch_rval, mepc_rval, mcause_rval, mtval_rval, mip_rval;
-  unsigned int tselect_rval, tdata1_rval, tdata2_rval, tdata3_rval, tinfo_rval;
-  unsigned int dcsr_rval, dpc_rval, dscratch0_rval, dscratch1_rval;
-  unsigned int mcycle_rval, minstret_rval, mhpmcounter_rval[32], mcycleh_rval;
-  unsigned int minstreth_rval, mhpmcounterh[32];
-  unsigned int mvendorid_rval, marchid_rval, mimpid_rval, mhartid_rval;
+  volatile unsigned int mstatus_rval, misa_rval, mie_rval, mtvec_rval;
+  volatile unsigned int mcounteren_rval, mcountinhibit_rval, mphmevent_rval[32];
+  volatile unsigned int mscratch_rval, mepc_rval, mcause_rval, mtval_rval, mip_rval;
+  volatile unsigned int tselect_rval, tdata1_rval, tdata2_rval, tinfo_rval;
+  volatile unsigned int dcsr_rval, dpc_rval, dscratch0_rval, dscratch1_rval;
+  volatile unsigned int mcycle_rval, minstret_rval, mhpmcounter_rval[32], mcycleh_rval;
+  volatile unsigned int minstreth_rval, mhpmcounterh[32];
+  volatile unsigned int mvendorid_rval, marchid_rval, mimpid_rval, mhartid_rval;
 
-  int err_cnt, sum;
+  volatile int err_cnt, sum;
 
   err_cnt = 0;
   sum     = 0;
@@ -131,7 +131,6 @@ int main(int argc, char *argv[])
   __asm__ volatile("csrr %0, 0x7A0" : "=r"(tselect_rval)); // unimplemented in model, hardwired to zero
   __asm__ volatile("csrr %0, 0x7A1" : "=r"(tdata1_rval));  // unimplemented in model, hardwired to zero
   __asm__ volatile("csrr %0, 0x7A2" : "=r"(tdata2_rval));  // unimplemented in model, hardwired to zero
-  __asm__ volatile("csrr %0, 0x7A3" : "=r"(tdata3_rval));  // unimplemented in model, hardwired to zero
   __asm__ volatile("csrr %0, 0x7A4" : "=r"(tinfo_rval));   // unimplemented in model
 
   if (tselect_rval != 0x0) {
@@ -139,8 +138,8 @@ int main(int argc, char *argv[])
     ++err_cnt;
   }
 
-  if (tdata1_rval != 0x28001040) {
-    printf("ERROR: CSR TDATA1 not 0x28001040!\n\n");
+  if (tdata1_rval != 0x28001000) {
+    printf("ERROR: CSR TDATA1 not 0x28001000!\n\n");
     ++err_cnt;
   }
 
@@ -149,13 +148,8 @@ int main(int argc, char *argv[])
     ++err_cnt;
   }
 
-  if (tdata3_rval != 0x0) {
-    printf("ERROR: CSR TDATA3 not 0x0!\n\n");
-    ++err_cnt;
-  }
-
-  if (tinfo_rval != 0x4) {
-    printf("ERROR: CSR TINFO not 0x4!\n\n");
+  if (tinfo_rval != 0x01008064) {
+    printf("ERROR: CSR TINFO not 0x01008064!\n\n");
     ++err_cnt;
   }
 
@@ -398,7 +392,6 @@ int main(int argc, char *argv[])
   printf("\ttselect       = 0x%0x\n", tselect_rval);
   printf("\ttdata1        = 0x%0x\n", tdata1_rval);
   printf("\ttdata2        = 0x%0x\n", tdata2_rval);
-  printf("\ttdata3        = 0x%0x\n", tdata3_rval);
   printf("\ttinfo         = 0x%0x\n", tinfo_rval);
   //printf("\tdcsr          = 0x%0x\n", dcsr_rval);
   //printf("\tdpc           = 0x%0x\n", dpc_rval);
