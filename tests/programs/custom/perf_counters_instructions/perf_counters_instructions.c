@@ -87,8 +87,6 @@ int main(int argc, char *argv[])
                  EVENT_WB_DATA_STALL = 1 << 15 };
 
 
-  __asm__ volatile(".option rvc");
-
   sum = 0;
   err_cnt = 0;
   count = 0;
@@ -885,7 +883,6 @@ int main(int argc, char *argv[])
   printf("\nRetired instruction count");
 
   event = EVENT_INSTR;                                          // Trigger on retired instructions
-  __asm__ volatile(".option rvc");
   __asm__ volatile("csrw 0x323, %0 " : : "r"(event));           // Set mhpmevent3
   __asm__ volatile("csrwi 0xB02, 0x0");                         // minstret = 0
   __asm__ volatile("csrwi 0xB03, 0x0");                         // mhpmcounter3 = 0
