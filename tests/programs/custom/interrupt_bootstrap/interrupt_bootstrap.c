@@ -3,9 +3,8 @@
 
 void alt_vector_table (void) __attribute__ ((naked, // No stack manipulation needed as this is a table and not an actual function
                                              aligned(8), // Align table
-                                             section(".vectors.alt"), // Put in alternate vector section
-                                             target("arch=rv32i"), // Avoid compressed instructions
-                                             norelax)); // Prevent linker from adding compressed instructions
+                                             section(".vectors.alt") // Put in alternate vector section
+                                             ));
 
 void generic_irq_handler(uint32_t) __attribute__((naked)); // Handle function entry and exit manually to ensure all registers are saved and restored
 
@@ -48,6 +47,8 @@ volatile uint32_t IRQ_ID_PRIORITY [IRQ_NUM] = {
 
 void alt_vector_table (void) {
    __asm__ volatile (R"(
+    .option push
+    .option norvc
     j u_sw_irq_handler
     j __no_irq_handler
     j __no_irq_handler
@@ -80,6 +81,7 @@ void alt_vector_table (void) {
     j m_fast13_irq_handler
     j m_fast14_irq_handler
     j m_fast15_irq_handler
+    .option pop
   )");
 }
 
