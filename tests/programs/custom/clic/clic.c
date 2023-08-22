@@ -52,6 +52,9 @@
 #define TIMER_VAL_ADDR       ((volatile uint32_t * volatile ) (CV_VP_INTR_TIMER_BASE + 4))
 #define RANDOM_NUM_ADDR      ((volatile uint32_t * volatile ) (CV_VP_RANDOM_NUM_BASE))
 
+#define MARCHID_CV32E40X 0x14
+#define MARCHID_CV32E40S 0x15
+
 // __FUNCTION__ is C99 and newer, -Wpedantic flags a warning that
 // this is not ISO C, thus we wrap this instatiation in a macro
 // ignoring this GCC warning to avoid a long list of warnings during
@@ -347,6 +350,20 @@ void set_mseccfg(mseccfg_t mseccfg);
  *          4 = word
  */
 void increment_mepc(uint32_t incr_val);
+
+/*
+ * has_pmp_configured
+ *
+ * Checks if a valid pmp configuration exists
+ */
+uint32_t has_pmp_configured(void);
+
+/*
+ * has_umode_configured
+ *
+ * Checks if a valid u-mode configuration exists
+ */
+uint32_t has_umode_configured(void);
 
 /*
  * reset_cpu_interrupt_lvl
@@ -817,7 +834,7 @@ uint32_t w_mcause_mpp_r_mstatus_mpp(uint32_t index, uint8_t report_name){
       :
       );
 
-  test_fail += MSTATUS_MPP(readback_val) != 0x3;
+  test_fail += MSTATUS_MPP(readback_val) !=  0x3;
   if (ABORT_ON_ERROR_IMMEDIATE) assert(test_fail == 0);
   cvprintf(V_HIGH, "Read back mstatus.mpp after setting bits: %0lx\n", ((readback_val & MSTATUS_MPP_MASK) >> MSTATUS_MPP_OFFSET));
 
@@ -831,7 +848,7 @@ uint32_t w_mcause_mpp_r_mstatus_mpp(uint32_t index, uint8_t report_name){
       :
       );
 
-  test_fail += MSTATUS_MPP(readback_val) != 0x0;
+  test_fail += MSTATUS_MPP(readback_val) != has_umode_configured() ? 0x0 : 0x3;
   if (ABORT_ON_ERROR_IMMEDIATE) assert(test_fail == 0);
   cvprintf(V_HIGH, "Read back mstatus.mpp after clearing bits: %0lx\n", ((readback_val & MSTATUS_MPP_MASK) >> MSTATUS_MPP_OFFSET));
 
@@ -909,7 +926,7 @@ uint32_t w_mstatus_mpp_r_mcause_mpp(uint32_t index, uint8_t report_name){
       :
       );
 
-  test_fail += MCAUSE_MPP(readback_val) != 0x0;
+  test_fail += MCAUSE_MPP(readback_val) != has_umode_configured() ? 0x0 : 0x3;
   if (ABORT_ON_ERROR_IMMEDIATE) assert(test_fail == 0);
   cvprintf(V_HIGH, "Read back mcause.mpp after clearing bits: %0lx\n", ((readback_val & MCAUSE_MPP_MASK) >> MCAUSE_MPP_OFFSET));
 
@@ -1402,16 +1419,65 @@ __attribute__((naked)) void m_fast14_irq_handler(void) {
 
 // -----------------------------------------------------------------------------
 
+uint32_t has_pmp_configured(void) {
+  volatile uint32_t pmpaddr0 = 0xffffffff;
+  volatile uint32_t pmpaddr0_backup = 0;
+  volatile uint32_t marchid = 0x0;
+
+  __asm__ volatile (R"(
+    csrrs %[marchid], marchid, zero
+  )":[marchid] "=r"(marchid));
+
+  // CV32E40X does not support PMP, skip test
+  switch (marchid) {
+    case (MARCHID_CV32E40X):
+      return 0;
+      break;
+    case (MARCHID_CV32E40S):
+      ;; // Do nothing and continue execution
+      break;
+  }
+
+  __asm__ volatile (R"(
+    csrrw %[pmpaddr0_backup] , pmpaddr0, %[pmpaddr0]
+    csrrw %[pmpaddr0], pmpaddr0, %[pmpaddr0_backup]
+  )" :[pmpaddr0_backup] "+r"(pmpaddr0_backup),
+      [pmpaddr0]        "+r"(pmpaddr0));
+
+  return (pmpaddr0 != 0);
+}
+
+// -----------------------------------------------------------------------------
+
+uint32_t has_umode_configured(void) {
+  volatile uint32_t marchid = 0x0;
+
+  __asm__ volatile (R"(
+    csrrs %[marchid], marchid, zero
+  )":[marchid] "=r"(marchid));
+
+  // CV32E40X does not support u-mode, skip test
+  switch (marchid) {
+    case (MARCHID_CV32E40X):
+      return 0;
+      break;
+    case (MARCHID_CV32E40S):
+      ;; // Do nothing and continue execution
+      break;
+  }
+
+  return (1);
+}
+
+// -----------------------------------------------------------------------------
+
 uint32_t invalid_mtvt_ptr_exec(uint32_t index, uint8_t report_name) {
 
   volatile uint8_t test_fail = 0;
 
   // These needs to be volatile to prevent loop optimization
-  //volatile uint8_t never = 0;
   volatile uint32_t no_timeout_threshold = 10;
-  //volatile uint32_t mepc_triggered = 0x0;
   volatile uint32_t addr = 0x0;
-  //volatile uint32_t clic_vector = 0x0;
   volatile clic_t clic_vector = { 0 };
 
   SET_FUNC_INFO
@@ -1474,90 +1540,94 @@ uint32_t invalid_mtvt_ptr_exec(uint32_t index, uint8_t report_name) {
   cvprintf(V_MEDIUM, "Expect non-zero mepc, MEPC = 0x%08lx\n", *g_mepc_triggered);
   if (ABORT_ON_ERROR_IMMEDIATE) assert(*g_mepc_triggered != 0);
 
-  // Set PMP configuration
-  __asm__ volatile ( R"(
-    la %[addr], mtvt_table;
-    srli %[addr], %[addr], 2
-    csrrw x0, pmpaddr0, %[addr]
-    la %[addr], mtvt_table + 128*4
-    srli %[addr], %[addr], 2
-    csrrw x0, pmpaddr1, %[addr]
-    addi %[addr], x0, -1
-    csrrw x0, pmpaddr2, %[addr]
-  )"
-      : [addr] "+r"(addr)
-      :
-      : "t0"
-      );
+  // Do not run this part of the test on cores without PMP as PMP is required for
+  // this part of the test to work.
+  if (has_pmp_configured()) {
+    // Set PMP configuration
+    __asm__ volatile ( R"(
+      la %[addr], mtvt_table;
+      srli %[addr], %[addr], 2
+      csrrw x0, pmpaddr0, %[addr]
+      la %[addr], mtvt_table + 128*4
+      srli %[addr], %[addr], 2
+      csrrw x0, pmpaddr1, %[addr]
+      addi %[addr], x0, -1
+      csrrw x0, pmpaddr2, %[addr]
+    )"
+        : [addr] "+r"(addr)
+        :
+        : "t0"
+        );
 
-  set_mseccfg((mseccfg_t){
-      .rlb  = 1,
-      .mmwp = 0,
-      .mml  = 0
-    });
+    set_mseccfg((mseccfg_t){
+        .rlb  = 1,
+        .mmwp = 0,
+        .mml  = 0
+      });
 
-  set_pmpcfg((pmpcfg_t){
-      .reg_no = 0,
-      .lock = 0,
-      .mode = TOR,
-      .execute = 1,
-      .write = 1,
-      .read = 1
-    });
+    set_pmpcfg((pmpcfg_t){
+        .reg_no = 0,
+        .lock = 0,
+        .mode = TOR,
+        .execute = 1,
+        .write = 1,
+        .read = 1
+      });
 
-  set_pmpcfg((pmpcfg_t){
-      .reg_no = 1,
-      .lock = 1,
-      .mode = TOR,
-      .execute = 0,
-      .write = 0,
-      .read = 0
-    });
+    set_pmpcfg((pmpcfg_t){
+        .reg_no = 1,
+        .lock = 1,
+        .mode = TOR,
+        .execute = 0,
+        .write = 0,
+        .read = 0
+      });
 
-  set_pmpcfg((pmpcfg_t){
-      .reg_no = 2,
-      .lock = 0,
-      .mode = TOR,
-      .execute = 1,
-      .write = 1,
-      .read = 1
-    });
+    set_pmpcfg((pmpcfg_t){
+        .reg_no = 2,
+        .lock = 0,
+        .mode = TOR,
+        .execute = 1,
+        .write = 1,
+        .read = 1
+      });
 
-  clic_vector = (clic_t){
-                      .fields.irq   = 0x1,
-                      .fields.id    = 0x4,
-                      .fields.level = 0x55,
-                      .fields.priv  = 0x3,
-                      .fields.shv   = 0x1
-                };
+    clic_vector = (clic_t){
+                        .fields.irq   = 0x1,
+                        .fields.id    = 0x4,
+                        .fields.level = 0x55,
+                        .fields.priv  = 0x3,
+                        .fields.shv   = 0x1
+                  };
 
-  no_timeout_threshold = 10;
-  *g_mepc_triggered = 0;
-  *g_recovery_enable = 1;
-  test_fail_asm = 0;
-  // Instruct clic_interrupt_vp to assert interrupt declared above
-  vp_assert_irq(clic_vector.raw, 0);
+    no_timeout_threshold = 10;
+    *g_mepc_triggered = 0;
+    *g_recovery_enable = 1;
+    test_fail_asm = 0;
+    // Instruct clic_interrupt_vp to assert interrupt declared above
+    vp_assert_irq(clic_vector.raw, 0);
 
-  // Wait for interrupt
-  while (no_timeout_threshold) {
-    no_timeout_threshold--;
+    // Wait for interrupt
+    while (no_timeout_threshold) {
+      no_timeout_threshold--;
+    }
+
+    __asm__ volatile ( R"(
+      .extern test_fail_asm
+      # This should never execute (deliberate dead code)
+      la t0, test_fail_asm
+      lw t1, 0(t0)
+      addi t1, t1, 1
+      sw t1, 0(t0)
+      # Execution should continue here
+      .global recovery_pt
+      recovery_pt: add x0, x0, x0
+    )":::);
+
+    cvprintf(V_LOW, "Entered recovery point, due to unrecoverable clic ptr trap, mepc: %08x, expected: %08x\n", *g_mepc_triggered, (uint32_t)(*((&mtvt_table) + 4)));
+    test_fail += test_fail_asm || *g_mepc_triggered != (uint32_t)(*(&mtvt_table + 4));
+
   }
-
-  __asm__ volatile ( R"(
-    .extern test_fail_asm
-    # This should never execute (deliberate dead code)
-    la t0, test_fail_asm
-    lw t1, 0(t0)
-    addi t1, t1, 1
-    sw t1, 0(t0)
-    # Execution should continue here
-    .global recovery_pt
-    recovery_pt: add x0, x0, x0
-  )":::);
-
-  cvprintf(V_LOW, "Entered recovery point, due to unrecoverable clic ptr trap, mepc: %08x, expected: %08x\n", *g_mepc_triggered, (uint32_t)(*((&mtvt_table) + 4)));
-  test_fail += test_fail_asm || *g_mepc_triggered != (uint32_t)(*(&mtvt_table + 4));
-
 
   if (test_fail) {
     cvprintf(V_LOW, "\nTest: \"%s\" FAIL!\n", name);
@@ -2096,25 +2166,27 @@ uint32_t rw_mscratchcsw(uint32_t index, uint8_t report_name) {
   )":[rd1] "=r"(mstatus_rval.raw)
     ::);
 
-  mstatus_rval.fields.mpp = 0x0;
+  if (has_umode_configured()) {
+    mstatus_rval.fields.mpp = 0x0;
 
-  // Set mpp to zero and attempt swap
-  __asm__ volatile (R"(
-    csrrw %[rd1], mstatus, %[rd1]
-    add   %[rd2], sp, zero
-    csrrw %[rd3], 0x348, sp
-    csrrs %[rd4], mscratch, zero
-    csrrw sp, 0x348, %[rd3]
-    add   %[rd3], sp, zero
-    csrrw zero, mscratch, zero
-  )":[rd1] "+r"(mstatus_rval.raw),
-     [rd2] "=r"(reg_backup_1),
-     [rd3] "+r"(reg_backup_2),
-     [rd4] "=r"(mscratch)
-    ::);
+    // Set mpp to zero and attempt swap
+    __asm__ volatile (R"(
+      csrrw %[rd1], mstatus, %[rd1]
+      add   %[rd2], sp, zero
+      csrrw %[rd3], 0x348, sp
+      csrrs %[rd4], mscratch, zero
+      csrrw sp, 0x348, %[rd3]
+      add   %[rd3], sp, zero
+      csrrw zero, mscratch, zero
+    )":[rd1] "+r"(mstatus_rval.raw),
+       [rd2] "=r"(reg_backup_1),
+       [rd3] "+r"(reg_backup_2),
+       [rd4] "=r"(mscratch)
+      ::);
 
-  cvprintf(V_DEBUG, "Reg1 read: %08x, mscratchcsw swap result: %08x, mscratch: %08x\n", reg_backup_1, reg_backup_2, mscratch);
-  test_fail += reg_backup_1 != reg_backup_2 || reg_backup_1 != mscratch;
+    cvprintf(V_DEBUG, "Reg1 read: %08x, mscratchcsw swap result: %08x, mscratch: %08x\n", reg_backup_1, reg_backup_2, mscratch);
+    test_fail += reg_backup_1 != reg_backup_2 || reg_backup_1 != mscratch;
+  }
 
   mstatus_rval.fields.mpp = 0x3;
   // Set mpp to 0x3 and attempt swap
