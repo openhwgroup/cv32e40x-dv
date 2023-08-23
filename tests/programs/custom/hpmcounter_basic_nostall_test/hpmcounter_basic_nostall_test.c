@@ -272,29 +272,26 @@ int main(int argc, char *argv[])
 
   // Do not count stall cycles (WB_INVALID) due to multicycle instructions
   // and force misaligned store to create data stalls (3 misaligned in the following seq)
-  __asm__ volatile("li x31, 7\n\t\
-                    li x30, 3\n\t\
-                    addi x0, x31, 1\n\t\
-                    lw x29, 0(sp)\n\t\
-                    lw x28, -1(sp)\n\t\
-                    srli x30, x29, 2\n\t\
-                    slli x30, x30, 2\n\t\
-                    xori x30, x30, 1\n\t\
-                    sw x29, 0(x30)\n\t\
-                    sw x29, 0(sp)\n\t\
-                    lw x28, -1(sp)\n\t\
-                    csrr x29, 0xB00\n\t\
-                    div x0, x31, x30" \
-                    : : : "x28", "x29", "x30", "x31");
+  __asm__ volatile(R"(
+                    addi sp, sp, -8
+                    sw sp, 1(sp)
+                    sw x0, 1(sp)
+                    sw x31, 1(sp)
+                    addi sp, sp, 8
+                    li x31, 7
+                    li x30, 3
+                    csrr x29, 0xB00
+                    div x0, x31, x30)"
+                    : : : "x29", "x30", "x31");
 
   __asm__ volatile("csrwi 0x320, 0x1F");                        // Inhibit mcycle, minstret, mhpmcounter3-4
   __asm__ volatile("csrr %0, 0xB02" : "=r"(minstret));
   __asm__ volatile("csrr %0, 0xB03" : "=r"(count));             // mhpmcounter3
 
   printf("\nminstret count = %d\n", minstret);
-  err_cnt += chck(minstret, 14);
+  err_cnt += chck(minstret, 10);
   printf("\nWrite port underutilization cycles: %d\n", count);
-  err_cnt += chck(count, 3);
+  err_cnt += chck(count, 0);
 
   //////////////////////////////////////////////////////////////
   // Retired instruction count (0) - Immediate minstret read
