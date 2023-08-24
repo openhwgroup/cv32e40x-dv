@@ -218,7 +218,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
     BREAKPOINT          = 11'd3,
     LOAD_ACCESS_FAULT   = 11'd5,
     STORE_ACCESS_FAULT  = 11'd7,
-    ECALL_U_MODE        = 11'd8,
+    ECALL_U_MODE        = 11'd8, // Not used in 40X
     ECALL_M_MODE        = 11'd11,
     INSTR_BUS_FAULT     = 11'd24,
     INSTR_PARITY_FAULT  = 11'd25,
@@ -266,8 +266,8 @@ module uvmt_cv32e40x_clic_interrupt_assert
   typedef enum logic [1:0] {
     M_MODE = 2'b11,
     I_MODE = 2'b10, // Illegal, reserved
-    S_MODE = 2'b01, // Not used in 40X/X
-    U_MODE = 2'b00
+    S_MODE = 2'b01, // Not used in 40S/X
+    U_MODE = 2'b00  // Not used in 40X
   } priv_mode_t;
 
   typedef enum logic [2:0] {
@@ -680,8 +680,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
   logic [7:0] expected_mpil;
   logic prev_was_valid_mnxti_write;
   logic prev_was_mret;
-  logic intended_mode_u;
-  logic prev_was_trapped_u;
 
   assign is_wfe_wakeup_event = wu_wfe;
 
@@ -714,7 +712,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
   assign is_intr_exception     = rvfi_intr.exception == 1'b1 && rvfi_intr.intr == 1'b1;
   assign is_intr_ecall_ebreak  = is_intr_exception
                                  && (rvfi_intr.cause == ECALL_M_MODE
-                                  || rvfi_intr.cause == ECALL_U_MODE
                                   || rvfi_intr.cause == BREAKPOINT);
 
 
@@ -2668,7 +2665,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
       |->
         rvfi_if.rvfi_pc_wdata == csr_mepc_if.rvfi_csr_rdata
       or
-        (rvfi_mcause_fields.minhv && rvfi_mcause_fields.mpp != U_MODE) && rvfi_if.rvfi_pc_wdata == mepc_as_pointer_rdata;
+        rvfi_mcause_fields.minhv && rvfi_if.rvfi_pc_wdata == mepc_as_pointer_rdata;
     endproperty : p_mret_pc_intended
 
     a_mret_pc_intended: assert property (p_mret_pc_intended)
@@ -2806,19 +2803,12 @@ module uvmt_cv32e40x_clic_interrupt_assert
         mintstatus_mil_q <= 0;
         prev_was_valid_mnxti_write <= 0;
         prev_was_mret <= 0;
-        intended_mode_u <= 0;
-        prev_was_trapped_u <= 0;
         expected_mpil <= 0;
       end else begin
         if (rvfi_valid) begin
           mintstatus_mil_q <= rvfi_mintstatus_fields.mil;
           prev_was_valid_mnxti_write <= is_valid_mnxti_write;
           prev_was_mret <= rvfi_if.is_mret;
-          intended_mode_u <= !rvfi_if.rvfi_trap.trap && (
-                              (rvfi_if.is_mret && rvfi_mcause_fields.mpp == U_MODE) ||
-                              (rvfi_if.is_dret && rvfi_dcsr_fields.prv == U_MODE) ||
-                              rvfi_if.rvfi_mode == U_MODE);
-          prev_was_trapped_u <= rvfi_if.rvfi_trap.trap && intended_mode_u;
           expected_mpil <= rvfi_mcause_wmask_fields.mpil ? (rvfi_mcause_wdata_fields.mpil & rvfi_mcause_wmask_fields.mpil) : rvfi_mcause_fields.mpil;
         end
       end
@@ -2833,10 +2823,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
       or
         is_valid_mnxti_write &&
         rvfi_mintstatus_wdata_fields.mil > max_level(rvfi_mintthresh_fields.th, rvfi_mcause_fields.mpil)
-      or
-        rvfi_if.rvfi_mode == U_MODE &&
-        rvfi_if.rvfi_trap.exception &&
-        rvfi_mintstatus_wdata_fields.mil == 0
     )
     else
       `uvm_error(info_tag,
@@ -2850,9 +2836,6 @@ module uvmt_cv32e40x_clic_interrupt_assert
       or
         prev_was_valid_mnxti_write &&
         rvfi_mintstatus_fields.mil > max_level(rvfi_mintthresh_fields.th, expected_mpil)
-      or
-        rvfi_if.rvfi_intr.intr &&
-        (intended_mode_u || prev_was_trapped_u)
     )
     else
       `uvm_error(info_tag,
@@ -2909,7 +2892,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
       |->
         prev_was_valid_mnxti_write && rvfi_mintstatus_fields.mil >= rvfi_mintthresh_fields.th
       or
-        rvfi_if.rvfi_intr.intr && ((rvfi_mintstatus_fields.mil >= rvfi_mintthresh_fields.th) || intended_mode_u)
+        rvfi_if.rvfi_intr.intr && (rvfi_mintstatus_fields.mil >= rvfi_mintthresh_fields.th)
       or
         prev_was_mret
     )
