@@ -21,6 +21,8 @@
 parameter uvme_cv32e40x_sys_default_clk_period   =  1_500; // 10ns
 parameter uvme_cv32e40x_debug_default_clk_period = 10_000; // 10ns
 
+`define CORE_IS_CV32E40X
+
 // For RVFI/RVVI
 parameter ILEN = 32;
 parameter XLEN = 32;

@@ -2161,49 +2161,54 @@ uint32_t rw_mscratchcsw(uint32_t index, uint8_t report_name) {
     return 0;
   }
 
-  __asm__ volatile (R"(
-    csrrs %[rd1], mstatus, zero
-  )":[rd1] "=r"(mstatus_rval.raw)
-    ::);
-
   if (has_umode_configured()) {
-    mstatus_rval.fields.mpp = 0x0;
+    __asm__ volatile (R"(
+      csrrs %[rd1], mstatus, zero
+    )":[rd1] "=r"(mstatus_rval.raw)
+      ::);
 
-    // Set mpp to zero and attempt swap
+    if (has_umode_configured()) {
+      mstatus_rval.fields.mpp = 0x0;
+
+      // Set mpp to zero and attempt swap
+      __asm__ volatile (R"(
+        csrrw %[rd1], mstatus, %[rd1]
+        add   %[rd2], sp, zero
+        csrrw %[rd3], 0x348, sp
+        csrrs %[rd4], mscratch, zero
+        csrrw sp, 0x348, %[rd3]
+        add   %[rd3], sp, zero
+        csrrw zero, mscratch, zero
+      )":[rd1] "+r"(mstatus_rval.raw),
+         [rd2] "=r"(reg_backup_1),
+         [rd3] "+r"(reg_backup_2),
+         [rd4] "=r"(mscratch)
+        ::);
+
+      cvprintf(V_DEBUG, "Reg1 read: %08x, mscratchcsw swap result: %08x, mscratch: %08x\n", reg_backup_1, reg_backup_2, mscratch);
+      test_fail += reg_backup_1 != reg_backup_2 || reg_backup_1 != mscratch;
+    }
+
+    mstatus_rval.fields.mpp = 0x3;
+    // Set mpp to 0x3 and attempt swap
     __asm__ volatile (R"(
       csrrw %[rd1], mstatus, %[rd1]
       add   %[rd2], sp, zero
       csrrw %[rd3], 0x348, sp
       csrrs %[rd4], mscratch, zero
       csrrw sp, 0x348, %[rd3]
-      add   %[rd3], sp, zero
-      csrrw zero, mscratch, zero
     )":[rd1] "+r"(mstatus_rval.raw),
        [rd2] "=r"(reg_backup_1),
-       [rd3] "+r"(reg_backup_2),
+       [rd3] "=r"(reg_backup_2),
        [rd4] "=r"(mscratch)
       ::);
 
     cvprintf(V_DEBUG, "Reg1 read: %08x, mscratchcsw swap result: %08x, mscratch: %08x\n", reg_backup_1, reg_backup_2, mscratch);
-    test_fail += reg_backup_1 != reg_backup_2 || reg_backup_1 != mscratch;
+    test_fail += reg_backup_1 != reg_backup_2 || mscratch != 0;
   }
-
-  mstatus_rval.fields.mpp = 0x3;
-  // Set mpp to 0x3 and attempt swap
-  __asm__ volatile (R"(
-    csrrw %[rd1], mstatus, %[rd1]
-    add   %[rd2], sp, zero
-    csrrw %[rd3], 0x348, sp
-    csrrs %[rd4], mscratch, zero
-    csrrw sp, 0x348, %[rd3]
-  )":[rd1] "+r"(mstatus_rval.raw),
-     [rd2] "=r"(reg_backup_1),
-     [rd3] "=r"(reg_backup_2),
-     [rd4] "=r"(mscratch)
-    ::);
-
-  cvprintf(V_DEBUG, "Reg1 read: %08x, mscratchcsw swap result: %08x, mscratch: %08x\n", reg_backup_1, reg_backup_2, mscratch);
-  test_fail += reg_backup_1 != reg_backup_2 || mscratch != 0;
+  else {
+    cvprintf(V_LOW, "User mode not available, skipping test");
+  }
 
   if (test_fail) {
     cvprintf(V_LOW, "\nTest: \"%s\" FAIL!\n", name);
@@ -2224,6 +2229,18 @@ uint32_t rw_mscratchcsw_illegal(uint32_t index, uint8_t report_name) {
   if (report_name) {
     cvprintf(V_LOW, "\"%s\"", name);
     return 0;
+  }
+
+  if (!has_umode_configured()) {
+    *g_expect_illegal = 1;
+    __asm__ volatile (R"( csrrw %[rd1], 0x348, sp)"
+      : [rd1] "=r"(reg_backup_1) ::);
+    test_fail += (uint8_t)((*g_expect_illegal ? 1 : 0));
+
+    *g_expect_illegal = 1;
+    __asm__ volatile (R"( csrrw sp, 0x348, %[rd1])"
+      :: [rd1] "r"(reg_backup_1) ::);
+    test_fail += (uint8_t)((*g_expect_illegal ? 1 : 0));
   }
 
   // Set mpp to 0x3 and attempt swap

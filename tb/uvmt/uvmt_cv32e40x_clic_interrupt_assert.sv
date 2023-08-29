@@ -2936,6 +2936,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
       `uvm_error(info_tag,
         $sformatf("mepc[0] should always be zero"));
 
+    `ifndef CORE_IS_CV32E40X
     // ------------------------------------------------------------------------
     // Checks correct behavior of accesses to mscratchcsw
     // ------------------------------------------------------------------------
@@ -2964,6 +2965,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
     else
       `uvm_error(info_tag,
         $sformatf("mscratchcsw value not as expected"));
+    `endif
 
     // ------------------------------------------------------------------------
     // Checks correct behavior of accesses to mscratchcswl

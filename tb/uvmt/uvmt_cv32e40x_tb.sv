@@ -335,7 +335,6 @@ module uvmt_cv32e40x_tb;
     `RVFI_CSR_BIND(mintstatus)
     `RVFI_CSR_BIND(mintthresh)
     `RVFI_CSR_BIND(mnxti)
-    `RVFI_CSR_BIND(mscratchcsw)
     `RVFI_CSR_BIND(mscratchcswl)
     `RVFI_CSR_BIND(mtvt)
   end : gen_clic_rvfi_bind
@@ -482,7 +481,7 @@ module uvmt_cv32e40x_tb;
         .mie                 (cs_registers_i.mie_rdata),
         .mnxti               (cs_registers_i.mnxti_rdata),
         .mscratch            (cs_registers_i.mscratch_rdata),
-        .mscratchcsw         (cs_registers_i.mscratchcsw_rdata),
+        .mscratchcsw         ('0 /* Not in 40x */),
         .mscratchcswl        (cs_registers_i.mscratchcswl_rdata),
         .dcsr                (cs_registers_i.dcsr_rdata),
 
@@ -1172,7 +1171,6 @@ module uvmt_cv32e40x_tb;
        `RVFI_CSR_UVM_CONFIG_DB_SET(mintstatus)
        `RVFI_CSR_UVM_CONFIG_DB_SET(mintthresh)
        `RVFI_CSR_UVM_CONFIG_DB_SET(mnxti)
-       `RVFI_CSR_UVM_CONFIG_DB_SET(mscratchcsw)
        `RVFI_CSR_UVM_CONFIG_DB_SET(mscratchcswl)
        `RVFI_CSR_UVM_CONFIG_DB_SET(mtvt)
      `endif
