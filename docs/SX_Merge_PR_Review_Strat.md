@@ -9,8 +9,7 @@ S->X PR review key points:
     * mhpmcounters, xif, etc.
     * (Auto-merging sometimes tries to delete X-features.)
 * Rejection Diff
-    * If the PRer adds a "rejection diff" it is useful to review.
-    * Check that updates weren't accidentally omitted.
+    * Read the "rejection diff", to heck that updates weren't accidentally omitted.
 * Familiar/Relevant Changes
     * Skim through the diff and see if it generally makes sense.
 * Test Results
