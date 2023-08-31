@@ -20,6 +20,7 @@ module uvmt_cv32e40x_rv32e_assert
   import uvma_rvfi_pkg::*;
   import cv32e40x_pkg::*;
   import uvmt_cv32e40x_base_test_pkg::*;
+  import isa_decoder_pkg::*;
   (
       uvma_rvfi_instr_if_t rvfi_if
   );
@@ -70,6 +71,16 @@ module uvmt_cv32e40x_rv32e_assert
     p_unimplemented_register_traps(rvfi_if.instr_asm.rd.gpr.raw, rvfi_if.instr_asm.rd.valid)
   )
   else `uvm_error(info_tag, $sformatf("RS2 is outside rv32e and should trap. RS2==%d", rvfi_if.instr_asm.rd.gpr.raw));
+
+  a_unimplemented_rlist_traps: assert property(
+      rvfi_if.rvfi_valid &&
+      rvfi_if.instr_asm.rlist.valid &&
+      (rvfi_if.instr_asm.rlist.rlist.raw > RA__S0_S1)
+    |->
+      rvfi_if.rvfi_trap.trap
+  )
+  else `uvm_error(info_tag, $sformatf("Rlist is outside rv32e and should trap. Rlist==%d", rvfi_if.instr_asm.rlist.rlist.raw));
+
 
 endmodule : uvmt_cv32e40x_rv32e_assert
 
