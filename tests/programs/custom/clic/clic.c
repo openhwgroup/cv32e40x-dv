@@ -2241,6 +2241,11 @@ uint32_t rw_mscratchcsw_illegal(uint32_t index, uint8_t report_name) {
     __asm__ volatile (R"( csrrw sp, 0x348, %[rd1])"
       :: [rd1] "r"(reg_backup_1) :);
     test_fail += (uint8_t)((*g_expect_illegal ? 1 : 0));
+
+    *g_expect_illegal = 1;
+    __asm__ volatile (R"( csrrs zero, 0x348, zero)"
+      :: [rd1] "r"(reg_backup_1) :);
+    test_fail += (uint8_t)((*g_expect_illegal ? 1 : 0));
   }
 
   // Set mpp to 0x3 and attempt swap
