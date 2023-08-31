@@ -590,7 +590,8 @@ module uvmt_cv32e40x_tb;
   bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
     uvmt_cv32e40x_rvfi_assert #(
       .CLIC          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-      .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+      .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
+      .RV32          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32)
     ) rvfi_assert_i (
       .rvfi_if          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
       .support_if       (dut_wrap.cv32e40x_wrapper_i.support_logic_module_o_if.slave_mp),
@@ -966,6 +967,13 @@ module uvmt_cv32e40x_tb;
                                                                     .cov_assert_if(debug_cov_assert_if),
                                                                     .support_if (support_logic_module_o_if.slave_mp)
                                                                     );
+
+
+    if (CORE_PARAM_RV32 == cv32e40x_pkg::RV32E) begin: gen_rv32e_assert
+      bind cv32e40x_wrapper uvmt_cv32e40x_rv32e_assert u_rv32e_assert(.rvfi_if(rvfi_instr_if)
+                                                                    );
+    end : gen_rv32e_assert
+
 
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
       .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
