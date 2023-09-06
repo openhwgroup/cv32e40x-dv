@@ -2936,23 +2936,26 @@ module uvmt_cv32e40x_clic_interrupt_assert
       `uvm_error(info_tag,
         $sformatf("mepc[0] should always be zero"));
 
+    `ifndef CORE_IS_CV32E40X
     // ------------------------------------------------------------------------
     // Checks correct behavior of accesses to mscratchcsw
     // ------------------------------------------------------------------------
-    // FIXME: Fails for undefined CSR instructions (needs defined behavior)
     property p_mscratchcsw_value;
            is_mscratchcsw_access_instr
-        && csr_instr.funct3    == CSRRW
-        && csr_instr.rd        != X0
-        && csr_instr.n.rs1     != X0
       |->
            rvfi_rd_wdata       == (csr_instr.rd != X0 ? rvfi_mscratch_rdata : 'b0)
         && rvfi_mscratch_wdata == rvfi_rs1_rdata
         && mstatus_fields.mpp  != rvfi_mode
+        && csr_instr.funct3    == CSRRW
+        && csr_instr.rd        != X0
+        && csr_instr.n.rs1     != X0
       or
            rvfi_rd_wdata       == rvfi_rs1_rdata
         && rvfi_mscratch_wmask == 'h0
         && mstatus_fields.mpp  == rvfi_mode
+        && csr_instr.funct3    == CSRRW
+        && csr_instr.rd        != X0
+        && csr_instr.n.rs1     != X0
       or
            rvfi_trap.exception
       or
@@ -2965,23 +2968,45 @@ module uvmt_cv32e40x_clic_interrupt_assert
       `uvm_error(info_tag,
         $sformatf("mscratchcsw value not as expected"));
 
+    `else // CORE_IS_CV32E40X
+
+    property p_mscratchcsw_illegal;
+        is_mscratchcsw_access_instr
+      |->
+        rvfi_trap.exception
+      or
+        rvfi_trap.trap
+     && rvfi_trap.debug
+     && rvfi_trap.debug_cause == cv32e40x_pkg::DBG_CAUSE_TRIGGER
+     && !rvfi_trap.exception
+      ;
+    endproperty : p_mscratchcsw_illegal
+
+    a_mscratchcsw_illegal: assert property (p_mscratchcsw_illegal)
+    else
+      `uvm_error(info_tag,
+        $sformatf("csr accessess to mscratchcsw should never be executed without trapping"));
+    `endif // ifndef CORE_IS_CV32E40X
+
     // ------------------------------------------------------------------------
     // Checks correct behavior of accesses to mscratchcswl
     // ------------------------------------------------------------------------
-    // FIXME: Fails for undefined CSR instructions (needs defined behavior)
     property p_mscratchcswl_value;
            is_mscratchcswl_access_instr
-        && csr_instr.funct3    == CSRRW
-        && csr_instr.rd        != X0
-        && csr_instr.n.rs1     != X0
       |->
            rvfi_rd_wdata       == (csr_instr.rd != X0 ? rvfi_mscratch_rdata : 'b0)
         && rvfi_mscratch_wdata == rvfi_rs1_rdata
         && |mcause_fields.mpil  ^ |mintstatus_fields.mil
+        && csr_instr.funct3    == CSRRW
+        && csr_instr.rd        != X0
+        && csr_instr.n.rs1     != X0
       or
            rvfi_rd_wdata       == rvfi_rs1_rdata
         && rvfi_mscratch_wmask == 'h0
         && |mcause_fields.mpil ^~ |mintstatus_fields.mil
+        && csr_instr.funct3    == CSRRW
+        && csr_instr.rd        != X0
+        && csr_instr.n.rs1     != X0
       or
            rvfi_trap.exception
       or
