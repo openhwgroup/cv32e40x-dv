@@ -45,7 +45,7 @@
 #define DEBUG_REQ_CONTROL_REG *((volatile uint32_t * volatile) (CV_VP_DEBUG_CONTROL_BASE))
 
 #define MARCHID_CV32E40X 0x14
-#define MARCHID_CV32E40S 0x15
+#define MARCHID_CV32E40X 0x15
 
 // __FUNCTION__ is C99 and newer, -Wpedantic flags a warning that
 // this is not ISO C, thus we wrap this instatiation in a macro
@@ -3129,7 +3129,7 @@ uint32_t has_pmp_configured(void) {
     case (MARCHID_CV32E40X):
       return 0;
       break;
-    case (MARCHID_CV32E40S):
+    case (MARCHID_CV32E40X):
       ;; // Do nothing and continue execution
       break;
   }

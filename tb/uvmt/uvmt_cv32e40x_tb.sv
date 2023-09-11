@@ -609,7 +609,509 @@ module uvmt_cv32e40x_tb;
   // Core integration assertions
 
   bind cv32e40x_wrapper
-    uvmt_cv32e40x_integration_assert  integration_assert_i (.*);
+    uvmt_cv32e40x_integration_assert  integration_assert_i (
+      .rvfi_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+      .support_if (support_logic_module_o_if.slave_mp),
+      .*
+    );
+
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_data_independent_timing_assert #(
+      .SECURE  (SECURE)
+    ) xsecure_data_independent_timing_assert_i   (
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //Interfaces:
+      .rvfi_if    (rvfi_instr_if),
+      .rvfi_cpuctrl (rvfi_csr_cpuctrl_if),
+
+      //CSRs:
+      .dataindtiming_enabled (core_i.xsecure_ctrl.cpuctrl.dataindtiming)
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_hardened_pc_assert #(
+      .SECURE  (SECURE)
+    ) xsecure_hardened_pc_assert_i   (
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //CSRs:
+      .pc_hardening_enabled (core_i.xsecure_ctrl.cpuctrl.pc_hardening),
+      .dataindtiming_enabled (core_i.xsecure_ctrl.cpuctrl.dataindtiming),
+
+      //Alert:
+      .alert_major_due_to_pc_err (core_i.alert_i.pc_err_i),
+
+      //IF:
+      .if_valid (core_i.if_valid),
+      .ptr_in_if (core_i.if_stage_i.ptr_in_if_o),
+      .if_instr_cmpr (core_i.if_stage_i.compressed_decoder_i.is_compressed_o),
+      .if_pc (core_i.pc_if),
+      .dummy_insert (dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.dummy_insert),
+
+      //ID:
+      .id_ready (core_i.id_ready),
+      .id_pc (core_i.id_stage_i.if_id_pipe_i.pc),
+      .id_last_op (core_i.if_id_pipe.last_op),
+      .id_first_op (core_i.if_id_pipe.first_op),
+      .jump_in_id (core_i.controller_i.controller_fsm_i.jump_in_id),
+      .kill_id (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_id),
+      .halt_id (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.halt_id),
+
+      //EX:
+      .ex_first_op (core_i.id_ex_pipe.first_op),
+      .branch_in_ex (core_i.controller_i.controller_fsm_i.branch_in_ex),
+      .kill_ex (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_ex),
+      .halt_ex (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.halt_ex),
+
+      //Controll signals:
+      .pc_set (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_set),
+      .pc_mux (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_mux),
+
+      //Signals to glitch check:
+      .branch_target (core_i.ex_stage_i.branch_target_o),
+      .branch_decision (core_i.ex_stage_i.alu_i.cmp_result_o),
+      .jump_target (core_i.jump_target_id),
+      .mepc (core_i.cs_registers_i.mepc_rdata)
+
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_reduced_profiling_infrastructure_assert #(
+      .SECURE  (SECURE)
+    ) xsecure_reduced_profiling_infrastructure_assert_i   (
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      .mhpmevent (core_i.cs_registers_i.mhpmevent_rdata),
+      .mhpmcounter (core_i.cs_registers_i.mhpmcounter_rdata),
+      .mcountinhibit (core_i.cs_registers_i.mcountinhibit_rdata)
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_hardened_csrs_assert #(
+      .SECURE  (SECURE)
+    ) xsecure_hardened_csrs_assert_i   (
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //Alert:
+      .alert_major (core_i.alert_major_o),
+
+      //CSRs:
+      .mstateen0            (core_i.cs_registers_i.mstateen0_csr_i.rdata_q),
+      .priv_lvl             (core_i.cs_registers_i.priv_lvl_i.rdata_q),
+      .jvt                  (core_i.cs_registers_i.jvt_csr_i.rdata_q),
+      .mstatus              (core_i.cs_registers_i.mstatus_csr_i.rdata_q),
+      .cpuctrl              (core_i.cs_registers_i.xsecure.cpuctrl_csr_i.rdata_q),
+      .dcsr                 (core_i.cs_registers_i.gen_debug_csr.dcsr_csr_i.rdata_q),
+      .mepc                 (core_i.cs_registers_i.mepc_csr_i.rdata_q),
+      .mscratch             (core_i.cs_registers_i.mscratch_csr_i.rdata_q),
+
+      //Shadows:
+      .mstateen0_shadow     (core_i.cs_registers_i.mstateen0_csr_i.gen_hardened.shadow_q),
+      .priv_lvl_shadow      (core_i.cs_registers_i.priv_lvl_i.gen_hardened.shadow_q),
+      .jvt_shadow           (core_i.cs_registers_i.jvt_csr_i.gen_hardened.shadow_q),
+      .mstatus_shadow       (core_i.cs_registers_i.mstatus_csr_i.gen_hardened.shadow_q),
+      .cpuctrl_shadow       (core_i.cs_registers_i.xsecure.cpuctrl_csr_i.gen_hardened.shadow_q),
+      .dcsr_shadow          (core_i.cs_registers_i.gen_debug_csr.dcsr_csr_i.gen_hardened.shadow_q),
+      .mepc_shadow          (core_i.cs_registers_i.mepc_csr_i.gen_hardened.shadow_q),
+      .mscratch_shadow      (core_i.cs_registers_i.mscratch_csr_i.gen_hardened.shadow_q)
+
+    );
+
+  if (CORE_PARAM_CLIC == 1) begin: gen_hardened_csrs_clic_assert
+
+    bind cv32e40x_wrapper
+      uvmt_cv32e40x_xsecure_hardened_csrs_clic_assert #(
+        .SECURE  (SECURE)
+      ) xsecure_hardened_csrs_clic_assert_i   (
+
+        //Signals:
+        .clk_i      (clknrst_if.clk),
+        .rst_ni     (clknrst_if.reset_n),
+
+        //Alert:
+        .alert_major (core_i.alert_major_o),
+
+        //CSRs:
+        .mcause             (core_i.cs_registers_i.clic_csrs.mcause_csr_i.rdata_q),
+        .mtvt               (core_i.cs_registers_i.clic_csrs.mtvt_csr_i.rdata_q),
+        .mtvec              (core_i.cs_registers_i.clic_csrs.mtvec_csr_i.rdata_q),
+        .mintstatus         (core_i.cs_registers_i.clic_csrs.mintstatus_csr_i.rdata_q),
+        .mintthresh         (core_i.cs_registers_i.clic_csrs.mintthresh_csr_i.rdata_q),
+
+        //Shadows:
+        .mcause_shadow      (core_i.cs_registers_i.clic_csrs.mcause_csr_i.gen_hardened.shadow_q),
+        .mtvt_shadow        (core_i.cs_registers_i.clic_csrs.mtvt_csr_i.gen_hardened.shadow_q),
+        .mtvec_shadow       (core_i.cs_registers_i.clic_csrs.mtvec_csr_i.gen_hardened.shadow_q),
+        .mintstatus_shadow  (core_i.cs_registers_i.clic_csrs.mintstatus_csr_i.gen_hardened.shadow_q),
+        .mintthresh_shadow  (core_i.cs_registers_i.clic_csrs.mintthresh_csr_i.gen_hardened.shadow_q)
+
+      );
+  end : gen_hardened_csrs_clic_assert
+
+  if (CORE_PARAM_CLIC == 0) begin: gen_hardened_csrs_interrupt_assert
+
+    bind cv32e40x_wrapper
+      uvmt_cv32e40x_xsecure_hardened_csrs_interrupt_assert #(
+        .SECURE  (SECURE)
+      ) xsecure_hardened_csrs_interrupt_assert_i   (
+
+        //Signals:
+        .clk_i      (clknrst_if.clk),
+        .rst_ni     (clknrst_if.reset_n),
+
+        //Alert:
+        .alert_major (core_i.alert_major_o),
+
+        //CSRs:
+        .mcause             (core_i.cs_registers_i.basic_mode_csrs.mcause_csr_i.rdata_q),
+        .mtvec              (core_i.cs_registers_i.basic_mode_csrs.mtvec_csr_i.rdata_q),
+        .mie                (core_i.cs_registers_i.basic_mode_csrs.mie_csr_i.rdata_q),
+
+        //Shadows:
+        .mcause_shadow      (core_i.cs_registers_i.basic_mode_csrs.mcause_csr_i.gen_hardened.shadow_q),
+        .mtvec_shadow       (core_i.cs_registers_i.basic_mode_csrs.mtvec_csr_i.gen_hardened.shadow_q),
+        .mie_shadow         (core_i.cs_registers_i.basic_mode_csrs.mie_csr_i.gen_hardened.shadow_q)
+      );
+  end : gen_hardened_csrs_interrupt_assert
+
+
+
+  if (CORE_PARAM_PMP_NUM_REGIONS > 0) begin: gen_hardened_csrs_pmp_assert
+    localparam PMP_ADDR_WIDTH = (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_GRANULARITY > 0) ? 33 - uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_GRANULARITY : 32;
+
+    pmpncfg_t pmpncfg[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_NUM_REGIONS];
+    logic [PMP_ADDR_WIDTH-1:0] pmp_addr[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_NUM_REGIONS];
+
+    logic [$bits(pmpncfg_t)-1:0] pmpncfg_shadow[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_NUM_REGIONS];
+    logic [PMP_ADDR_WIDTH-1:0] pmp_addr_shadow[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_NUM_REGIONS];
+
+    for (genvar n = 0; n < uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMP_NUM_REGIONS; n++) begin
+      assign pmpncfg[n] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.csr_pmp.gen_pmp_csr[n].pmp_region.pmpncfg_csr_i.rdata_q;
+      assign pmp_addr[n] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.csr_pmp.gen_pmp_csr[n].pmp_region.pmp_addr_csr_i.rdata_q;
+
+      assign pmpncfg_shadow[n] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.csr_pmp.gen_pmp_csr[n].pmp_region.pmpncfg_csr_i.gen_hardened.shadow_q;
+      assign pmp_addr_shadow[n] = dut_wrap.cv32e40x_wrapper_i.core_i.cs_registers_i.csr_pmp.gen_pmp_csr[n].pmp_region.pmp_addr_csr_i.gen_hardened.shadow_q;
+    end
+
+
+    bind cv32e40x_wrapper
+      uvmt_cv32e40x_xsecure_hardened_csrs_pmp_assert #(
+        .SECURE  (SECURE),
+        .PMP_ADDR_WIDTH (core_i.cs_registers_i.PMP_ADDR_WIDTH),
+        .PMP_NUM_REGIONS (PMP_NUM_REGIONS)
+      ) xsecure_hardened_csrs_pmp_assert_i   (
+
+        //Signals:
+        .clk_i      (clknrst_if.clk),
+        .rst_ni     (clknrst_if.reset_n),
+
+        //Alert:
+        .alert_major (core_i.alert_major_o),
+
+        //CSRs:
+        .pmp_mseccfg        (core_i.cs_registers_i.csr_pmp.pmp_mseccfg_csr_i.rdata_q),
+        .pmpncfg            (uvmt_cv32e40x_tb.gen_hardened_csrs_pmp_assert.pmpncfg),
+        .pmp_addr           (uvmt_cv32e40x_tb.gen_hardened_csrs_pmp_assert.pmp_addr),
+
+        //Shadows:
+        .pmp_mseccfg_shadow (core_i.cs_registers_i.csr_pmp.pmp_mseccfg_csr_i.gen_hardened.shadow_q),
+        .pmpncfg_shadow     (uvmt_cv32e40x_tb.gen_hardened_csrs_pmp_assert.pmpncfg_shadow),
+        .pmp_addr_shadow    (uvmt_cv32e40x_tb.gen_hardened_csrs_pmp_assert.pmp_addr_shadow)
+      );
+
+  end : gen_hardened_csrs_pmp_assert
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_register_file_ecc_assert #(
+	    .SECURE	(SECURE)
+    ) xsecure_register_file_ecc_assert_i 	(
+
+      //Interfaces:
+      .rvfi_if	  (rvfi_instr_if),
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //Alert:
+      .alert_major (core_i.alert_major_o),
+
+      //Register file memory:
+      .gpr_mem (core_i.register_file_wrapper_i.register_file_i.mem_gated),
+
+      //Soruce registers:
+      .rs1 (core_i.if_id_pipe.instr.bus_resp.rdata[19:15]),
+      .rs2 (core_i.if_id_pipe.instr.bus_resp.rdata[24:20]),
+
+      //Writing of GPRs:
+      .gpr_we (core_i.rf_we_wb),
+      .gpr_waddr (core_i.rf_waddr_wb),
+      .gpr_wdata (core_i.rf_wdata_wb)
+
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_security_alerts_assert #(
+	    .SECURE	(SECURE)
+    ) xsecure_security_alerts_assert_i 	(
+
+      //Interfaces:
+      .rvfi_if	  (rvfi_instr_if),
+      .support_if (support_logic_module_o_if.slave_mp),
+
+      //Signals:
+      .rst_ni     (clknrst_if.reset_n),
+      .clk_i      (clknrst_if.clk),
+
+      //alerts:
+      .alert_minor (core_i.alert_minor_o),
+      .alert_major (core_i.alert_major_o),
+
+      //wb:
+      .wb_valid (core_i.wb_valid),
+      .exception_in_wb (core_i.controller_i.controller_fsm_i.exception_in_wb),
+      .exception_cause_wb (core_i.controller_i.controller_fsm_i.exception_cause_wb),
+
+      //dummy and hint:
+      .dummy_en (core_i.xsecure_ctrl.cpuctrl.rnddummy),
+      .hint_en (core_i.xsecure_ctrl.cpuctrl.rndhint),
+      .lfsr0_clock_en (core_i.cs_registers_i.xsecure.lfsr0_i.clock_en),
+      .lfsr1_clock_en (core_i.cs_registers_i.xsecure.lfsr1_i.clock_en),
+      .lfsr2_clock_en (core_i.cs_registers_i.xsecure.lfsr2_i.clock_en),
+      .seed0_we       (core_i.cs_registers_i.xsecure.lfsr0_i.seed_we_i),
+      .seed1_we       (core_i.cs_registers_i.xsecure.lfsr1_i.seed_we_i),
+      .seed2_we       (core_i.cs_registers_i.xsecure.lfsr2_i.seed_we_i),
+      .seed0_i        (core_i.cs_registers_i.xsecure.lfsr0_i.seed_i),
+      .seed1_i        (core_i.cs_registers_i.xsecure.lfsr1_i.seed_i),
+      .seed2_i        (core_i.cs_registers_i.xsecure.lfsr2_i.seed_i),
+      .lfsr0_n        (core_i.cs_registers_i.xsecure.lfsr0_i.lfsr_n),
+      .lfsr1_n        (core_i.cs_registers_i.xsecure.lfsr1_i.lfsr_n),
+      .lfsr2_n        (core_i.cs_registers_i.xsecure.lfsr2_i.lfsr_n),
+
+      //OBI:
+      .obi_data_rvalid (core_i.data_rvalid_i),
+      .obi_data_err (core_i.data_err_i),
+
+      //NMI:
+      .nmip (core_i.dcsr.nmip),
+
+      //debug:
+      .debug_mode (core_i.controller_i.controller_fsm_i.debug_mode_q)
+
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_bus_protocol_hardening_assert #(
+	    .SECURE	(SECURE)
+    ) xsecure_bus_protocol_hardening_assert_i 	(
+
+      //Interfaces:
+      .support_if (support_logic_module_o_if.slave_mp),
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //Alerts:
+      .alert_major (core_i.alert_major_o),
+      .bus_protocol_hardening_glitch (core_i.alert_i.itf_prot_err_i),
+
+      //OBI:
+      .obi_data_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
+      .obi_instr_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
+
+      //Resp valids:
+      .instr_if_mpu_resp (core_i.if_stage_i.prefetch_resp_valid),
+      .lsu_mpu_resp (core_i.load_store_unit_i.resp_valid),
+
+      //Counters:
+      .lsu_rf_core_side_cnt (core_i.load_store_unit_i.response_filter_i.core_cnt_q),
+      .lsu_rf_bus_side_cnt (core_i.load_store_unit_i.response_filter_i.bus_cnt_q)
+
+    );
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_interface_integrity_assert #(
+	    .SECURE	(SECURE),
+      .ALBUF_DEPTH (core_i.if_stage_i.ALBUF_DEPTH),
+      .ALBUF_CNT_WIDTH (core_i.if_stage_i.ALBUF_CNT_WIDTH)
+    ) xsecure_interface_integrity_assert_i 	(
+
+      //Interfaces:
+      .support_if (support_logic_module_o_if.slave_mp),
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      //Alert:
+      .alert_major (core_i.alert_major_o),
+      .alert_major_due_to_integrity_err (core_i.alert_i.itf_int_err_i),
+
+      //CSRs:
+      .integrity_enabled (core_i.xsecure_ctrl.cpuctrl.integrity),
+      .nmip (core_i.cs_registers_i.dcsr_rdata.nmip),
+      .mcause_exception_code (core_i.cs_registers_i.mcause_rdata.exception_code),
+
+      //OBI data:
+      .obi_data_req_packet (core_i.m_c_obi_data_if.req_payload),
+      .obi_data_resp_packet (core_i.m_c_obi_data_if.resp_payload),
+      .obi_data_addr (core_i.data_addr_o),
+      .obi_data_req (core_i.m_c_obi_data_if.s_req.req),
+      .obi_data_reqpar (core_i.m_c_obi_data_if.s_req.reqpar),
+      .obi_data_gnt (core_i.m_c_obi_data_if.s_gnt.gnt),
+      .obi_data_gntpar (core_i.m_c_obi_data_if.s_gnt.gntpar),
+      .obi_data_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
+      .obi_data_rvalidpar (core_i.m_c_obi_data_if.s_rvalid.rvalidpar),
+
+      //OBI instr:
+      .obi_instr_req_packet (core_i.m_c_obi_instr_if.req_payload),
+      .obi_instr_resp_packet (core_i.m_c_obi_instr_if.resp_payload),
+      .obi_instr_addr (core_i.instr_addr_o),
+      .obi_instr_req (core_i.m_c_obi_instr_if.s_req.req),
+      .obi_instr_reqpar (core_i.m_c_obi_instr_if.s_req.reqpar),
+      .obi_instr_gnt (core_i.m_c_obi_instr_if.s_gnt.gnt),
+      .obi_instr_gntpar (core_i.m_c_obi_instr_if.s_gnt.gntpar),
+      .obi_instr_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
+      .obi_instr_rvalidpar (core_i.m_c_obi_instr_if.s_rvalid.rvalidpar),
+
+      //Register file memory:
+      .gpr_mem (core_i.register_file_wrapper_i.register_file_i.mem_gated),
+      .rf_we (core_i.rf_we_wb),
+      .rf_waddr (core_i.rf_waddr_wb),
+      .rf_wdata (core_i.rf_wdata_wb),
+
+      //Alignment buffer:
+      .alb_resp_i (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.resp_i),
+      .alb_resp_q (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.resp_q),
+      .alb_valid (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.valid_q),
+      .alb_wptr (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.wptr),
+      .alb_rptr1 (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.rptr),
+      .alb_rptr2 (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.rptr2),
+
+      //If:
+      .if_valid (core_i.if_valid),
+      .if_instr_integrity_err (core_i.if_stage_i.bus_resp.integrity_err),
+      .if_instr_cmpr (core_i.if_stage_i.compressed_decoder_i.is_compressed_o),
+      .if_instr_pc (core_i.if_stage_i.pc_if_o),
+      .dummy_insert (dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.dummy_insert),
+
+      //Id:
+      .id_ready (core_i.id_ready),
+      .id_instr_integrity_err (core_i.if_id_pipe.instr.bus_resp.integrity_err),
+      .id_abort_op (dut_wrap.cv32e40x_wrapper_i.core_i.if_id_pipe.abort_op),
+      .id_illegal_insn (dut_wrap.cv32e40x_wrapper_i.core_i.if_id_pipe.illegal_c_insn),
+
+      //Wb:
+      .wb_valid (core_i.wb_valid),
+      .wb_integrity_err (core_i.ex_wb_pipe.instr.bus_resp.integrity_err),
+      .wb_instr_opcode (core_i.ex_wb_pipe.instr.bus_resp.rdata[6:0]),
+      .wb_exception (core_i.controller_i.controller_fsm_i.exception_in_wb),
+      .wb_exception_code (core_i.controller_i.controller_fsm_i.exception_cause_wb),
+      .data_integrity_err (core_i.load_store_unit_i.bus_resp.integrity_err),
+
+      //MISC:
+      .ctrl_fsm_cs (core_i.controller_i.controller_fsm_i.ctrl_fsm_cs),
+      .pc_mux (dut_wrap.cv32e40x_wrapper_i.core_i.ctrl_fsm.pc_mux),
+      .pc_set (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.ctrl_fsm_i.pc_set),
+      .seq_valid (core_i.if_stage_i.seq_valid),
+      .kill_if (core_i.ctrl_fsm.kill_if),
+      .n_flush_q (core_i.if_stage_i.prefetch_unit_i.alignment_buffer_i.n_flush_q),
+      .rchk_err_instr (core_i.if_stage_i.instruction_obi_i.rchk_err_resp),
+      .rchk_err_data (core_i.load_store_unit_i.data_obi_i.rchk_err_resp)
+
+    );
+
+
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_xsecure_dummy_and_hint_assert #(
+	    .SECURE	(SECURE)
+    ) xsecure_dummy_and_hint_assert_i 	(
+
+      //Interfaces:
+      .rvfi_if	  (rvfi_instr_if),
+      .rvfi_mcountinhibit_if (rvfi_csr_mcountinhibit_if),
+      .rvfi_dcsr_if (rvfi_csr_dcsr_if),
+
+      //Signals:
+      .clk_i      (clknrst_if.clk),
+      .rst_ni     (clknrst_if.reset_n),
+
+      .gated_clk_enabled (core_i.sleep_unit_i.clock_en),
+
+      //CSRs:
+      .rnddummy_enabled (core_i.xsecure_ctrl.cpuctrl.rnddummy),
+      .rndhint_enabled (core_i.xsecure_ctrl.cpuctrl.rndhint),
+      .dummy_freq (core_i.xsecure_ctrl.cpuctrl.rnddummyfreq),
+      .mhpmcounter (core_i.cs_registers_i.mhpmcounter_rdata),
+      .mcountinhibit (core_i.cs_registers_i.mcountinhibit_rdata),
+      .csr_waddr(core_i.cs_registers_i.csr_waddr),
+
+      //LFSR:
+      .lfsr0_seed_we (core_i.cs_registers_i.xsecure.lfsr0_i.seed_we_i),
+      .lfsr1_seed_we (core_i.cs_registers_i.xsecure.lfsr1_i.seed_we_i),
+      .lfsr2_seed_we (core_i.cs_registers_i.xsecure.lfsr2_i.seed_we_i),
+      .lfsr0_seed (core_i.cs_registers_i.xsecure.lfsr0_i.seed_i),
+      .lfsr1_seed (core_i.cs_registers_i.xsecure.lfsr1_i.seed_i),
+      .lfsr2_seed (core_i.cs_registers_i.xsecure.lfsr2_i.seed_i),
+      .lfsr0 (core_i.cs_registers_i.xsecure.lfsr0_i.lfsr_q),
+      .lfsr1 (core_i.cs_registers_i.xsecure.lfsr1_i.lfsr_q),
+      .lfsr2 (core_i.cs_registers_i.xsecure.lfsr2_i.lfsr_q),
+      .lfsr0_n (core_i.cs_registers_i.xsecure.lfsr0_i.lfsr_n),
+      .lfsr1_n (core_i.cs_registers_i.xsecure.lfsr1_i.lfsr_n),
+      .lfsr2_n (core_i.cs_registers_i.xsecure.lfsr2_i.lfsr_n),
+      .lfsr0_clk_en (core_i.cs_registers_i.xsecure.lfsr0_i.clock_en),
+      .lfsr1_clk_en (core_i.cs_registers_i.xsecure.lfsr1_i.clock_en),
+      .lfsr2_clk_en (core_i.cs_registers_i.xsecure.lfsr2_i.clock_en),
+
+      //IF:
+      .if_hint  (core_i.if_stage_i.instr_hint),
+      .if_dummy (core_i.if_stage_i.dummy_insert),
+      .kill_if  (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_if),
+      .if_valid (core_i.if_valid),
+      .ptr_in_if (core_i.if_stage_i.ptr_in_if_o),
+      .if_first_op (core_i.if_stage_i.first_op),
+
+      //ID:
+      .operand_a (core_i.id_stage_i.operand_a),
+      .operand_b (core_i.id_stage_i.operand_b),
+      .id_instr (core_i.if_id_pipe.instr.bus_resp.rdata),
+      .id_dummy (core_i.if_id_pipe.instr_meta.dummy),
+      .id_hint (core_i.if_id_pipe.instr_meta.hint),
+      .kill_id (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_id),
+      .id_ready (core_i.id_ready),
+      .id_valid (core_i.id_valid),
+      .id_last_op (core_i.id_stage_i.last_op),
+
+      //EX:
+      .kill_ex (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_ex),
+      .ex_ready (core_i.ex_ready),
+
+      //WB:
+      .kill_wb (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.kill_wb),
+      .wb_dummy (core_i.ex_wb_pipe.instr_meta.dummy),
+      .wb_hint (core_i.ex_wb_pipe.instr_meta.hint),
+      .wb_valid (core_i.wb_valid),
+      .wb_instr (core_i.ex_wb_pipe.instr.bus_resp.rdata),
+
+      //Controller:
+      .debug_mode (core_i.controller_i.controller_fsm_i.debug_mode_q),
+      .stopcount_in_debug (core_i.cs_registers_i.debug_stopcount)
+    );
 
 
   // Debug assertion and coverage interface
