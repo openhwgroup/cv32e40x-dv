@@ -205,8 +205,15 @@ module uvmt_cv32e40x_tb;
                                                                    .rvfi_mem_rmask(rvfi_i.rvfi_mem_rmask[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8]),
                                                                    .rvfi_mem_wdata(rvfi_i.rvfi_mem_wdata[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN*0    +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN]),
                                                                    .rvfi_mem_wmask(rvfi_i.rvfi_mem_wmask[uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8*0  +:uvma_rvfi_pkg::NMEM*uvmt_cv32e40x_base_test_pkg::XLEN/8]),
-                                                                   .instr_prot(rvfi_i.rvfi_instr_prot),
-                                                                   .mem_prot(rvfi_i.rvfi_mem_prot)
+                                                                   .rvfi_instr_prot(rvfi_i.rvfi_instr_prot),
+                                                                   .rvfi_instr_memtype(rvfi_i.rvfi_instr_memtype),
+                                                                   .rvfi_instr_dbg(rvfi_i.rvfi_instr_dbg),
+                                                                   .rvfi_mem_prot(rvfi_i.rvfi_mem_prot),
+                                                                   .rvfi_mem_exokay(rvfi_i.rvfi_mem_exokay),
+                                                                   .rvfi_mem_err(rvfi_i.rvfi_mem_err),
+                                                                   .rvfi_mem_atop(rvfi_i.rvfi_mem_atop),
+                                                                   .rvfi_mem_memtype(rvfi_i.rvfi_mem_memtype),
+                                                                   .rvfi_mem_dbg(rvfi_i.rvfi_mem_dbg)
                                                                    );
 
   // RVFI CSR binds
@@ -704,24 +711,20 @@ module uvmt_cv32e40x_tb;
       .*
     );
 
-    // TODO: silabs-hefegran, reenable when all prerequisites are in place
-    // Atomic assert
-    //bind  dut_wrap.cv32e40x_wrapper_i
-    //uvmt_cv32e40x_atomic_assert #(
-    //) atomic_assert_i (
-    //  .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
-    //  .data_obi                (dut_wrap.obi_data_if),
-    //  .id_stage_instr_rdata_i  (core_i.if_id_pipe.instr.bus_resp.rdata),
-    //  .ex_stage_instr_rdata_i  (core_i.id_ex_pipe.instr.bus_resp.rdata),
-    //  .wb_stage_instr_rdata_i  (core_i.ex_wb_pipe.instr.bus_resp.rdata),
-    //  .if_valid                (core_i.if_valid),
-    //  .id_valid                (core_i.id_valid),
-    //  .ex_valid                (core_i.ex_valid),
-    //  .wb_valid                (core_i.wb_valid),
-    //  .clk                     (clknrst_if.clk),
-    //  .rst_n                   (clknrst_if.reset_n),
-    //  .*
-    //);
+
+    //Atomic assert
+    bind  dut_wrap.cv32e40x_wrapper_i
+    uvmt_cv32e40x_atomic_assert #(
+      .A_EXT (A_EXT)
+    ) atomic_assert_i (
+      .clknrst_if              (dut_wrap.clknrst_if),
+      .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+      .data_obi_if             (dut_wrap.obi_data_if),
+      .support_if              (support_logic_module_o_if.slave_mp),
+
+      .ex_stage_instr_rdata_i  (core_i.id_ex_pipe.instr.bus_resp.rdata),
+      .ex_valid                (core_i.ex_valid)
+    );
 
     logic [31:0] tdata1_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
     logic [31:0] tdata2_array[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DBG_NUM_TRIGGERS+1];
