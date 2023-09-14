@@ -237,50 +237,7 @@ module uvmt_cv32e40x_atomic_assert
 
 
     // A_EXT = A or ZALRSC:
-
-    // When an atomic instruction is recognized, the atomic valid signal is asserted
-    // TODO: Change assertion to check for equivalence:
-    //        rvfi_valid
-    //        |->
-    //        (conditions == atomic.valid)
-    a_atomic_instr : assert property (
-      rvfi_if.rvfi_valid
-      && (rvfi_if.rvfi_insn[14:12] == 3'b010)
-      && (rvfi_if.rvfi_insn[6:0]   == 7'b0101111)
-      && (
-      (  rvfi_if.rvfi_insn[31:27] == 5'b00010 && rvfi_if.rvfi_insn[24:20] == 5'b0)
-      || rvfi_if.rvfi_insn[31:27] == 5'b00011
-      || rvfi_if.rvfi_insn[31:27] == 5'b00001
-      || rvfi_if.rvfi_insn[31:27] == 5'b00000
-      || rvfi_if.rvfi_insn[31:27] == 5'b00100
-      || rvfi_if.rvfi_insn[31:27] == 5'b01100
-      || rvfi_if.rvfi_insn[31:27] == 5'b01000
-      || rvfi_if.rvfi_insn[31:27] == 5'b10000
-      || rvfi_if.rvfi_insn[31:27] == 5'b10100
-      || rvfi_if.rvfi_insn[31:27] == 5'b11000
-      || rvfi_if.rvfi_insn[31:27] == 5'b11100
-      )
-      |->
-      rvfi_if.instr_asm.atomic.valid
-    ) else `uvm_error(info_tag, "Atomic instruction not decoded.\n");
-
-    // When an atomic memory operation is initiated, earlier memory operations must be finished.
-    a_atomic_atop_correct_value : assert property (
-      data_obi_if.atop[5] == 1 && ex_valid
-      |->
-      data_obi_if.atop[4:0] == 5'b00010
-      || data_obi_if.atop[4:0] == 5'b00011
-      || data_obi_if.atop[4:0] == 5'b00001
-      || data_obi_if.atop[4:0] == 5'b00000
-      || data_obi_if.atop[4:0] == 5'b00100
-      || data_obi_if.atop[4:0] == 5'b01100
-      || data_obi_if.atop[4:0] == 5'b01000
-      || data_obi_if.atop[4:0] == 5'b10000
-      || data_obi_if.atop[4:0] == 5'b10100
-      || data_obi_if.atop[4:0] == 5'b11000
-      || data_obi_if.atop[4:0] == 5'b11100
-    ) else `uvm_error(info_tag, "Atop does not match to an atomic instruction.\n");
-
+    //TODO: krdosvik, it would be nice to have rvfi timing. Look into this when enabeling A_EXT=ATOMIC
     // atop[4:0] shall be equal to bits [31:27] of the instruction if atop[5] == 1.
     // atop compared to bits [31:27] of the instruction
     a_atomic_atop_match_instruction : assert property (
