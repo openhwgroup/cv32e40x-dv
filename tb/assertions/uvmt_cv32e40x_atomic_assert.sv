@@ -36,9 +36,7 @@ module uvmt_cv32e40x_atomic_assert
   // ---------------------------------------------------------------------------
 
   string  info_tag                = "CV32E40X_ATOMIC_ASSERT";
-  localparam IS_ATOMIC_OPERATION         = 5;
-  localparam ATOMIC_OPERATION_CAUSE_MSB  = 4;
-  localparam ATOMIC_OPERATION_CAUSE_LSB  = 0;
+  localparam ATOP_ATOMIC_OPERATION_POS      = 5;
   localparam ATOP_LR_W                   = 6'h22;
   localparam ATOP_SC_W                   = 6'h23;
 
@@ -54,7 +52,7 @@ module uvmt_cv32e40x_atomic_assert
       reservation_valid <= 1'b0;
       reservation_set <= '0;
     end else begin
-      if (support_if.asm_rvfi.instr == LR_W && rvfi_if.rvfi_mem_exokay && rvfi_if.rvfi_valid && !rvfi_if.rvfi_trap.trap) begin
+      if (support_if.asm_rvfi.instr == LR_W && rvfi_if.rvfi_mem_exokay && rvfi_if.rvfi_valid && (!rvfi_if.rvfi_trap.trap || rvfi_if.rvfi_trap.debug_cause==DBG_CAUSE_STEP)) begin
         reservation_valid <= 1'b1;
         reservation_set <= rvfi_if.rvfi_mem_addr[31:0];
       end else if (support_if.asm_rvfi.instr == SC_W && rvfi_if.rvfi_valid && !rvfi_if.rvfi_trap.trap) begin
@@ -79,15 +77,15 @@ module uvmt_cv32e40x_atomic_assert
     // A_EXT = A or ZALRSC:
 
     a_atomic_no_outstanding_req: assert property (
-      data_obi_if.req && data_obi_if.gnt && (data_obi_if.atop[5] == 1) ##1 !data_obi_if.rvalid
+      data_obi_if.req && data_obi_if.gnt && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS] ##1 !data_obi_if.rvalid
       |->
-      (!(data_obi_if.req && data_obi_if.gnt) until_with data_obi_if.rvalid)
+      (!data_obi_if.req until_with data_obi_if.rvalid)
     ) else `uvm_error(info_tag, "There are unfinished atomic memory operations.\n");
 
     a_atomic_no_initiated_req: assert property (
-      data_obi_if.req && data_obi_if.gnt && !(data_obi_if.atop[5] == 1)
+      data_obi_if.req && data_obi_if.gnt && !data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS]
       |->
-      (!(data_obi_if.req && data_obi_if.gnt && (data_obi_if.atop[5] == 1)) until_with data_obi_if.rvalid)
+      (!(data_obi_if.req && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS])) until_with data_obi_if.rvalid
     ) else `uvm_error(info_tag, "There are unfinished earlier memory operations.\n");
 
     // A_EXT = ZALRSC:
@@ -98,8 +96,20 @@ module uvmt_cv32e40x_atomic_assert
       (support_if.asm_rvfi.instr == LR_W ||
       support_if.asm_rvfi.instr == SC_W)
       |->
-      rvfi_if.rvfi_mem_atop[IS_ATOMIC_OPERATION]
+      rvfi_if.rvfi_mem_atop[ATOP_ATOMIC_OPERATION_POS]
     ) else `uvm_error(info_tag, "Atop[5] is cleared for a non-traped LR_W or SC_W instruction.\n");
+
+    //Verifying that the oposite of the above assertion is also true.
+    a_atomic_atop_5_zalrsc: assert property (
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      rvfi_if.rvfi_mem_atop[ATOP_ATOMIC_OPERATION_POS] &&
+      (rvfi_if.rvfi_mem_rmask ||
+      rvfi_if.rvfi_mem_wmask)
+      |->
+      (support_if.asm_rvfi.instr == LR_W ||
+      support_if.asm_rvfi.instr == SC_W)
+    ) else `uvm_error(info_tag, "Atop[5] is set for a memory instruction, but it is not a LR_W or SC_W.\n");
 
     a_atomic_atop_4_to_0_lrw: assert property (
       rvfi_if.rvfi_valid &&
@@ -182,9 +192,8 @@ module uvmt_cv32e40x_atomic_assert
       rvfi_if.rvfi_rs1_rdata[1:0]  == 2'b0
     ) else `uvm_error(info_tag, "A non trapped SC_W or LR_W instruction access a non-aligned memory field.\n");
 
-    a_atomic_alignment_exceptions: assert property (
-      (support_if.asm_rvfi.instr == SC_W ||
-      support_if.asm_rvfi.instr == LR_W) &&
+    a_atomic_alignment_exceptions_lrw: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
 
       rvfi_if.rvfi_valid &&
       rvfi_if.rvfi_rs1_rdata[1:0] != 2'b0 &&
@@ -199,13 +208,32 @@ module uvmt_cv32e40x_atomic_assert
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
 
       |->
-      (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED &&
-      support_if.asm_rvfi.instr == LR_W)
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED &&
+      support_if.asm_rvfi.instr == LR_W
 
-      || (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED &&
+    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+
+    a_atomic_alignment_exceptions_scw: assert property (
+      support_if.asm_rvfi.instr == SC_W &&
+
+      rvfi_if.rvfi_valid &&
+      rvfi_if.rvfi_rs1_rdata[1:0] != 2'b0 &&
+
+      !rvfi_if.rvfi_trap.debug &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_BUS_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ECALL_MMODE &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_STORE_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
+
+      |->
+
+      (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED &&
       support_if.asm_rvfi.instr == SC_W)
 
-    ) else `uvm_error(info_tag, "A SC_W or LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
 
     // A_EXT = A or ZALRSC:
@@ -236,6 +264,7 @@ module uvmt_cv32e40x_atomic_assert
       rvfi_if.instr_asm.atomic.valid
     ) else `uvm_error(info_tag, "Atomic instruction not decoded.\n");
 
+    // When an atomic memory operation is initiated, earlier memory operations must be finished.
     a_atomic_atop_correct_value : assert property (
       data_obi_if.atop[5] == 1 && ex_valid
       |->
