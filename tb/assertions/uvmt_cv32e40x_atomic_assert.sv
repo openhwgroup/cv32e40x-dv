@@ -208,8 +208,7 @@ module uvmt_cv32e40x_atomic_assert
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
 
       |->
-      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED &&
-      support_if.asm_rvfi.instr == LR_W
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED
 
     ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
@@ -230,8 +229,7 @@ module uvmt_cv32e40x_atomic_assert
 
       |->
 
-      (rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED &&
-      support_if.asm_rvfi.instr == SC_W)
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED
 
     ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
