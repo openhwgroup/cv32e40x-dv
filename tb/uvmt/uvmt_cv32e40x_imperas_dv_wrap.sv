@@ -490,7 +490,6 @@ module uvmt_cv32e40x_imperas_dv_wrap
      `RVVI_SET_CSR( `CSR_MNXTI_ADDR,       mnxti         )
      `RVVI_SET_CSR( `CSR_MINTSTATUS_ADDR,  mintstatus    )
      `RVVI_SET_CSR( `CSR_MINTTHRESH_ADDR,  mintthresh    )
-     `RVVI_SET_CSR( `CSR_MSCRATCHCSW_ADDR, mscratchcsw   )
      `RVVI_SET_CSR( `CSR_MSCRATCHCSWL_ADDR,mscratchcswl  )
    end
 
@@ -845,7 +844,6 @@ interface uvmt_imperas_dv_if_t;
     // we have a proper fix implemented in the ISS
     if (CORE_PARAM_CLIC == 1) begin
       void'(rvviRefCsrSetVolatile(hart_id, `CSR_MNXTI_ADDR));
-      void'(rvviRefCsrSetVolatile(hart_id, `CSR_MSCRATCHCSW_ADDR));
       void'(rvviRefCsrSetVolatile(hart_id, `CSR_MSCRATCHCSWL_ADDR));
     end
 

@@ -165,6 +165,9 @@ typedef union {
 
 extern void end_handler_incr_mepc(void);
 
+uint32_t has_umode_configured(void);
+uint32_t has_atomics_configured(void);
+
 void _debugger_start(void)           __attribute__((section(".debugger"), naked));
 void _debug_handler(void)            __attribute__((section(".debugger")));
 void _debug_mode_register_test(void) __attribute__((section(".debugger")));
@@ -207,6 +210,58 @@ volatile uint32_t g_register_access_status;
 volatile uint8_t  g_some_data_bytes[4]     = {0xC0, 0xFF, 0xEB, 0xEE};
 volatile uint16_t g_some_data_halfwords[2] = {0xDEAD, 0xBEEF};
 volatile uint32_t g_some_data_word         = 0xC0DECAFE;
+
+/*
+ * has_umode_configured
+ *
+ * Check if we are running a core supporting umode
+ *
+ */
+uint32_t has_umode_configured(void) {
+  volatile uint32_t misa = 0x0;
+
+  __asm__ volatile (R"(
+    csrrs %[misa], misa, zero
+  )":[misa] "=r"(misa));
+
+  // CV32E40X does not support u-mode, skip test
+  switch ((misa & 0x00100000) > 0) {
+    case (0):
+      return 0;
+      break;
+    case (1):
+      ;; // Do nothing and continue execution
+      break;
+  }
+
+  return (1);
+}
+
+/*
+ * has_atomics_configured
+ *
+ * Check if we are running a core supporting A-extension
+ *
+ */
+uint32_t has_atomics_configured(void) {
+  volatile uint32_t misa = 0x0;
+
+  __asm__ volatile (R"(
+    csrrs %[misa], misa, zero
+  )":[misa] "=r"(misa));
+
+  // Conditionally support A-ext based on misa.A
+  switch (misa & 0x1) {
+    case (0):
+      return 0;
+      break;
+    case (1):
+      ;; // Do nothing and continue execution
+      break;
+  }
+
+  return (1);
+}
 
 /*
  * execute_test_constructor
@@ -1289,18 +1344,18 @@ void _debug_mode_register_test(void) {
 
   // TDATA1 - Check reset value
   __asm__ volatile (R"(csrr  s0,     tdata1
-                           li    s1,     0x28001000
-                           beq   s0,     s1, 1f
-                           li    s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
-                           sw    s1,     g_debug_entry_status, s2
-                         1:nop
+                       li    s1,     0x28001000
+                       beq   s0,     s1, 1f
+                       li    s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
+                       sw    s1,     g_debug_entry_status, s2
+                     1:nop
                            )" ::: "s0", "s1", "s2", "memory");
 
   // TDATA1 (Type==6) - Write 1s
   __asm__ volatile (R"(li   s0,     0x6FFFFFFF
                        csrw tdata1, s0
                        csrr s1,     tdata1
-                       li   s0,     0x6800104F
+                       li   s0,     0x68001047
                        beq  s0,     s1,  1f
                        li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
                        sw   s1,     g_debug_entry_status, s2
@@ -1341,7 +1396,7 @@ void _debug_mode_register_test(void) {
   __asm__ volatile (R"(li   s0,     0x2FFFFFFF
                        csrw tdata1, s0
                        csrr s1,     tdata1
-                       li   s0,     0x2800104F
+                       li   s0,     0x28001047
                        beq  s0,     s1,  1f
                        li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
                        sw   s1,     g_debug_entry_status, s2
@@ -1397,7 +1452,7 @@ void _debug_mode_register_test(void) {
   __asm__ volatile (R"(li   s0,     0x5FFFFFFF
                        csrw tdata1, s0
                        csrr s1,     tdata1
-                       li   s0,     0x58000241
+                       li   s0,     0x58000201
                        beq  s0,     s1,  1f
                        li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
                        sw   s1,     g_debug_entry_status, s2
@@ -1416,16 +1471,29 @@ void _debug_mode_register_test(void) {
                        )" ::: "s0", "s1", "s2", "memory");
 
 
-  // TDATA2 (Type==5) - Exception Trigger - Write 1s
-  __asm__ volatile (R"(li   s1,     0xFFFFFFFF
-                       csrw tdata2, s1
-                       csrr s0,     tdata2
-                       li   s1,     0x030009AE
-                       beq  s0,     s1,  1f
-                       li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
-                       sw   s1,     g_debug_entry_status, s2
-                     1:nop
-                       )" ::: "s0", "s1", "s2", "memory");
+  if (has_atomics_configured()) {
+    // TDATA2 (Type==5) - Exception Trigger - Write 1s
+    __asm__ volatile (R"(li   s1,     0xFFFFFFFF
+                         csrw tdata2, s1
+                         csrr s0,     tdata2
+                         li   s1,     0x010008FE
+                         beq  s0,     s1,  1f
+                         li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
+                         sw   s1,     g_debug_entry_status, s2
+                       1:nop
+                         )" ::: "s0", "s1", "s2", "memory");
+  } else {
+    // TDATA2 (Type==5) - Exception Trigger - Write 1s
+    __asm__ volatile (R"(li   s1,     0xFFFFFFFF
+                         csrw tdata2, s1
+                         csrr s0,     tdata2
+                         li   s1,     0x010008AE
+                         beq  s0,     s1,  1f
+                         li   s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
+                         sw   s1,     g_debug_entry_status, s2
+                       1:nop
+                         )" ::: "s0", "s1", "s2", "memory");
+  }
 
   // TDATA2 (Type==5) - Exception Trigger  - Write 0s
   __asm__ volatile (R"(csrwi tdata2, 0x0
@@ -1456,7 +1524,6 @@ void _debug_mode_register_test(void) {
                      1:nop
                        )" ::: "s0", "s1", "s2");
 
-
   // TDATA2 (Disabled) - Write 1s
   __asm__ volatile (R"(li    s0,     0xFFFFFFFF
                        csrw  tdata2, s0
@@ -1476,21 +1543,11 @@ void _debug_mode_register_test(void) {
                      1:nop
                        )" ::: "s0", "s1", "s2", "memory");
 
-  // TDATA3 - Write 1s
-  __asm__ volatile (R"(li    s0,     0xFFFFFFFF
-                       csrw  tdata3, s0
-                       csrr  s1,     tdata3
-                       beqz  s1,     1f
-                       li    s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
-                       sw    s1,     g_debug_entry_status, s2
-                     1:nop
-                       )" ::: "s0", "s1", "s2", "memory");
-
   // TINFO - Write 1s, Debug Access test
   __asm__ volatile (R"(li    s1,     0xFFFFFFFF
                        csrw  tinfo,  s1
                        csrr  s0,     tinfo
-                       li    s1,     0x8064
+                       li    s1,     0x01008064
                        beq   s0,     s1,  1f
                        li    s1,     0x2   #DEBUG_STATUS_ENTERED_FAIL
                        sw    s1,     g_debug_entry_status, s2
@@ -1516,7 +1573,7 @@ int test_register_access(void) {
   printf("\n\n\n --- Testing register access ---\n\n");
 
   if (DEBUG_PRINT) printf("  Checking register access from debug mode\n");
-  
+
   g_debug_sel = DEBUG_SEL_REGTEST;
   g_debug_entry_status = DEBUG_STATUS_NOT_ENTERED;
   DEBUG_REQ_CONTROL_REG = (CV_VP_DEBUG_CONTROL_DBG_REQ(0x1)        |
@@ -1560,26 +1617,13 @@ int test_register_access(void) {
   __asm__ volatile (R"(li    s1,     0x0
                        csrw  tinfo,  s1
                        csrr  s0,     tinfo
-                       li    s1,     0x8064
+                       li    s1,     0x01008064
                        bne   s0,     s1,  1f
                        li    s1,     0x0   #SUCCESS
                        sw    s1,     g_register_access_status, s2
                      1:nop
                        )" ::: "s0", "s1", "s2", "memory");
   if (g_register_access_status != SUCCESS) return FAIL;
-
-  // TCONTROL - Write 1s
-  g_register_access_status = FAIL;
-  __asm__ volatile (R"(li    s1,     0xFFFFFFFF
-                       csrw  tcontrol,  s1
-                       csrr  s0,     tcontrol
-                       bnez  s0,     1f
-                       li    s1,     0x0   #SUCCESS
-                       sw    s1,     g_register_access_status, s2
-                     1:nop
-                       )" ::: "s0", "s1", "s2", "memory");
-  if (g_register_access_status != SUCCESS) return FAIL;
-
 
   // TDATA1 - Write valid value (in m-mode), check that is ignored
   g_register_access_status = FAIL;
@@ -1611,7 +1655,7 @@ int test_register_access(void) {
   __asm__ volatile (R"(li    s1,     0x0
                        csrw  tinfo,  s1
                        csrr  s0,     tinfo
-                       li    s1,     0x8064
+                       li    s1,     0x01008064
                        bne   s0,     s1, 1f
                        li    s1,     0x0   #SUCCESS
                        sw    s1,     g_register_access_status, s2
@@ -1619,76 +1663,15 @@ int test_register_access(void) {
                        )" ::: "s0", "s1", "s2");
   if (g_register_access_status != SUCCESS) return FAIL;
 
-  // TCONTROL - Write 1s
-  g_register_access_status = FAIL;
-  __asm__ volatile (R"(li    s1,     0xFFFFFFFF
-                       csrw  tcontrol,  s1
-                       csrr  s0,     tcontrol
-                       bnez  s0,     1f
-                       li    s1,     0x0   #SUCCESS
-                       sw    s1,     g_register_access_status, s2
-                     1:nop
-                       )" ::: "s0", "s1", "s2", "memory");
-  if (g_register_access_status != SUCCESS) return FAIL;
-
   // Context Registers - Access Checks (in machine mode)
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi mcontext, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi mscontext, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi hcontext, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi scontext, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-
-  execute_debug_command(DEBUG_SEL_ENTER_USERMODE);
-
-  // TDATA1 - Read/write valid value (in u-mode), check that it traps
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrr  s0, tdata1" ::: "s0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi tdata1, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-
-  // TDATA2 - Read/Write valid value (in u-mode), check that it traps
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrr  s0, tdata2" ::: "s0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi tdata2, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  // TINFO - Read/Write valid value (in u-mode), check that it traps
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrr  s0, tinfo" ::: "s0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrwi tinfo, 0x0");
-  if (!g_illegal_insn_status) return FAIL;
-
-  // TCONTROL - Read/Write valid value (in u-mode), check that it traps
-  g_illegal_insn_status = 0;
-  __asm__ volatile ("csrr  s0, tcontrol" ::: "s0");
-  if (!g_illegal_insn_status) return FAIL;
-
   g_illegal_insn_status = 0;
   __asm__ volatile ("csrwi tcontrol, 0x0");
   if (!g_illegal_insn_status) return FAIL;
 
-  // Context Registers - Access Checks (in user mode)
+  g_illegal_insn_status = 0;
+  __asm__ volatile ("csrwi tdata3, 0x0");
+  if (!g_illegal_insn_status) return FAIL;
+
   g_illegal_insn_status = 0;
   __asm__ volatile ("csrwi mcontext, 0x0");
   if (!g_illegal_insn_status) return FAIL;
@@ -1705,7 +1688,65 @@ int test_register_access(void) {
   __asm__ volatile ("csrwi scontext, 0x0");
   if (!g_illegal_insn_status) return FAIL;
 
-  execute_debug_command(DEBUG_SEL_ENTER_MACHINEMODE);
+  if (has_umode_configured()) {
+    execute_debug_command(DEBUG_SEL_ENTER_USERMODE);
+
+    // TDATA1 - Read/write valid value (in u-mode), check that it traps
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrr  s0, tdata1" ::: "s0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi tdata1, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+
+    // TDATA2 - Read/Write valid value (in u-mode), check that it traps
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrr  s0, tdata2" ::: "s0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi tdata2, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    // TINFO - Read/Write valid value (in u-mode), check that it traps
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrr  s0, tinfo" ::: "s0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi tinfo, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    // TCONTROL - Read/Write valid value (in u-mode), check that it traps
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrr  s0, tcontrol" ::: "s0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi tcontrol, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    // Context Registers - Access Checks (in user mode)
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi mcontext, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi mscontext, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi hcontext, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    g_illegal_insn_status = 0;
+    __asm__ volatile ("csrwi scontext, 0x0");
+    if (!g_illegal_insn_status) return FAIL;
+
+    execute_debug_command(DEBUG_SEL_ENTER_MACHINEMODE);
+  }
 
   return SUCCESS;
 }
@@ -1766,7 +1807,12 @@ void get_num_triggers(void) {
  */
 int main(int argc, char *argv[])
 {
-  pmp_setup();
+  volatile uint32_t has_umode = has_umode_configured();
+
+  if (has_umode) {
+    pmp_setup();
+  }
+
   get_num_triggers();
 
   if (g_num_triggers > 0) {
@@ -1785,33 +1831,41 @@ int main(int argc, char *argv[])
         printf("Execute trigger test (machine mode) failed\n");
         return FAIL;
       }
-      if (test_execute_trigger(PRIV_LVL_USER_MODE)) {
-        printf("Execute trigger test (user mode) failed\n");
-        return FAIL;
+      if (has_umode) {
+        if (test_execute_trigger(PRIV_LVL_USER_MODE)) {
+          printf("Execute trigger test (user mode) failed\n");
+          return FAIL;
+        }
       }
       if (test_load_trigger(PRIV_LVL_MACHINE_MODE)) {
         printf("Load trigger test (machine mode) failed\n");
         return FAIL;
       }
-      if (test_load_trigger(PRIV_LVL_USER_MODE)) {
-        printf("Load trigger (user mode) test failed\n");
-        return FAIL;
+      if (has_umode) {
+        if (test_load_trigger(PRIV_LVL_USER_MODE)) {
+          printf("Load trigger (user mode) test failed\n");
+          return FAIL;
+        }
       }
       if (test_store_trigger(PRIV_LVL_MACHINE_MODE)) {
         printf("Store trigger test (machine mode) failed\n");
         return FAIL;
       }
-      if (test_store_trigger(PRIV_LVL_USER_MODE)) {
-        printf("Store trigger (user mode) test failed\n");
-        return FAIL;
+      if (has_umode) {
+        if (test_store_trigger(PRIV_LVL_USER_MODE)) {
+          printf("Store trigger (user mode) test failed\n");
+          return FAIL;
+        }
       }
       if (test_exception_trigger(PRIV_LVL_MACHINE_MODE)) {
         printf("Exception trigger test (machine mode) failed\n");
         return FAIL;
       }
-      if (test_exception_trigger(PRIV_LVL_USER_MODE)) {
-        printf("Exception trigger (user mode) test failed\n");
-        return FAIL;
+      if (has_umode) {
+        if (test_exception_trigger(PRIV_LVL_USER_MODE)) {
+          printf("Exception trigger (user mode) test failed\n");
+          return FAIL;
+        }
       }
     }
     printf("Finished \n");

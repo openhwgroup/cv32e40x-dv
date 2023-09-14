@@ -36,7 +36,8 @@ module uvmt_cv32e40x_rvfi_assert
   import isa_decoder_pkg::*;
 #(
   parameter logic  CLIC,
-  parameter int    CLIC_ID_WIDTH
+  parameter int    CLIC_ID_WIDTH,
+  parameter rv32_e RV32
 )(
   input wire  clk_i,
   input wire  rst_ni,
@@ -356,7 +357,16 @@ module uvmt_cv32e40x_rvfi_assert
     rvfi_if.rvfi_trap.trap
   ) else `uvm_error(info_tag, "Unknown instruction is not trapped");
 
+// RV32E
+  if (RV32 == cv32e40x_pkg::RV32E) begin: gen_rv32e_rd1
+    a_rvfi_rd1_rv32e: assert property(
+      rvfi_if.rvfi_valid
+    |->
+      rvfi_if.rvfi_rd1_addr < 16
+  )
+  else `uvm_error(info_tag, $sformatf("RD1 outside implemented register file. RD1==%d", rvfi_if.rvfi_rd1_addr));
 
+  end : gen_rv32e_rd1
 
 endmodule : uvmt_cv32e40x_rvfi_assert
 
