@@ -825,7 +825,8 @@ module uvmt_cv32e40x_tb;
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
         .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
-        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte)
+        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte),
+        .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
 
     bind  dut_wrap.cv32e40x_wrapper_i
@@ -845,7 +846,8 @@ module uvmt_cv32e40x_tb;
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
         .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
-        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte)
+        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte),
+        .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
