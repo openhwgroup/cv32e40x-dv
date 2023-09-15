@@ -79,6 +79,12 @@ module  uvmt_cv32e40x_pma_assert
 
   // Helper logic
 
+  // signal to mimic the alignment checker in the LSU
+  // blocks unaligned atomic accesses
+  logic pma_align_block;
+  assign pma_align_block = !IS_INSTR_SIDE && core_trans_atop[5] && bus_trans_o.addr[1:0];
+
+
   function logic  is_bufferable_in_config;
     is_bufferable_in_config = 0;
     foreach (PMA_CFG[i]) begin
@@ -180,7 +186,7 @@ module  uvmt_cv32e40x_pma_assert
 
   property p_eventually_mpu2obi;
     logic [31:0]  addr;
-    (bus_trans_valid_o && bus_trans_ready_i, addr = bus_trans_o.addr)
+    (bus_trans_valid_o && bus_trans_ready_i && !pma_align_block, addr = bus_trans_o.addr)
     |->
     s_eventually (obi_memory_if.req && (obi_memory_if.addr[31:2] == addr[31:2]))
     //TODO:INFO:silabs-robin Could use transaction number ID instead of addr
