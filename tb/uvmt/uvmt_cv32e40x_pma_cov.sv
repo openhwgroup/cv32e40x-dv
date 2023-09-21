@@ -56,6 +56,8 @@ module  uvmt_cv32e40x_pma_cov
     localparam bit  SIMPLIFY_FV = 0;
   `endif
 
+  // Helper logic - parameters from packages
+  const logic a_ext_disabled = (CORE_PARAM_A_EXT == A_NONE ? 1 : 0);
 
   // Helper Logic - Match Info
 
@@ -241,13 +243,13 @@ module  uvmt_cv32e40x_pma_cov
 
     x_loadstoreexec_allow_main:   cross  cp_loadstoreexec, cp_allow, cp_main {
       ignore_bins  ignore =
-        binsof(cp_allow.allow)  &&
+        binsof(cp_allow.allow) &&
         binsof(cp_main.io);
         //Note: Should be specific "illegal_bins"
         //Because of tool support, the covers are artificially limited.
       illegal_bins  disallow_main =
-        (binsof(cp_allow.disallow)  &&
-        binsof(cp_main.main)) with (CORE_PARAM_A_EXT == A_NONE);
+        binsof(cp_allow) && binsof(cp_main)
+        with (cp_allow == 0 && cp_main == 1 && a_ext_disabled);
     }
     x_loadstoreexec_main_pushpop: cross  cp_loadstoreexec, cp_main, cp_pushpop;
     //x_loadstoreexec_bufferable:   cross  cp_loadstoreexec, cp_bufferable;
