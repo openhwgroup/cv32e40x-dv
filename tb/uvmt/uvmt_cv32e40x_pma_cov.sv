@@ -248,7 +248,7 @@ module  uvmt_cv32e40x_pma_cov
         //Note: Should be specific "illegal_bins"
         //Because of tool support, the covers are artificially limited.
       illegal_bins  disallow_main =
-        binsof(cp_allow) && binsof(cp_main)
+        binsof(cp_allow.disallow) && binsof(cp_main.main)
         with (cp_allow == 0 && cp_main == 1 && a_ext_disabled);
     }
     x_loadstoreexec_main_pushpop: cross  cp_loadstoreexec, cp_main, cp_pushpop;
