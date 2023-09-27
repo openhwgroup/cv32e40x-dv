@@ -39,6 +39,7 @@ module  uvmt_cv32e40x_pma_model
   input wire         misaligned_access_i,
   input wire [31:0]  addr_i,
   input wire jvt_t   jvt_q,
+  input wire         atomic_access_i,
 
   output wire pma_status_t  pma_status_o
 );
@@ -99,7 +100,7 @@ module  uvmt_cv32e40x_pma_model
         : (have_match ? cfg_matched : CFG_DEFAULT);
 
     cfg_effective.bufferable =
-      cfg_effective.bufferable && !IS_INSTR_SIDE && !load_access;
+      cfg_effective.bufferable && !IS_INSTR_SIDE && !load_access && !atomic_access_i;
   end
 
   wire logic  allow_instr;
@@ -116,8 +117,8 @@ module  uvmt_cv32e40x_pma_model
     (addr_i <= (jvt_q + (4 * 8'b 1111_1111)));
 
   assign  pma_status_o.allow =
-    (override_dm) || // && !cfg_effective.atomic) ||
-    (IS_INSTR_SIDE ? allow_instr : allow_data);
+    (override_dm && !atomic_access_i) ||
+    ((!atomic_access_i || cfg_effective.atomic) && (IS_INSTR_SIDE ? allow_instr : allow_data));
   assign  pma_status_o.main              = cfg_effective.main;
   assign  pma_status_o.bufferable        = cfg_effective.bufferable;
   assign  pma_status_o.cacheable         = cfg_effective.cacheable;

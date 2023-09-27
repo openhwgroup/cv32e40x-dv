@@ -616,7 +616,11 @@ module uvmt_cv32e40x_tb;
   // Core integration assertions
 
   bind cv32e40x_wrapper
-    uvmt_cv32e40x_integration_assert  integration_assert_i (.*);
+    uvmt_cv32e40x_integration_assert  integration_assert_i (
+      .rvfi_if    (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+      .support_if (support_logic_module_o_if.slave_mp),
+      .*
+    );
 
 
   // Debug assertion and coverage interface
@@ -678,14 +682,6 @@ module uvmt_cv32e40x_tb;
       .minstret               (core_i.cs_registers_i.mhpmcounter_q[2]),
       .csr_we_int             (core_i.cs_registers_i.csr_we_int),
 
-      // TODO: review this change from CV32E40X_HASH f6196bf to a26b194. It should be logically equivalent.
-      //assign debug_cov_assert_if.inst_ret = core_i.cs_registers_i.inst_ret;
-      // First attempt: this causes unexpected failures of a_minstret_count
-      //assign debug_cov_assert_if.inst_ret = (core_i.id_valid &
-      //                                       core_i.is_decoding);
-      // Second attempt: (based on OK input).  This passes, but maybe only because p_minstret_count
-      //                                       is the only property sensitive to inst_ret. Will
-      //                                       this work in the general case?
       .inst_ret               (core_i.ctrl_fsm.mhpmevent.minstret),
       .csr_access             (core_i.ex_wb_pipe.csr_en),
       .csr_op                 (core_i.ex_wb_pipe.csr_op),
@@ -770,12 +766,10 @@ module uvmt_cv32e40x_tb;
         .data_bus_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
         .data_bus_req (core_i.m_c_obi_data_if.s_req.req),
         .data_bus_gnt (core_i.m_c_obi_data_if.s_gnt.gnt),
-        //TODO:ERROR:silabs-robin  .data_bus_gntpar (core_i.m_c_obi_data_if.s_gnt.gntpar),
 
         .instr_bus_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
         .instr_bus_req (core_i.m_c_obi_instr_if.s_req.req),
         .instr_bus_gnt (core_i.m_c_obi_instr_if.s_gnt.gnt),
-        //TODO:ERROR:silabs-robin  .instr_bus_gntpar (core_i.m_c_obi_instr_if.s_gnt.gntpar),
 
         //obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) is refered to as abiim
         .abiim_bus_rvalid (core_i.if_stage_i.prefetch_resp_valid),
@@ -793,8 +787,6 @@ module uvmt_cv32e40x_tb;
         .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready),
 
         .req_is_store (core_i.m_c_obi_data_if.req_payload.we),
-        //TODO:ERROR:silabs-robin  .req_instr_integrity (core_i.if_stage_i.mpu_i.bus_trans_integrity),
-        //TODO:ERROR:silabs-robin  .req_data_integrity (core_i.load_store_unit_i.mpu_i.bus_trans_integrity)
         .instr_req_pc ({core_i.m_c_obi_instr_if.req_payload.addr[31:2], 2'b0})
     );
 
@@ -855,7 +847,8 @@ module uvmt_cv32e40x_tb;
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
         .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
-        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte)
+        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte),
+        .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
 
     bind  dut_wrap.cv32e40x_wrapper_i
@@ -875,7 +868,8 @@ module uvmt_cv32e40x_tb;
         .jvt_q                (rvfi_csr_jvt_if.rvfi_csr_rdata),
         .load_access          (|rvfi_instr_if.rvfi_mem_rmask),
         .misaligned_access_i  (rvfi_instr_if.is_split_datatrans_intended),
-        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte)
+        .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte),
+        .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
 
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
