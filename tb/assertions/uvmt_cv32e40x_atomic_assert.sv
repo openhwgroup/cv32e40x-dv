@@ -16,107 +16,235 @@
 
 module uvmt_cv32e40x_atomic_assert
   import uvm_pkg::*;
-  import uvma_rvfi_pkg::*;
   import cv32e40x_pkg::*;
-  import uvmt_cv32e40x_base_test_pkg::*;
-  import support_pkg::*;
-  (
+  import isa_decoder_pkg::*;
+  #(
+    parameter A_EXT = A_NONE
+  )(
+    uvma_clknrst_if_t       clknrst_if,
     uvma_rvfi_instr_if_t    rvfi_if,
-    uvma_obi_memory_if_t    data_obi,
-    input logic[31:0]       id_stage_instr_rdata_i,
+    uvma_obi_memory_if_t    data_obi_if,
+    uvmt_cv32e40x_support_logic_module_o_if_t.slave_mp  support_if,
+
     input logic[31:0]       ex_stage_instr_rdata_i,
-    input logic[31:0]       wb_stage_instr_rdata_i,
-    input logic             if_valid,
-    input logic             id_valid,
-    input logic             ex_valid,
-    input logic             wb_valid,
-    input wire              clk,
-    input wire              rst_n
+    input logic             ex_valid
   );
 
 
   // ---------------------------------------------------------------------------
   // Local variables
   // ---------------------------------------------------------------------------
-  string  info_tag = "CV32E40X_ATOMIC_ASSERT";
+
+  string  info_tag                = "CV32E40X_ATOMIC_ASSERT";
+  localparam ATOP_ATOMIC_OPERATION_POS      = 5;
+  localparam ATOP_LR_W                   = 6'h22;
+  localparam ATOP_SC_W                   = 6'h23;
+
+  // ---------------------------------------------------------------------------
+  // Support logic
+  // ---------------------------------------------------------------------------
+
+  logic reservation_valid;
+  logic [31:0] reservation_set;
+
+  always_ff @(posedge clknrst_if.clk or negedge clknrst_if.reset_n) begin
+    if (!clknrst_if.reset_n) begin
+      reservation_valid <= 1'b0;
+      reservation_set <= '0;
+    end else begin
+      if (support_if.asm_rvfi.instr == LR_W && rvfi_if.rvfi_mem_exokay && rvfi_if.rvfi_valid && (!rvfi_if.rvfi_trap.trap || rvfi_if.rvfi_trap.debug_cause==DBG_CAUSE_STEP)) begin
+        reservation_valid <= 1'b1;
+        reservation_set <= rvfi_if.rvfi_mem_addr[31:0];
+      end else if (support_if.asm_rvfi.instr == SC_W && rvfi_if.rvfi_valid && !rvfi_if.rvfi_trap.trap) begin
+        reservation_valid <= 1'b0;
+      end
+    end
+  end
 
   // ---------------------------------------------------------------------------
   // Clocking block
   // ---------------------------------------------------------------------------
-  default clocking @(posedge clk); endclocking
-  default disable iff !rst_n;
+  default clocking @(posedge clknrst_if.clk); endclocking
+  default disable iff !(clknrst_if.reset_n);
+
 
   // ---------------------------------------------------------------------------
   // Assertions
   // ---------------------------------------------------------------------------
 
-  // When an atomic instruction is recognized, the atomic valid signal is asserted
-  // TODO: Change assertion to check for equivalence:
-  //        rvfi_valid
-  //        |->
-  //        (conditions == atomic.valid)
-  a_atomic_instr : assert property (
-    rvfi_if.rvfi_valid
-    && (rvfi_if.rvfi_insn[14:12] == 3'b010)
-    && (rvfi_if.rvfi_insn[6:0]   == 7'b0101111)
-    && (
-    (  rvfi_if.rvfi_insn[31:27] == 5'b00010 && rvfi_if.rvfi_insn[24:20] == 5'b0)
-    || rvfi_if.rvfi_insn[31:27] == 5'b00011
-    || rvfi_if.rvfi_insn[31:27] == 5'b00001
-    || rvfi_if.rvfi_insn[31:27] == 5'b00000
-    || rvfi_if.rvfi_insn[31:27] == 5'b00100
-    || rvfi_if.rvfi_insn[31:27] == 5'b01100
-    || rvfi_if.rvfi_insn[31:27] == 5'b01000
-    || rvfi_if.rvfi_insn[31:27] == 5'b10000
-    || rvfi_if.rvfi_insn[31:27] == 5'b10100
-    || rvfi_if.rvfi_insn[31:27] == 5'b11000
-    || rvfi_if.rvfi_insn[31:27] == 5'b11100
-    )
-    |->
-    rvfi_if.instr_asm.atomic.valid
-  ) else `uvm_error(info_tag, "Atomic instruction not decoded");
+  if (A_EXT != A_NONE) begin
 
-  // When an atomic memory operation is initiated, earlier memory operations must be finished.
-  a_atomic_no_unfinished_memory_operations : assert property (
-    data_obi.req && data_obi.gnt && !(data_obi.atop[5] == 1)
-    |->
-    !(data_obi.req && data_obi.gnt && (data_obi.atop[5] == 1))[*0:$] ##1 data_obi.rvalid
-  ) else `uvm_error(info_tag, "There are unfinished earlier memory operations");
+    // A_EXT = A or ZALRSC:
 
-  // Atomic memory operations must finish before a later memory operation can be initiated.
-  a_no_unfinished_atomic_memory_operations : assert property (
-    data_obi.req && data_obi.gnt && (data_obi.atop[5] == 1) ##1 !data_obi.rvalid
-    |->
-    !(data_obi.req && data_obi.gnt)[*0:$] ##1 data_obi.rvalid
-  ) else `uvm_error(info_tag, "There are unfinished atomic memory operations");
+    a_atomic_no_outstanding_req: assert property (
+      data_obi_if.req && data_obi_if.gnt && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS] ##1 !data_obi_if.rvalid
+      |->
+      (!data_obi_if.req until_with data_obi_if.rvalid)
+    ) else `uvm_error(info_tag, "There are unfinished atomic memory operations.\n");
 
-  // OBI-v1.6.0: R-11.2 atop[4:0] shall be equal to bits [31:27] of the instruction if atop[5] == 1.
-  // atop compared to possible values of atomic instructions
-  a_atomic_atop_correct_value : assert property (
-    data_obi.atop[5] == 1 && ex_valid
-    |->
-    (  data_obi.atop[4:0] == 5'b00010)
-    || data_obi.atop[4:0] == 5'b00011
-    || data_obi.atop[4:0] == 5'b00001
-    || data_obi.atop[4:0] == 5'b00000
-    || data_obi.atop[4:0] == 5'b00100
-    || data_obi.atop[4:0] == 5'b01100
-    || data_obi.atop[4:0] == 5'b01000
-    || data_obi.atop[4:0] == 5'b10000
-    || data_obi.atop[4:0] == 5'b10100
-    || data_obi.atop[4:0] == 5'b11000
-    || data_obi.atop[4:0] == 5'b11100
-  ) else `uvm_error(info_tag, "Atop does not match to an atomic instruction");
+    a_atomic_no_initiated_req: assert property (
+      data_obi_if.req && data_obi_if.gnt && !data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS]
+      |->
+      (!(data_obi_if.req && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS])) until_with data_obi_if.rvalid
+    ) else `uvm_error(info_tag, "There are unfinished earlier memory operations.\n");
 
-  // OBI-v1.6.0: R-11.2 atop[4:0] shall be equal to bits [31:27] of the instruction if atop[5] == 1.
-  // atop compared to bits [31:27] of the instruction
-  a_atomic_atop_match_instruction : assert property (
-    data_obi.atop[5] == 1 && data_obi.req && data_obi.gnt && ex_valid
-    |->
-    data_obi.atop[4:0] == ex_stage_instr_rdata_i[31:27]
-  ) else `uvm_error(info_tag, "Atop does not match the instruction");
+    // A_EXT = ZALRSC:
+
+    a_atomic_atop_5: assert property (
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      (support_if.asm_rvfi.instr == LR_W ||
+      support_if.asm_rvfi.instr == SC_W)
+      |->
+      rvfi_if.rvfi_mem_atop[ATOP_ATOMIC_OPERATION_POS]
+    ) else `uvm_error(info_tag, "Atop[5] is cleared for a non-traped LR_W or SC_W instruction.\n");
+
+    //Verifying that the oposite of the above assertion is also true.
+    a_atomic_atop_5_zalrsc: assert property (
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      rvfi_if.rvfi_mem_atop[ATOP_ATOMIC_OPERATION_POS] &&
+      (rvfi_if.rvfi_mem_rmask ||
+      rvfi_if.rvfi_mem_wmask)
+      |->
+      (support_if.asm_rvfi.instr == LR_W ||
+      support_if.asm_rvfi.instr == SC_W)
+    ) else `uvm_error(info_tag, "Atop[5] is set for a memory instruction, but it is not a LR_W or SC_W.\n");
+
+    a_atomic_atop_4_to_0_lrw: assert property (
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      support_if.asm_rvfi.instr == LR_W
+      |->
+      rvfi_if.rvfi_mem_atop == ATOP_LR_W
+    ) else `uvm_error(info_tag, "Atop[4:0] != 2 for a non-traped LR_W instruction.\n");
+
+    a_atomic_atop_4_to_0_scw: assert property (
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      support_if.asm_rvfi.instr == SC_W
+      |->
+      rvfi_if.rvfi_mem_atop == ATOP_SC_W
+    ) else `uvm_error(info_tag, "Atop[4:0] != 3 for a non-traped SC_W instruction.\n");
+
+    c_atomic_lrw_exokay_ignore: cover property (
+      rvfi_if.rvfi_valid &&
+      support_if.asm_rvfi.instr == LR_W &&
+      !rvfi_if.rvfi_mem_err &&
+      !rvfi_if.rvfi_mem_exokay &&
+      !rvfi_if.rvfi_trap.trap
+    );
+
+    a_atomic_lrw_address: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap
+      |->
+      rvfi_if.rvfi_mem_addr == rvfi_if.rvfi_rs1_rdata
+    ) else `uvm_error(info_tag, "The memory address of a non-traped LR_W instruction is not the value held in RS1.\n");
+
+    a_atomic_lrw_data: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      rvfi_if.rvfi_rd1_addr != X0
+      |->
+      rvfi_if.rvfi_rd1_wdata == rvfi_if.rvfi_mem_rdata
+    ) else `uvm_error(info_tag, "The RD register does not contained the data fetched from memory by a non-traped LR_W instruction.\n");
+
+    a_atomic_scw_success: assert property (
+      support_if.asm_rvfi.instr == SC_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      rvfi_if.rvfi_mem_exokay
+      |->
+      rvfi_if.rvfi_rd1_wdata == 32'h0
+    ) else `uvm_error(info_tag, "A successful SC_W instruction has not written 0 to RD.\n");
+
+    a_atomic_scw_failure: assert property (
+      support_if.asm_rvfi.instr == SC_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap &&
+      !rvfi_if.rvfi_mem_exokay &&
+      rvfi_if.rvfi_rd1_addr != X0
+      |->
+      rvfi_if.rvfi_rd1_wdata == 32'h1
+    ) else `uvm_error(info_tag, "An unsuccessful SC_W instruction has not written 1 to RD.\n");
+
+    a_atomic_scw_invalidates_reservation_set: assert property (
+      (!reservation_valid ||
+      rvfi_if.rvfi_mem_addr[31:0] != reservation_set) &&
+      support_if.asm_rvfi.instr == SC_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap
+      |->
+      !rvfi_if.rvfi_mem_exokay
+    ) else `uvm_error(info_tag, "A SC_W instruction is successful even though there is no valid reservation set or it accessed bytes outside the reservation set.\n");
+
+    a_atomic_alignment: assert property (
+      (support_if.asm_rvfi.instr == SC_W ||
+      support_if.asm_rvfi.instr == LR_W) &&
+
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap.trap
+
+      |->
+      rvfi_if.rvfi_rs1_rdata[1:0]  == 2'b0
+    ) else `uvm_error(info_tag, "A non trapped SC_W or LR_W instruction access a non-aligned memory field.\n");
+
+    a_atomic_alignment_exceptions_lrw: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
+
+      rvfi_if.rvfi_valid &&
+      rvfi_if.rvfi_rs1_rdata[1:0] != 2'b0 &&
+
+      !rvfi_if.rvfi_trap.debug &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_BUS_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ECALL_MMODE &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_STORE_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
+
+      |->
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED
+
+    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+
+    a_atomic_alignment_exceptions_scw: assert property (
+      support_if.asm_rvfi.instr == SC_W &&
+
+      rvfi_if.rvfi_valid &&
+      rvfi_if.rvfi_rs1_rdata[1:0] != 2'b0 &&
+
+      !rvfi_if.rvfi_trap.debug &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_BUS_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ECALL_MMODE &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_STORE_FAULT &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
+
+      |->
+
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED
+
+    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
 
+    // A_EXT = A or ZALRSC:
+    //TODO: krdosvik, it would be nice to have rvfi timing. Look into this when enabeling A_EXT=ATOMIC
+    // atop[4:0] shall be equal to bits [31:27] of the instruction if atop[5] == 1.
+    // atop compared to bits [31:27] of the instruction
+    a_atomic_atop_match_instruction : assert property (
+      data_obi_if.atop[5] == 1 && data_obi_if.req && data_obi_if.gnt && ex_valid
+      |->
+      data_obi_if.atop[4:0] == ex_stage_instr_rdata_i[31:27]
+    ) else `uvm_error(info_tag, "Atop does not match the instruction.\n");
+
+  end
 
 
 endmodule : uvmt_cv32e40x_atomic_assert
