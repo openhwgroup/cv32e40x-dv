@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
   printf("\nCycle count while running = %d", count);
   printf("\nMCYCLE counted cycles = %d\n", mcycle_count);
   err_cnt += chck(count, mcycle_count);
-  err_cnt += chck(count, 6);
+  err_cnt += chck(count, 5);
 
   //////////////////////////////////////////////////////////////
   // IF_INVALID
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
   printf("\nminstret count = %d\n", minstret);
   err_cnt += chck(minstret, 5);
   printf("\nUnderutilized cycles on EX-stage due to ID stage = %d\n", count);
-  err_cnt += chck(count, 2);
+  err_cnt += chck(count, 1);
 
   //////////////////////////////////////////////////////////////
   // ID_INVALID - JR STALL
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
   printf("\nminstret count = %d\n", minstret);
   err_cnt += chck(minstret, 4);
   printf("\nUnderutilized cycles on EX-stage due to ID stage = %d\n", count);
-  err_cnt += chck(count, 3);
+  err_cnt += chck(count, 2);
 
   //////////////////////////////////////////////////////////////
   // EX_INVALID
