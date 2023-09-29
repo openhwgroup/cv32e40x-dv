@@ -3,11 +3,13 @@ CSR access test for (a practical subset of) implemented CSRs (i.e. not for the _
 Generated from "riscv-dv"'s `scripts/gen_csr_test.py`, via core-v-verif's
 `bin/gen_csr_access_test.py`, using the csr yaml definition in the core's repo.
 
+Needs `CFG=clic_default`.
+
 From top-level:
 ```
 ./bin/gen_csr_access_test.py  \
   --core=cv32e40x     \
-  --clint_enable      \
+  --clic_enable       \
   --i_base_enable     \
   --m_ext_enable      \
   --zc_enable         \

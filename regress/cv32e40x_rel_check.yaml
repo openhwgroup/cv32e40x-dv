@@ -22,6 +22,11 @@ builds:
     cmd: make comp_corev-dv comp
     dir: cv32e40x/sim/uvmt
 
+  uvmt_cv32e40x_clic:
+    cmd: make comp_corev-dv comp
+    cfg: clic_default
+    dir: cv32e40x/sim/uvmt
+
   uvmt_cv32e40x_pma_1:
     cmd: make comp_corev-dv comp
     cfg: pma_test_cfg_1
@@ -187,7 +192,7 @@ tests:
     cmd: make test TEST=isa_fcov_holes
 
   cv32e40x_csr_access_test:
-    build: uvmt_cv32e40x
+    build: uvmt_cv32e40x_clic
     description: Randomly generated CSR access test
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=cv32e40x_csr_access_test
