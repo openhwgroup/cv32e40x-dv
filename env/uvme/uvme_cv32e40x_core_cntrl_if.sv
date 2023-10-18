@@ -26,6 +26,7 @@ interface uvme_cv32e40x_core_cntrl_if_t
     pma_cfg_t pma_cfg[16];
     `endif
     cv32e40x_pkg::b_ext_e b_ext;
+    cv32e40x_pkg::a_ext_e a_ext;
 
     // Testcase asserts this to load memory (not really a core control signal)
     logic        load_instr_mem;

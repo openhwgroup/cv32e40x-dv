@@ -510,3 +510,8 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=debug_test_0_triggers
 
+  zalrsc:
+    description: Sanity test of ZALRSC extention
+    builds: [ uvmt_cv32e40x ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=zalrsc CFG=zalrsc_ext USE_ISS=0
