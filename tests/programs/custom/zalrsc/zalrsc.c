@@ -1,3 +1,25 @@
+//
+// Copyright 2023 Silicon Labs, Inc.
+//
+// Licensed under the Solderpad Hardware Licence, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://solderpad.org/licenses/
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+///////////////////////////////////////////////////////////////////////////////
+//
+// Author: Kristine Døsvik
+//
+// ZALRSC directed tests
+//
+/////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdint.h>
@@ -10,7 +32,7 @@ typedef enum {
 } trap_behavior_t;
 
 // trap handler behavior definitions
-volatile trap_behavior_t trap_handler_beh; //TODO, krdosvik, why volatile?
+volatile trap_behavior_t trap_handler_beh;
 volatile uint32_t num_misaligned_LRW_trapped;
 volatile uint32_t num_misaligned_SCW_trapped;
 volatile uint32_t unexpected_irq_beh;
@@ -27,10 +49,10 @@ void increment_mepc(void){
   volatile uint32_t insn, mepc;
 
   // read the mepc
-  __asm__ volatile("csrrs %0, mepc, x0" : "=r"(mepc));
+  __asm__ volatile("csrrs %[mepc], mepc, x0" : [mepc]"=r"(mepc));
 
   // read the contents of the mepc pc.
-  __asm__ volatile("lw %0, (%1)" : "=r"(insn) : "r"(mepc));
+  __asm__ volatile("lw %[insn], (%[mepc])" : [insn]"=r"(insn) : [mepc]"r"(mepc));
 
   // check for compressed instruction before increment.
   if ((insn & 0x3) == 0x3) {
@@ -40,7 +62,7 @@ void increment_mepc(void){
   }
 
   // write to the mepc
-  __asm__ volatile("csrrw x0, mepc, %0" :: "r"(mepc));
+  __asm__ volatile("csrrw x0, mepc, %[mepc]" :: [mepc]"r"(mepc));
 }
 
 // Rewritten interrupt handler
@@ -68,7 +90,6 @@ void u_sw_irq_handler(void) {
 
 }
 
-//TODO: krdosvik, understand where the flags to the simulator is comming from, and how to use them.
 
 int main(int argc, char *argv[])
 {
@@ -108,8 +129,13 @@ int test_LR_SC_sequence_success(void)
 
   mem_addr = (uint32_t)&mem_addr;
 
-  __asm__ volatile("lr.w %0, (%1)"     : "=r" (random)     : "r" (mem_addr));
-  __asm__ volatile("sc.w %0, %1, (%2)" : "=r" (is_failure) : "r" (random), "r" (mem_addr));
+  __asm__ volatile("lr.w %[random], (%[mem_addr])"
+  : [random]"=r"(random)
+  : [mem_addr]"r"(mem_addr));
+
+  __asm__ volatile("sc.w %[is_failure], %[random], (%[mem_addr])"
+  : [is_failure]"=r"(is_failure)
+  : [random] "r"(random), [mem_addr]"r"(mem_addr));
 
   if (is_failure) {
     printf("Expected sequence to succeed. However, it did not.\n");
@@ -131,8 +157,13 @@ int test_LR_SC_sequence_failure_address_mismatch(void)
   mem_addr_LRW = (uint32_t)&mem_addr_LRW;
   mem_addr_SCW = (uint32_t)&mem_addr_SCW;
 
-  __asm__ volatile("lr.w %0, (%1)"     : "=r" (random)      : "r" (mem_addr_LRW));
-  __asm__ volatile("sc.w %0, %1, (%2)" : "=r" (is_failure)  : "r" (random), "r" (mem_addr_SCW));
+  __asm__ volatile("lr.w %[random], (%[mem_addr_LRW])"
+  : [random]"=r"(random)
+  : [mem_addr_LRW]"r"(mem_addr_LRW));
+
+  __asm__ volatile("sc.w %[is_failure], %[random], (%[mem_addr_SCW])"
+  : [is_failure]"=r"(is_failure)
+  : [random] "r"(random), [mem_addr_SCW]"r"(mem_addr_SCW));
 
   if (!is_failure) {
     printf("Expected sequence to fail. However, it did not.\n");
@@ -155,9 +186,17 @@ int test_LR_SC_sequence_failure_additional_SC_access(void)
   mem_addr                = (uint32_t)&mem_addr;
   mem_addr_additional_SCW = (uint32_t)&mem_addr_additional_SCW;
 
-  __asm__ volatile("lr.w %0, (%1)"     : "=r" (random)                    : "r" (mem_addr));
-  __asm__ volatile("sc.w %0, %1, (%2)" : "=r" (is_failure_additional_SCW) : "r" (random), "r" (mem_addr_additional_SCW)); //TODO: krdosvik, not 100% sure if this should fail?
-  __asm__ volatile("sc.w %0, %1, (%2)" : "=r" (is_failure)                : "r" (random), "r" (mem_addr));
+  __asm__ volatile("lr.w %[random], (%[mem_addr])"
+  : [random]"=r"(random)
+  : [mem_addr]"r"(mem_addr));
+
+  __asm__ volatile("sc.w %[is_failure_additional_SCW], %[random], (%[mem_addr_additional_SCW])"
+  : [is_failure_additional_SCW]"=r"(is_failure_additional_SCW)
+  : [random]"r"(random), [mem_addr_additional_SCW]"r"(mem_addr_additional_SCW));
+
+  __asm__ volatile("sc.w %[is_failure], %[random], (%[mem_addr])"
+  : [is_failure]"=r"(is_failure)
+  : [random] "r"(random), [mem_addr]"r"(mem_addr));
 
   if (!is_failure_additional_SCW) {
     printf("Expected SCW instruction to fail. However, it did not.\n");
@@ -180,7 +219,7 @@ int test_LRW_misaligned_access(void)
   mem_addr_misaligned = ((uint32_t)&mem_addr_misaligned) +1;
   trap_handler_beh = MISALIGNED_LRW;
 
-  __asm__ volatile("lr.w %[random], (%[mem_addr_misaligned])" : [random]"=r" (random) : [mem_addr_misaligned]"r" (mem_addr_misaligned));
+  __asm__ volatile("lr.w %[random], (%[mem_addr_misaligned])" : [random]"=r"(random) : [mem_addr_misaligned]"r"(mem_addr_misaligned));
 
   //(Execute exception handler)
 
@@ -189,6 +228,7 @@ int test_LRW_misaligned_access(void)
     return 1;
   }
 
+  num_misaligned_LRW_trapped = 0;
   return 0;
 }
 
@@ -203,7 +243,7 @@ int test_SCW_misaligned_access(void)
   mem_addr_misaligned = ((uint32_t)&mem_addr_misaligned) +1;
   trap_handler_beh = MISALIGNED_SCW;
 
-  __asm__ volatile("sc.w %[is_failure], %[random], (%[mem_addr_misaligned])" : [is_failure]"=r" (is_failure) : [random]"r" (random), [mem_addr_misaligned]"r" (mem_addr_misaligned));
+  __asm__ volatile("sc.w %[is_failure], %[random], (%[mem_addr_misaligned])" : [is_failure]"=r"(is_failure) : [random]"r"(random), [mem_addr_misaligned]"r"(mem_addr_misaligned));
 
   //(Execute exception handler)
 
@@ -212,5 +252,6 @@ int test_SCW_misaligned_access(void)
     return 1;
   }
 
+  num_misaligned_SCW_trapped = 0;
   return 0;
 }

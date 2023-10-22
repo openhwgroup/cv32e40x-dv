@@ -1,0 +1,11 @@
+name: TEMPORARY_zalrsc
+description: Enables the ZALRSC extension, and disables the zcmp extentnion. Use this configuration as long as issue ... is open, then delete this configuration.
+compile_flags:
+    +define+ZALRSC
+ovpsim: >
+    --showoverrides
+    --trace --tracechange --traceshowicount --monitornets
+cflags: >
+    -Wl,--nmagic
+cv_sw_march: rv32ima_zicsr_zca_zcb_zifencei
+

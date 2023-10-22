@@ -1,14 +1,3 @@
 name: zalrsc
-description: Enables the A extension ZALRSC in the cv32e40x
+description: Sanity checks for the ZALRSC extension. TODO, krdosvik, use CFG=zalrsc_ext as long as issue ... is open. When closed use clic_default config.
 uvm_test: uvmt_$(CV_CORE_LC)_firmware_test_c
-compile_flags:
-    +define+ZALRSC
-    +define+PMA_TEST_CFG_1
-ovpsim: >
-#    --showoverrides
-#    --trace --tracechange --traceshowicount --monitornets
-cflags: >
-    -Wl,--nmagic
-cv_sw_march: rv32ima_zicsr_zca_zcb_zifencei
-#cv_sw_march: rv32ima_zicsr_zca_zcb_zcmp_zifencei #TODO, krdosvik, add when zcmp fail is fixed
-

@@ -50,7 +50,7 @@ module  uvmt_cv32e40x_pma_model
   localparam pma_cfg_t  CFG_DEFAULT = '{
     default : '0,
     main    : (PMA_NUM_REGIONS == 0),
-    atomic  : (PMA_NUM_REGIONS == 0) ? 1'b 1 : 1'b 0
+    atomic  : (PMA_NUM_REGIONS == 0)
   };
 
   localparam pma_cfg_t  CFG_DEBUG = '{

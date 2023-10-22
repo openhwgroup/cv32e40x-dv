@@ -29,6 +29,11 @@ builds:
     cfg: clic_default
     dir: cv32e40x/sim/uvmt
 
+  uvmt_cv32e40x_TEMPORARY_zalrsc:
+    cmd: make comp_corev-dv comp
+    cfg: TEMPORARY_zalrsc
+    dir: cv32e40x/sim/uvmt
+
   uvmt_cv32e40x_b_ext_abs:
     cmd: make comp_corev-dv comp
     cfg: b_ext_abs
@@ -512,6 +517,6 @@ tests:
 
   zalrsc:
     description: Sanity test of ZALRSC extention
-    builds: [ uvmt_cv32e40x ]
+    builds: [ uvmt_cv32e40x_TEMPORARY_zalrsc ]
     dir: cv32e40x/sim/uvmt
-    cmd: make test TEST=zalrsc CFG=zalrsc_ext USE_ISS=0
+    cmd: make test TEST=zalrsc USE_ISS=0
