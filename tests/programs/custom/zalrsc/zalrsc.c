@@ -66,8 +66,7 @@ void increment_mepc(void){
 }
 
 // Rewritten interrupt handler
-__attribute__ ((interrupt ("machine")))
-void u_sw_irq_handler(void) {
+void trap_handler(void) {
 
   switch(trap_handler_beh) {
 
@@ -87,7 +86,62 @@ void u_sw_irq_handler(void) {
       unexpected_irq_beh += 1;
       increment_mepc();
   }
+}
 
+__attribute__((interrupt ("machine")))
+void  u_sw_irq_handler(void) {
+  __asm__ volatile (R"(
+    # Backup "sp", use debug's own stack
+    # csrw dscratch0, sp
+    # la sp, __debugger_stack_start
+
+    # Backup all GPRs
+    sw a0, -4(sp)
+    sw a1, -8(sp)
+    sw a2, -12(sp)
+    sw a3, -16(sp)
+    sw a4, -20(sp)
+    sw a5, -24(sp)
+    sw a6, -28(sp)
+    sw a7, -32(sp)
+    sw t0, -36(sp)
+    sw t1, -40(sp)
+    sw t2, -44(sp)
+    sw t3, -48(sp)
+    sw t4, -52(sp)
+    sw t5, -56(sp)
+    sw t6, -60(sp)
+    addi sp, sp, -64
+    cm.push {ra, s0-s11}, -64
+
+    # Call the handler actual
+    call ra, trap_handler
+
+    # Restore all GPRs
+    cm.pop {ra, s0-s11}, 64
+    addi sp, sp, 64
+    lw a0, -4(sp)
+    lw a1, -8(sp)
+    lw a2, -12(sp)
+    lw a3, -16(sp)
+    lw a4, -20(sp)
+    lw a5, -24(sp)
+    lw a6, -28(sp)
+    lw a7, -32(sp)
+    lw t0, -36(sp)
+    lw t1, -40(sp)
+    lw t2, -44(sp)
+    lw t3, -48(sp)
+    lw t4, -52(sp)
+    lw t5, -56(sp)
+    lw t6, -60(sp)
+
+    # Restore "sp"
+    # csrr sp, dscratch0
+
+    # Done
+    mret
+  )");
 }
 
 

@@ -2,7 +2,7 @@ name: default
 description: Default configuration for CV32E40X simulations
 compile_flags: >
     +define+ZBA_ZBB_ZBC_ZBS
-    +define+ZALRSC
+    #+define+ZALRSC #TODO, krdosvik, enable A extension when the ISS has no problem running the ZALRSC extension.
 ovpsim: >
     # --showoverrides
     # --trace --tracechange --traceshowicount --monitornets

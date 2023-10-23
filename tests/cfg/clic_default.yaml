@@ -3,7 +3,7 @@ description: Default clic configuration for CV32E40X simulations
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN
-    +define+ZALRSC
+    #+define+ZALRSC #TODO, krdosvik, enable A extension when the ISS has no problem running the ZALRSC extension.
 ovpsim: >
     --override cpu/CLICLEVELS=256
     --override cpu/CLICXCSW=T

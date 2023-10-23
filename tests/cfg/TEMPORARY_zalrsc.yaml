@@ -1,5 +1,5 @@
 name: TEMPORARY_zalrsc
-description: Enables the ZALRSC extension, and disables the zcmp extentnion. TODO, krdosvik, remove this configuration when no problem running zalrsc test with zcmp.
+description: Enables the ZALRSC extension, and disables the zcmp extentnion. TODO, krdosvik, remove this configuration when no problem running zalrsc test with ISS=1, so until then run with ISS=0.
 compile_flags:
     +define+ZALRSC
 ovpsim: >
@@ -7,5 +7,5 @@ ovpsim: >
     --trace --tracechange --traceshowicount --monitornets
 cflags: >
     -Wl,--nmagic
-cv_sw_march: rv32ima_zicsr_zca_zcb_zifencei
+cv_sw_march: rv32ima_zicsr_zca_zcb_zcmp_zifencei
 
