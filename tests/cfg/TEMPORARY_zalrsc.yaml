@@ -1,5 +1,5 @@
 name: TEMPORARY_zalrsc
-description: Enables the ZALRSC extension, and disables the zcmp extentnion. Use this configuration as long as issue ... is open, then delete this configuration.
+description: Enables the ZALRSC extension, and disables the zcmp extentnion. TODO, krdosvik, remove this configuration when no problem running zalrsc test with zcmp.
 compile_flags:
     +define+ZALRSC
 ovpsim: >

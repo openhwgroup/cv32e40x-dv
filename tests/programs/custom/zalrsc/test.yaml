@@ -1,3 +1,3 @@
 name: zalrsc
-description: Sanity checks for the ZALRSC extension. TODO, krdosvik, use CFG=zalrsc_ext as long as issue ... is open. When closed use clic_default config.
+description: Sanity checks for the ZALRSC extension. Use CFG=TEMPORARY_zalrsc, but exchange it with CFG=clic_default when no problem running this test with zcmp.
 uvm_test: uvmt_$(CV_CORE_LC)_firmware_test_c

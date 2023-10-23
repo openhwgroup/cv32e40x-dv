@@ -29,7 +29,7 @@ builds:
     cfg: clic_default
     dir: cv32e40x/sim/uvmt
 
-  uvmt_cv32e40x_TEMPORARY_zalrsc:
+  uvmt_cv32e40x_TEMPORARY_zalrsc: #TODO, krdosvik, remove this build when no problem running zalrsc test with zcmp
     cmd: make comp_corev-dv comp
     cfg: TEMPORARY_zalrsc
     dir: cv32e40x/sim/uvmt
@@ -515,8 +515,8 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=debug_test_0_triggers
 
-  zalrsc:
-    description: Sanity test of ZALRSC extention
-    builds: [ uvmt_cv32e40x_TEMPORARY_zalrsc ]
-    dir: cv32e40x/sim/uvmt
-    cmd: make test TEST=zalrsc USE_ISS=0
+  #zalrsc: #TODO, krdosvik, add test when no problem running zalrsc test with ISS
+  #  description: Sanity test of ZALRSC extention
+  #  builds: [ uvmt_cv32e40x_TEMPORARY_zalrsc ] #TODO, krdosvik, exchange the builds when no problem running zalrsc test with zcmp
+  #  dir: cv32e40x/sim/uvmt
+  #  cmd: make test TEST=zalrsc
