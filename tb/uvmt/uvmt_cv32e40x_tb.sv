@@ -150,7 +150,9 @@ module uvmt_cv32e40x_tb;
 
   // Connect to core_cntrl_if
   assign core_cntrl_if.b_ext            = uvmt_cv32e40x_base_test_pkg::CORE_PARAM_B_EXT;
+  assign core_cntrl_if.a_ext            = uvmt_cv32e40x_base_test_pkg::CORE_PARAM_A_EXT;
   assign core_cntrl_if.num_mhpmcounters = uvmt_cv32e40x_base_test_pkg::CORE_PARAM_NUM_MHPMCOUNTERS;
+
   `ifndef FORMAL
     initial begin
       core_cntrl_if.pma_cfg = new[CORE_PARAM_PMA_NUM_REGIONS];
