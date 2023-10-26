@@ -25,7 +25,9 @@ module uvmt_cv32e40x_support_logic
   (
     uvma_rvfi_instr_if_t rvfi,
     uvmt_cv32e40x_support_logic_module_i_if_t.driver_mp in_support_if,
-    uvmt_cv32e40x_support_logic_module_o_if_t.master_mp out_support_if
+    uvmt_cv32e40x_support_logic_module_o_if_t.master_mp out_support_if,
+    uvma_obi_memory_if_t data_obi_if,
+    uvma_obi_memory_if_t instr_obi_if
   );
 
 
@@ -36,11 +38,11 @@ module uvmt_cv32e40x_support_logic
   default clocking @(posedge in_support_if.clk); endclocking
   default disable iff (!in_support_if.rst_n);
 
-
   // ---------------------------------------------------------------------------
   // Local parameters
   // ---------------------------------------------------------------------------
 
+  localparam MAX_NUM_OUTSTANDING_OBI_REQUESTS = 2;
 
   // ---------------------------------------------------------------------------
   // Local variables
@@ -62,6 +64,24 @@ module uvmt_cv32e40x_support_logic
   // counter for keeping track of the number of rvfi_valids that have passed since the last observed debug_req
   int   req_vs_valid_cnt;
 
+
+  obi_data_req_t data_obi_req;
+  assign data_obi_req.addr      = data_obi_if.addr;
+  assign data_obi_req.we        = data_obi_if.we;
+  assign data_obi_req.be        = data_obi_if.be;
+  assign data_obi_req.wdata     = data_obi_if.wdata;
+  assign data_obi_req.memtype   = data_obi_if.memtype;
+  assign data_obi_req.prot      = data_obi_if.prot;
+  assign data_obi_req.dbg       = data_obi_if.dbg;
+  assign data_obi_req.achk      = data_obi_if.achk;
+  assign data_obi_req.atop      = data_obi_if.atop;
+
+  obi_inst_req_t instr_obi_req;
+  assign instr_obi_req.addr      = instr_obi_if.addr;
+  assign instr_obi_req.memtype   = instr_obi_if.memtype;
+  assign instr_obi_req.prot      = instr_obi_if.prot;
+  assign instr_obi_req.dbg       = instr_obi_if.dbg;
+  assign instr_obi_req.achk      = instr_obi_if.achk;
 
   // ---------------------------------------------------------------------------
   // Support logic blocks
@@ -299,39 +319,48 @@ end
   );
 
 
-  //The submodule instance under will tell if the
-  //the response's request required a store operation.
-
-  uvmt_cv32e40x_sl_req_attribute_fifo
+  uvmt_cv32e40x_sl_fifo
   #(
-    .XLEN (1)
-  ) req_was_store_i
+    .FIFO_TYPE_T (obi_data_req_t),
+    .FIFO_SIZE (MAX_NUM_OUTSTANDING_OBI_REQUESTS)
+  ) fifo_obi_data_req
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
-    .gnt (in_support_if.data_bus_gnt),
-    .req (in_support_if.data_bus_req),
-    .rvalid (in_support_if.data_bus_rvalid),
-    .req_attribute_i (in_support_if.req_is_store & in_support_if.rst_n),
+    .add_item   (data_obi_if.gnt && data_obi_if.req),
+    .shift_fifo (data_obi_if.rvalid),
 
-    .is_req_attribute_in_response_o (out_support_if.req_was_store)
+    .item_in    (data_obi_req),
+    .item_out   (out_support_if.obi_data_packet.req)
   );
 
-  uvmt_cv32e40x_sl_req_attribute_fifo
+  assign out_support_if.obi_data_packet.resp.rdata         = data_obi_if.rdata;
+  assign out_support_if.obi_data_packet.resp.err           = data_obi_if.err;
+  assign out_support_if.obi_data_packet.resp.rchk          = data_obi_if.rchk;
+  assign out_support_if.obi_data_packet.resp.exokay        = data_obi_if.exokay;
+  assign out_support_if.obi_data_packet.valid              = data_obi_if.rvalid;
+
+
+  uvmt_cv32e40x_sl_fifo
   #(
-    .XLEN (32)
-  ) instr_resp_pc_i
+    .FIFO_TYPE_T (obi_inst_req_t),
+    .FIFO_SIZE (MAX_NUM_OUTSTANDING_OBI_REQUESTS)
+  ) fifo_obi_instr_req
   (
     .clk_i (in_support_if.clk),
     .rst_ni (in_support_if.rst_n),
 
-    .gnt (in_support_if.instr_bus_gnt),
-    .req (in_support_if.instr_bus_req),
-    .rvalid (in_support_if.instr_bus_rvalid),
-    .req_attribute_i (in_support_if.instr_req_pc & !in_support_if.rst_n),
+    .add_item   (instr_obi_if.gnt && instr_obi_if.req),
+    .shift_fifo (instr_obi_if.rvalid),
 
-    .is_req_attribute_in_response_o (out_support_if.instr_resp_pc)
+    .item_in    (instr_obi_req),
+    .item_out   (out_support_if.obi_instr_packet.req)
   );
+
+  assign out_support_if.obi_instr_packet.resp.rdata         = instr_obi_if.rdata;
+  assign out_support_if.obi_instr_packet.resp.err           = instr_obi_if.err;
+  assign out_support_if.obi_instr_packet.resp.rchk          = instr_obi_if.rchk;
+  assign out_support_if.obi_instr_packet.valid              = instr_obi_if.rvalid;
 
 endmodule : uvmt_cv32e40x_support_logic

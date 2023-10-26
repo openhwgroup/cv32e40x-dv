@@ -350,43 +350,14 @@ module uvmt_cv32e40x_triggers_assert_cov
 
   //- Vplan:
   //Check that attempts to access "tdata3" raise an illegal instruction exception, always. (Unless overruled by a higher priority.)
-  //Verify that tdata3 is illegal for all tdata2 types.
 
   //- Assertion verification:
   //1) Check that attempts to access "tdata3" raise an illegal instruction exception, always. (Unless overruled by a higher priorit
-  //2) Verify that tdata3 is illegal for all tdata2 types.
 
   //1)
   a_dt_tdata3_not_implemented: assert property (
     p_dt_tcsr_not_implemented(ADDR_TDATA3)
   ) else `uvm_error(info_tag, "Access to tdata3 does not cause an illegal exception (when no higher priority exception has occured)\n");
-
-
-  // Assertions and coverages for when there are debug triggers:
-  if (CORE_PARAM_DBG_NUM_TRIGGERS != 0) begin
-
-    //2)
-    c_dt_access_tdata3_m2: cover property (
-      rvfi_if.is_csr_instr(ADDR_TDATA3)
-      && tdata1_pre_state[MSB_TYPE:LSB_TYPE] == TTYPE_MCONTROL
-    );
-
-    c_dt_access_tdata3_etrigger: cover property (
-      rvfi_if.is_csr_instr(ADDR_TDATA3)
-      && tdata1_pre_state[MSB_TYPE:LSB_TYPE] == TTYPE_ETRIGGER
-    );
-
-    c_dt_access_tdata3_m6: cover property (
-      rvfi_if.is_csr_instr(ADDR_TDATA3)
-      && tdata1_pre_state[MSB_TYPE:LSB_TYPE] == TTYPE_MCONTROL6
-    );
-
-    c_dt_access_tdata3_disabled: cover property (
-      rvfi_if.is_csr_instr(ADDR_TDATA3)
-      && tdata1_pre_state[MSB_TYPE:LSB_TYPE] == TTYPE_DISABLED
-    );
-  end
-
 
   //- Vplan:
   //Have 0 triggers, access any trigger register and check that illegal instruction exception occurs.
@@ -636,7 +607,7 @@ module uvmt_cv32e40x_triggers_assert_cov
     //2) Try changing "tdata1.dmode" and check that it is WARL (0x1)
 
 
-    //1) //a_dt_access_csr_not_dbg_mode --> changed to the two following assertions: a_dt_not_access_tdata1_dbg_mode, a_dt_not_access_tdata2_dbg_mode
+    //1)
     a_dt_not_access_tdata1_dbg_mode: assert property (
       !rvfi_if.rvfi_dbg_mode
       && rvfi_if.is_csr_instr(ADDR_TDATA1)

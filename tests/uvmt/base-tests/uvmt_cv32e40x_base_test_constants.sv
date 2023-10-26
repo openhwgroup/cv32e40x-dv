@@ -31,11 +31,11 @@ parameter RVFI_NRET = 1;
 // For OBI
 parameter ENV_PARAM_INSTR_ADDR_WIDTH  = 32;
 parameter ENV_PARAM_INSTR_DATA_WIDTH  = 32;
-parameter ENV_PARAM_INSTR_ACHK_WIDTH  = 12;
+parameter ENV_PARAM_INSTR_ACHK_WIDTH  = 13;
 parameter ENV_PARAM_INSTR_RCHK_WIDTH  = 5;
 parameter ENV_PARAM_DATA_ADDR_WIDTH   = 32;
 parameter ENV_PARAM_DATA_DATA_WIDTH   = 32;
-parameter ENV_PARAM_DATA_ACHK_WIDTH   = 12;
+parameter ENV_PARAM_DATA_ACHK_WIDTH   = 13;
 parameter ENV_PARAM_DATA_RCHK_WIDTH   = 5;
 parameter ENV_PARAM_RAM_ADDR_WIDTH    = 22;
 
@@ -154,6 +154,17 @@ parameter logic CLIC = CORE_PARAM_CLIC;
    parameter cv32e40x_pkg::b_ext_e CORE_PARAM_B_EXT = cv32e40x_pkg::ZBA_ZBB_ZBC_ZBS;
 `else
    parameter cv32e40x_pkg::b_ext_e CORE_PARAM_B_EXT = cv32e40x_pkg::B_NONE;
+`endif
+
+
+// M-ext
+
+`ifdef PARAM_SET_0
+   // Sat from the include file
+`elsif PARAM_SET_1
+   // Sat from the include file
+`else
+   parameter cv32e40x_pkg::m_ext_e CORE_PARAM_M_EXT = cv32e40x_pkg::M;
 `endif
 
 
@@ -374,7 +385,6 @@ parameter int  PMA_MAX_REGIONS = 16;
 `elsif PARAM_SET_1
    // Sat from the include file
 `else
-   parameter cv32e40x_pkg::m_ext_e  CORE_PARAM_M_EXT           = cv32e40x_pkg::M;  // No defines control this.
    parameter int                    CORE_PARAM_CORE_LOG_ENABLE = 1;                // The default is 1 in the RTL repo.
    parameter int                    CORE_PARAM_DEBUG           = 1;                // Debug is supported by default.
    parameter int                    CORE_PARAM_LIB             = 0;                // "LIB" doesn't matter.

@@ -315,11 +315,7 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
    //Instr bus inputs
    input logic lrfodi_bus_rvalid,
    input logic lrfodi_bus_gnt,
-   input logic lrfodi_bus_req,
-
-   //Obi request information
-   input logic req_is_store,
-   input logic [31:0] instr_req_pc
+   input logic lrfodi_bus_req
 
    );
 
@@ -363,10 +359,7 @@ interface uvmt_cv32e40x_support_logic_module_i_if_t
 
       lrfodi_bus_rvalid,
       lrfodi_bus_gnt,
-      lrfodi_bus_req,
-
-      req_is_store,
-      instr_req_pc
+      lrfodi_bus_req
    );
 
 endinterface : uvmt_cv32e40x_support_logic_module_i_if_t
@@ -384,6 +377,10 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    asm_t asm_ex;
    asm_t asm_wb;
    asm_t asm_rvfi;
+
+   //OBI packets:
+   obi_data_packet_t obi_data_packet;
+   obi_instr_packet_t obi_instr_packet;
 
    // Indicates that a new obi data req arrives after an exception is triggered.
    // Used to verify exception timing with multiop instruction
@@ -423,10 +420,6 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
    // Counter for ack'ed irqs
    logic [31:0] cnt_irq_ack;
    logic [31:0] cnt_rvfi_irqs;
-
-   //Signals stating whether the request for the current response had the attribute value or not
-   logic req_was_store;
-   logic [31:0] instr_resp_pc;
 
    // indicates that the current rvfi_valid instruction is the first in a debug handler
    logic first_debug_ins;
@@ -474,8 +467,8 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
          cnt_irq_ack,
          cnt_rvfi_irqs,
 
-         req_was_store,
-         instr_resp_pc,
+         obi_data_packet,
+         obi_instr_packet,
          first_debug_ins,
          first_fetch,
          recorded_dbg_req
@@ -516,8 +509,8 @@ interface uvmt_cv32e40x_support_logic_module_o_if_t;
          cnt_irq_ack,
          cnt_rvfi_irqs,
 
-         req_was_store,
-         instr_resp_pc,
+         obi_data_packet,
+         obi_instr_packet,
          first_debug_ins,
          first_fetch,
          recorded_dbg_req

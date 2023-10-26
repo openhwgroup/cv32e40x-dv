@@ -4,6 +4,7 @@ compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN
 ovpsim: >
+    --override cpu/hpmcounter_undefined=T
     --override cpu/CLICLEVELS=256
     --override cpu/CLICXCSW=T
     --override cpu/CLICXNXTI=T

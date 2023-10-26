@@ -356,6 +356,7 @@ module uvmt_cv32e40x_tb;
                                                                      .rvfi_csr_wdata(rvfi_i.rvfi_csr_dscratch_wdata[0])
     );
 
+
   // dscratch1
   bind cv32e40x_wrapper
     uvma_rvfi_csr_if_t#(uvmt_cv32e40x_base_test_pkg::XLEN) rvfi_csr_dscratch1_if(.clk(clk_i),
@@ -387,6 +388,9 @@ module uvmt_cv32e40x_tb;
     );
 
 
+
+  // Bind in verification modules to the design
+
   bind uvmt_cv32e40x_dut_wrap
     uvma_obi_memory_assert_if_wrp#(
       .ADDR_WIDTH(uvmt_cv32e40x_base_test_pkg::ENV_PARAM_INSTR_ADDR_WIDTH),
@@ -414,203 +418,208 @@ module uvmt_cv32e40x_tb;
     ) obi_data_memory_assert_i(.obi(obi_data_if));
 
 
-  // Bind in verification modules to the design
-
   if (CORE_PARAM_CLIC == 0) begin: gen_interrupt_assert
-    bind cv32e40x_core
-      uvmt_cv32e40x_interrupt_assert  interrupt_assert_i (
-        .dcsr_step    (cs_registers_i.dcsr_q.step),
-        .mcause_n     ({cs_registers_i.mcause_n.irq, cs_registers_i.mcause_n.exception_code[4:0]}),
-        .mie_q        (cs_registers_i.mie_q),
-        .mip          (cs_registers_i.mip_rdata),
-        .mstatus_mie  (cs_registers_i.mstatus_q.mie),
-        .mstatus_tw   (cs_registers_i.mstatus_q.tw),
-        .mtvec_mode_q (cs_registers_i.mtvec_q.mode),
+    `ifndef  COREV_ASSERT_OFF
+      bind cv32e40x_core
+        uvmt_cv32e40x_interrupt_assert  interrupt_assert_i (
+          .dcsr_step    (cs_registers_i.dcsr_q.step),
+          .mcause_n     ({cs_registers_i.mcause_n.irq, cs_registers_i.mcause_n.exception_code[4:0]}),
+          .mie_q        (cs_registers_i.mie_q),
+          .mip          (cs_registers_i.mip_rdata),
+          .mstatus_mie  (cs_registers_i.mstatus_q.mie),
+          .mstatus_tw   (cs_registers_i.mstatus_q.tw),
+          .mtvec_mode_q (cs_registers_i.mtvec_q.mode),
 
-        .if_stage_instr_rdata_i  (if_stage_i.m_c_obi_instr_if.resp_payload.rdata),
-        .if_stage_instr_req_o    (if_stage_i.m_c_obi_instr_if.s_req.req),
-        .if_stage_instr_rvalid_i (if_stage_i.m_c_obi_instr_if.s_rvalid.rvalid),
-        .alignbuf_outstanding    (if_stage_i.prefetch_unit_i.alignment_buffer_i.outstanding_cnt_q),
+          .if_stage_instr_rdata_i  (if_stage_i.m_c_obi_instr_if.resp_payload.rdata),
+          .if_stage_instr_req_o    (if_stage_i.m_c_obi_instr_if.s_req.req),
+          .if_stage_instr_rvalid_i (if_stage_i.m_c_obi_instr_if.s_rvalid.rvalid),
+          .alignbuf_outstanding    (if_stage_i.prefetch_unit_i.alignment_buffer_i.outstanding_cnt_q),
 
-        .ex_stage_instr_valid (ex_stage_i.id_ex_pipe_i.instr_valid),
+          .ex_stage_instr_valid (ex_stage_i.id_ex_pipe_i.instr_valid),
 
-        .wb_kill                   (ctrl_fsm.kill_wb),
-        .wb_stage_instr_err_i      (wb_stage_i.ex_wb_pipe_i.instr.bus_resp.err),
-        .wb_stage_instr_mpu_status (wb_stage_i.ex_wb_pipe_i.instr.mpu_status),
-        .wb_stage_instr_rdata_i    (wb_stage_i.ex_wb_pipe_i.instr.bus_resp.rdata),
-        .wb_stage_instr_valid_i    (wb_stage_i.ex_wb_pipe_i.instr_valid),
-        .wb_trigger                (controller_i.controller_fsm_i.trigger_match_in_wb),
-        .wb_valid                  (wb_stage_i.wb_valid),
+          .wb_kill                   (ctrl_fsm.kill_wb),
+          .wb_stage_instr_err_i      (wb_stage_i.ex_wb_pipe_i.instr.bus_resp.err),
+          .wb_stage_instr_mpu_status (wb_stage_i.ex_wb_pipe_i.instr.mpu_status),
+          .wb_stage_instr_rdata_i    (wb_stage_i.ex_wb_pipe_i.instr.bus_resp.rdata),
+          .wb_stage_instr_valid_i    (wb_stage_i.ex_wb_pipe_i.instr_valid),
+          .wb_trigger                (controller_i.controller_fsm_i.trigger_match_in_wb),
+          .wb_valid                  (wb_stage_i.wb_valid),
 
-        .branch_taken_ex (controller_i.controller_fsm_i.branch_taken_ex),
-        .debug_mode_q    (controller_i.controller_fsm_i.debug_mode_q),
-        .pending_nmi     (controller_i.controller_fsm_i.pending_nmi),
+          .branch_taken_ex (controller_i.controller_fsm_i.branch_taken_ex),
+          .debug_mode_q    (controller_i.controller_fsm_i.debug_mode_q),
+          .pending_nmi     (controller_i.controller_fsm_i.pending_nmi),
 
-        .irq_ack_o (core_i.irq_ack),
-        .irq_id_o  (core_i.irq_id),
+          .irq_ack_o (core_i.irq_ack),
+          .irq_id_o  (core_i.irq_id),
 
-        .mpu_instr_rvalid (if_stage_i.mpu_i.core_resp_valid_o),
-        .obi_instr_if     (dut_wrap.obi_instr_if),
-        .obi_data_if      (dut_wrap.obi_data_if),
+          .mpu_instr_rvalid (if_stage_i.mpu_i.core_resp_valid_o),
+          .obi_instr_if     (dut_wrap.obi_instr_if),
+          .obi_data_if      (dut_wrap.obi_data_if),
 
-        .writebufstate (load_store_unit_i.write_buffer_i.state),
-        .rvfi          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
-        .support_if    (cv32e40x_wrapper.support_logic_module_o_if.slave_mp),
+          .writebufstate (load_store_unit_i.write_buffer_i.state),
+          .rvfi          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+          .support_if    (cv32e40x_wrapper.support_logic_module_o_if.slave_mp),
 
-        .*
-      );
+          .*
+        );
+    `endif
   end : gen_interrupt_assert
 
   if (CORE_PARAM_CLIC == 1) begin: gen_clic_assert
     // CLIC assertions
-    bind cv32e40x_core
-      uvmt_cv32e40x_clic_interrupt_assert#(
-        .CLIC (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-        .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
-      ) clic_assert_i(
-        .support_if (cv32e40x_wrapper.support_logic_module_o_if.slave_mp),
-        .rvfi_if(cv32e40x_wrapper.rvfi_instr_if),
-        .csr_mepc_if(cv32e40x_wrapper.rvfi_csr_mepc_if),
-        .csr_mstatus_if(cv32e40x_wrapper.rvfi_csr_mstatus_if),
-        .csr_mcause_if(cv32e40x_wrapper.rvfi_csr_mcause_if),
-        .csr_mintthresh_if(cv32e40x_wrapper.rvfi_csr_mintthresh_if),
-        .csr_mintstatus_if(cv32e40x_wrapper.rvfi_csr_mintstatus_if),
-        .csr_dcsr_if(cv32e40x_wrapper.rvfi_csr_dcsr_if),
+    `ifndef  COREV_ASSERT_OFF
+      bind cv32e40x_core
+        uvmt_cv32e40x_clic_interrupt_assert#(
+          .CLIC (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+          .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH)
+        ) clic_assert_i(
+          .support_if (cv32e40x_wrapper.support_logic_module_o_if.slave_mp),
+          .rvfi_if(cv32e40x_wrapper.rvfi_instr_if),
+          .csr_mepc_if(cv32e40x_wrapper.rvfi_csr_mepc_if),
+          .csr_mstatus_if(cv32e40x_wrapper.rvfi_csr_mstatus_if),
+          .csr_mcause_if(cv32e40x_wrapper.rvfi_csr_mcause_if),
+          .csr_mintthresh_if(cv32e40x_wrapper.rvfi_csr_mintthresh_if),
+          .csr_mintstatus_if(cv32e40x_wrapper.rvfi_csr_mintstatus_if),
+          .csr_dcsr_if(cv32e40x_wrapper.rvfi_csr_dcsr_if),
 
-        .dpc                 (cs_registers_i.dpc_rdata),
-        .mintstatus          (cs_registers_i.mintstatus_rdata),
-        .mintthresh          (cs_registers_i.mintthresh_rdata),
-        .mcause              (cs_registers_i.mcause_rdata),
-        .mtvec               (cs_registers_i.mtvec_rdata),
-        .mtvt                (cs_registers_i.mtvt_rdata),
-        .mepc                (cs_registers_i.mepc_rdata),
-        .mip                 (cs_registers_i.mip_rdata),
-        .mie                 (cs_registers_i.mie_rdata),
-        .mnxti               (cs_registers_i.mnxti_rdata),
-        .mscratch            (cs_registers_i.mscratch_rdata),
-        .mscratchcsw         ('0 /* Not in 40x */),
-        .mscratchcswl        (cs_registers_i.mscratchcswl_rdata),
-        .dcsr                (cs_registers_i.dcsr_rdata),
+          .dpc                 (cs_registers_i.dpc_rdata),
+          .mintstatus          (cs_registers_i.mintstatus_rdata),
+          .mintthresh          (cs_registers_i.mintthresh_rdata),
+          .mcause              (cs_registers_i.mcause_rdata),
+          .mtvec               (cs_registers_i.mtvec_rdata),
+          .mtvt                (cs_registers_i.mtvt_rdata),
+          .mepc                (cs_registers_i.mepc_rdata),
+          .mip                 (cs_registers_i.mip_rdata),
+          .mie                 (cs_registers_i.mie_rdata),
+          .mnxti               (cs_registers_i.mnxti_rdata),
+          .mscratch            (cs_registers_i.mscratch_rdata),
+          .mscratchcsw         ('0 /* Not in 40x */),
+          .mscratchcswl        (cs_registers_i.mscratchcswl_rdata),
+          .dcsr                (cs_registers_i.dcsr_rdata),
 
-        //Control signals:
-        .pc_set              (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_set),
-        .pc_mux              (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_mux),
+          //Control signals:
+          .pc_set              (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_set),
+          .pc_mux              (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.pc_mux),
 
-        .rvfi_mepc_wdata     (rvfi_i.rvfi_csr_mepc_wdata),
-        .rvfi_mepc_wmask     (rvfi_i.rvfi_csr_mepc_wmask),
-        .rvfi_mepc_rdata     (rvfi_i.rvfi_csr_mepc_rdata),
-        .rvfi_mepc_rmask     (rvfi_i.rvfi_csr_mepc_rmask),
-        .rvfi_dpc_rdata      (rvfi_i.rvfi_csr_dpc_rdata),
-        .rvfi_dpc_rmask      (rvfi_i.rvfi_csr_dpc_rmask),
-        .rvfi_mscratch_rdata (rvfi_i.rvfi_csr_mscratch_rdata),
-        .rvfi_mscratch_rmask (rvfi_i.rvfi_csr_mscratch_rmask),
-        .rvfi_mscratch_wdata (rvfi_i.rvfi_csr_mscratch_wdata),
-        .rvfi_mscratch_wmask (rvfi_i.rvfi_csr_mscratch_wmask),
-        .rvfi_mcause_wdata   (rvfi_i.rvfi_csr_mcause_wdata),
-        .rvfi_mcause_wmask   (rvfi_i.rvfi_csr_mcause_wmask),
+          .rvfi_mepc_wdata     (rvfi_i.rvfi_csr_mepc_wdata),
+          .rvfi_mepc_wmask     (rvfi_i.rvfi_csr_mepc_wmask),
+          .rvfi_mepc_rdata     (rvfi_i.rvfi_csr_mepc_rdata),
+          .rvfi_mepc_rmask     (rvfi_i.rvfi_csr_mepc_rmask),
+          .rvfi_dpc_rdata      (rvfi_i.rvfi_csr_dpc_rdata),
+          .rvfi_dpc_rmask      (rvfi_i.rvfi_csr_dpc_rmask),
+          .rvfi_mscratch_rdata (rvfi_i.rvfi_csr_mscratch_rdata),
+          .rvfi_mscratch_rmask (rvfi_i.rvfi_csr_mscratch_rmask),
+          .rvfi_mscratch_wdata (rvfi_i.rvfi_csr_mscratch_wdata),
+          .rvfi_mscratch_wmask (rvfi_i.rvfi_csr_mscratch_wmask),
+          .rvfi_mcause_wdata   (rvfi_i.rvfi_csr_mcause_wdata),
+          .rvfi_mcause_wmask   (rvfi_i.rvfi_csr_mcause_wmask),
 
-        .irq_i               (core_i.irq_i),
-        .irq_ack             (core_i.irq_ack),
-        .fetch_enable        (core_i.fetch_enable),
-        .current_priv_mode   (core_i.priv_lvl),
-        .mtvec_addr_i        (core_i.mtvec_addr_i),
-        // External inputs
-        .clic_if             (dut_wrap.clic_if),
-        // Internal sampled   variants
-        .irq_id              (core_i.irq_id[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH-1:0]),
-        .irq_level           (core_i.irq_level),
-        .irq_priv            (core_i.irq_priv),
-        .irq_shv             (core_i.irq_shv),
+          .irq_i               (core_i.irq_i),
+          .irq_ack             (core_i.irq_ack),
+          .fetch_enable        (core_i.fetch_enable),
+          .current_priv_mode   (core_i.priv_lvl),
+          .mtvec_addr_i        (core_i.mtvec_addr_i),
+          // External inputs
+          .clic_if             (dut_wrap.clic_if),
+          // Internal sampled   variants
+          .irq_id              (core_i.irq_id[uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH-1:0]),
+          .irq_level           (core_i.irq_level),
+          .irq_priv            (core_i.irq_priv),
+          .irq_shv             (core_i.irq_shv),
 
-        .obi_instr_req       (core_i.instr_req_o),
-        .obi_instr_gnt       (core_i.instr_gnt_i),
-        .obi_instr_rvalid    (core_i.instr_rvalid_i),
-        .obi_instr_addr      (core_i.instr_addr_o),
-        .obi_instr_rdata     (core_i.instr_rdata_i),
-        .obi_instr_rready    (1'b1),
-        .obi_instr_err       (core_i.instr_err_i),
+          .obi_instr_req       (core_i.instr_req_o),
+          .obi_instr_gnt       (core_i.instr_gnt_i),
+          .obi_instr_rvalid    (core_i.instr_rvalid_i),
+          .obi_instr_addr      (core_i.instr_addr_o),
+          .obi_instr_rdata     (core_i.instr_rdata_i),
+          .obi_instr_rready    (1'b1),
+          .obi_instr_err       (core_i.instr_err_i),
 
-        .obi_data_addr       (core_i.data_addr_o),
-        .obi_data_wdata      (core_i.data_wdata_o),
-        .obi_data_we         (core_i.data_we_o),
-        .obi_data_be         (core_i.data_be_o),
-        .obi_data_req        (core_i.data_req_o),
-        .obi_data_gnt        (core_i.data_gnt_i),
-        .obi_data_rvalid     (core_i.data_rvalid_i),
-        .obi_data_rready     (1'b1),
-        .obi_data_err        (core_i.data_err_i),
+          .obi_data_addr       (core_i.data_addr_o),
+          .obi_data_wdata      (core_i.data_wdata_o),
+          .obi_data_we         (core_i.data_we_o),
+          .obi_data_be         (core_i.data_be_o),
+          .obi_data_req        (core_i.data_req_o),
+          .obi_data_gnt        (core_i.data_gnt_i),
+          .obi_data_rvalid     (core_i.data_rvalid_i),
+          .obi_data_rready     (1'b1),
+          .obi_data_err        (core_i.data_err_i),
 
-        .debug_mode          (controller_i.controller_fsm_i.debug_mode_q),
-        .debug_req           (core_i.debug_req_i),
-        .debug_havereset     (core_i.debug_havereset_o),
-        .debug_running       (core_i.debug_running_o),
-        .debug_halt_addr     (dut_wrap.cv32e40x_wrapper_i.dm_halt_addr_i),
-        .debug_exc_addr      (dut_wrap.cv32e40x_wrapper_i.dm_exception_addr_i),
+          .debug_mode          (controller_i.controller_fsm_i.debug_mode_q),
+          .debug_req           (core_i.debug_req_i),
+          .debug_havereset     (core_i.debug_havereset_o),
+          .debug_running       (core_i.debug_running_o),
+          .debug_halt_addr     (dut_wrap.cv32e40x_wrapper_i.dm_halt_addr_i),
+          .debug_exc_addr      (dut_wrap.cv32e40x_wrapper_i.dm_exception_addr_i),
 
-        .rvfi_mode           (rvfi_i.rvfi_mode),
-        .rvfi_insn           (rvfi_i.rvfi_insn),
-        .rvfi_intr           (rvfi_i.rvfi_intr),
-        .rvfi_rs1_rdata      (rvfi_i.rvfi_rs1_rdata),
-        .rvfi_rs2_rdata      (rvfi_i.rvfi_rs2_rdata),
-        .rvfi_rd_wdata       (rvfi_i.rvfi_rd_wdata),
-        .rvfi_valid          (rvfi_i.rvfi_valid),
-        .rvfi_pc_rdata       (rvfi_i.rvfi_pc_rdata),
-        .rvfi_pc_wdata       (rvfi_i.rvfi_pc_wdata),
-        .rvfi_trap           (rvfi_i.rvfi_trap),
-        .rvfi_dbg_mode       (rvfi_i.rvfi_dbg_mode),
-        .rvfi_dbg            (rvfi_i.rvfi_dbg),
+          .rvfi_mode           (rvfi_i.rvfi_mode),
+          .rvfi_insn           (rvfi_i.rvfi_insn),
+          .rvfi_intr           (rvfi_i.rvfi_intr),
+          .rvfi_rs1_rdata      (rvfi_i.rvfi_rs1_rdata),
+          .rvfi_rs2_rdata      (rvfi_i.rvfi_rs2_rdata),
+          .rvfi_rd_wdata       (rvfi_i.rvfi_rd_wdata),
+          .rvfi_valid          (rvfi_i.rvfi_valid),
+          .rvfi_pc_rdata       (rvfi_i.rvfi_pc_rdata),
+          .rvfi_pc_wdata       (rvfi_i.rvfi_pc_wdata),
+          .rvfi_trap           (rvfi_i.rvfi_trap),
+          .rvfi_dbg_mode       (rvfi_i.rvfi_dbg_mode),
+          .rvfi_dbg            (rvfi_i.rvfi_dbg),
 
-        .wu_wfe              (dut_wrap.cv32e40x_wrapper_i.wu_wfe_i),
-        .core_sleep_o        (core_i.core_sleep_o),
-        .*
-      );
+          .wu_wfe              (dut_wrap.cv32e40x_wrapper_i.wu_wfe_i),
+          .core_sleep_o        (core_i.core_sleep_o),
+          .*
+        );
+    `endif
   end : gen_clic_assert
 
 
   // Fence.i assertions
 
-  bind cv32e40x_wrapper
-    uvmt_cv32e40x_fencei_assert #(
-      .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-      .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
-    ) fencei_assert_i (
-      .wb_valid           (core_i.wb_stage_i.wb_valid),
-      .wb_instr_valid     (core_i.ex_wb_pipe.instr_valid),
-      .wb_sys_en          (core_i.ex_wb_pipe.sys_en),
-      .wb_sys_fencei_insn (core_i.ex_wb_pipe.sys_fencei_insn),
-      .wb_pc              (core_i.ex_wb_pipe.pc),
-      .wb_rdata           (core_i.ex_wb_pipe.instr.bus_resp.rdata),
-      .wb_buffer_state    (core_i.load_store_unit_i.write_buffer_i.state),
+  `ifndef  COREV_ASSERT_OFF
+    bind cv32e40x_wrapper
+      uvmt_cv32e40x_fencei_assert #(
+        .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+        .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
+      ) fencei_assert_i (
+        .wb_valid           (core_i.wb_stage_i.wb_valid),
+        .wb_instr_valid     (core_i.ex_wb_pipe.instr_valid),
+        .wb_sys_en          (core_i.ex_wb_pipe.sys_en),
+        .wb_sys_fencei_insn (core_i.ex_wb_pipe.sys_fencei_insn),
+        .wb_pc              (core_i.ex_wb_pipe.pc),
+        .wb_rdata           (core_i.ex_wb_pipe.instr.bus_resp.rdata),
+        .wb_buffer_state    (core_i.load_store_unit_i.write_buffer_i.state),
 
-      .rvfi_valid         (rvfi_i.rvfi_valid),
-      .rvfi_intr          (rvfi_i.rvfi_intr.intr),
-      .rvfi_dbg_mode      (rvfi_i.rvfi_dbg_mode),
-      .rvfi_insn          (rvfi_i.rvfi_insn),
+        .rvfi_if (rvfi_instr_if),
 
-      .*
-    );
+        .*
+      );
+  `endif
 
 
   // RVFI Asserts & Covers
 
-  bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
-    uvmt_cv32e40x_rvfi_assert #(
-      .CLIC          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
-      .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
-      .RV32          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32)
-    ) rvfi_assert_i (
-      .rvfi_if          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
-      .support_if       (dut_wrap.cv32e40x_wrapper_i.support_logic_module_o_if.slave_mp),
-      .writebuf_ready_o (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.ready_o),
-      .writebuf_valid_i (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.valid_i),
-      .*
-    );
+  `ifndef  COREV_ASSERT_OFF
+    bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
+      uvmt_cv32e40x_rvfi_assert #(
+        .CLIC          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC),
+        .CLIC_ID_WIDTH (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_CLIC_ID_WIDTH),
+        .RV32          (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_RV32)
+      ) rvfi_assert_i (
+        .rvfi_if          (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+        .support_if       (dut_wrap.cv32e40x_wrapper_i.support_logic_module_o_if.slave_mp),
+        .writebuf_ready_o (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.ready_o),
+        .writebuf_valid_i (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.write_buffer_i.valid_i),
+        .*
+      );
+  `endif
 
-  bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
-    uvmt_cv32e40x_rvfi_cov  rvfi_cov_i (
-      .rvfi_if (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
-      .*
-    );
+  `ifndef  COREV_ASSERT_OFF
+    bind  dut_wrap.cv32e40x_wrapper_i.rvfi_i
+      uvmt_cv32e40x_rvfi_cov  rvfi_cov_i (
+        .rvfi_if (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+        .*
+      );
+  `endif
 
 
   // Core integration assertions
@@ -627,61 +636,70 @@ module uvmt_cv32e40x_tb;
 
   // Instantiate debug assertions
 
-  bind cv32e40x_wrapper
-    uvmt_cv32e40x_debug_cov_assert_if_t  debug_cov_assert_if (
-      .id_valid               (core_i.id_stage_i.id_valid_o),
-      .sys_fence_insn_i       (core_i.id_stage_i.decoder_i.sys_fencei_insn_o),
+  `ifndef  COREV_ASSERT_OFF
+    bind cv32e40x_wrapper
+      uvmt_cv32e40x_debug_cov_assert_if_t  debug_cov_assert_if (
+        .id_valid               (core_i.id_stage_i.id_valid_o),
+        .sys_fence_insn_i       (core_i.id_stage_i.decoder_i.sys_fencei_insn_o),
 
-      .ex_stage_csr_en        (core_i.id_ex_pipe.csr_en),
-      .ex_valid               (core_i.ex_stage_i.instr_valid),
-      .ex_stage_instr_rdata_i (core_i.id_ex_pipe.instr.bus_resp.rdata),
-      .ex_stage_pc            (core_i.id_ex_pipe.pc),
+        .ex_stage_csr_en        (core_i.id_ex_pipe.csr_en),
+        .ex_valid               (core_i.ex_stage_i.instr_valid),
+        .ex_stage_instr_rdata_i (core_i.id_ex_pipe.instr.bus_resp.rdata),
+        .ex_stage_pc            (core_i.id_ex_pipe.pc),
 
-      .wb_stage_instr_rdata_i (core_i.ex_wb_pipe.instr.bus_resp.rdata),
-      .wb_stage_instr_valid_i (core_i.ex_wb_pipe.instr_valid),
-      .wb_stage_pc            (core_i.wb_stage_i.ex_wb_pipe_i.pc),
-      .wb_err                 (core_i.ex_wb_pipe.instr.bus_resp.err),
-      .wb_illegal             (core_i.ex_wb_pipe.illegal_insn),
-      .wb_valid               (core_i.wb_stage_i.wb_valid_o),
-      .wb_mpu_status          (core_i.ex_wb_pipe.instr.mpu_status),
-      .illegal_insn_i         (core_i.ex_wb_pipe.illegal_insn),
-      .sys_en_i               (core_i.ex_wb_pipe.sys_en),
-      .sys_ecall_insn_i       (core_i.ex_wb_pipe.sys_ecall_insn),
+        .wb_stage_instr_rdata_i (core_i.ex_wb_pipe.instr.bus_resp.rdata),
+        .wb_stage_instr_valid_i (core_i.ex_wb_pipe.instr_valid),
+        .wb_stage_pc            (core_i.wb_stage_i.ex_wb_pipe_i.pc),
+        .wb_err                 (core_i.ex_wb_pipe.instr.bus_resp.err),
+        .wb_illegal             (core_i.ex_wb_pipe.illegal_insn),
+        .wb_valid               (core_i.wb_stage_i.wb_valid_o),
+        .wb_mpu_status          (core_i.ex_wb_pipe.instr.mpu_status),
+        .illegal_insn_i         (core_i.ex_wb_pipe.illegal_insn),
+        .sys_en_i               (core_i.ex_wb_pipe.sys_en),
+        .sys_ecall_insn_i       (core_i.ex_wb_pipe.sys_ecall_insn),
 
-      .ctrl_fsm_cs            (core_i.controller_i.controller_fsm_i.ctrl_fsm_cs),
-      .debug_req_i            (core_i.controller_i.controller_fsm_i.debug_req_i),
-      .debug_havereset        (core_i.debug_havereset_o),
-      .debug_running          (core_i.debug_running_o),
-      .debug_halted           (core_i.debug_halted_o),
-      .debug_pc_o             (core_i.debug_pc_o),
-      .debug_pc_valid_o       (core_i.debug_pc_valid_o),
+        .ctrl_fsm_cs            (core_i.controller_i.controller_fsm_i.ctrl_fsm_cs),
+        .debug_req_i            (core_i.controller_i.controller_fsm_i.debug_req_i),
+        .debug_havereset        (core_i.debug_havereset_o),
+        .debug_running          (core_i.debug_running_o),
+        .debug_halted           (core_i.debug_halted_o),
+        .debug_pc_o             (core_i.debug_pc_o),
+        .debug_pc_valid_o       (core_i.debug_pc_valid_o),
 
-      .ctrl_fsm_async_debug_allowed  (core_i.controller_i.controller_fsm_i.async_debug_allowed),
-      .pending_sync_debug     (core_i.controller_i.controller_fsm_i.pending_sync_debug),
-      .pending_async_debug    (core_i.controller_i.controller_fsm_i.pending_async_debug),
-      .pending_nmi            (core_i.controller_i.controller_fsm_i.pending_nmi),
-      .nmi_allowed            (core_i.controller_i.controller_fsm_i.nmi_allowed),
-      .debug_mode_q           (core_i.controller_i.controller_fsm_i.debug_mode_q),
-      .debug_mode_if          (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.debug_mode_if),
-      .ctrl_halt_ex           (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.halt_ex),
-      .trigger_match_in_wb    (core_i.controller_i.controller_fsm_i.trigger_match_in_wb),
-      .etrigger_in_wb         (core_i.controller_i.controller_fsm_i.etrigger_in_wb),
-      .branch_in_ex           (core_i.controller_i.controller_fsm_i.branch_in_ex),
+        .ctrl_fsm_async_debug_allowed  (core_i.controller_i.controller_fsm_i.async_debug_allowed),
+        .pending_sync_debug     (core_i.controller_i.controller_fsm_i.pending_sync_debug),
+        .pending_async_debug    (core_i.controller_i.controller_fsm_i.pending_async_debug),
+        .pending_nmi            (core_i.controller_i.controller_fsm_i.pending_nmi),
+        .nmi_allowed            (core_i.controller_i.controller_fsm_i.nmi_allowed),
+        .debug_mode_q           (core_i.controller_i.controller_fsm_i.debug_mode_q),
+        .debug_mode_if          (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.debug_mode_if),
+        .ctrl_halt_ex           (core_i.controller_i.controller_fsm_i.ctrl_fsm_o.halt_ex),
+        .trigger_match_in_wb    (core_i.controller_i.controller_fsm_i.trigger_match_in_wb),
+        .etrigger_in_wb         (core_i.controller_i.controller_fsm_i.etrigger_in_wb),
+        .branch_in_ex           (core_i.controller_i.controller_fsm_i.branch_in_ex),
 
-      .mie_q                  (core_i.cs_registers_i.mie_q),
-      .dcsr_q                 (core_i.cs_registers_i.dcsr_q),
-      .dpc_q                  (core_i.cs_registers_i.dpc_q),
-      .dpc_n                  (core_i.cs_registers_i.dpc_n),
-      .mcause_q               (core_i.cs_registers_i.mcause_q),
-      .mtvec                  (core_i.cs_registers_i.mtvec_q),
-      .mepc_q                 (core_i.cs_registers_i.mepc_q),
-      .tdata1                 (core_i.cs_registers_i.tdata1_rdata),
-      .tdata2                 (core_i.cs_registers_i.tdata2_rdata),
-      .mcountinhibit_q        (core_i.cs_registers_i.mcountinhibit_q),
-      .mcycle                 (core_i.cs_registers_i.mhpmcounter_q[0]),
-      .minstret               (core_i.cs_registers_i.mhpmcounter_q[2]),
-      .csr_we_int             (core_i.cs_registers_i.csr_we_int),
+        .mie_q                  (core_i.cs_registers_i.mie_q),
+        .dcsr_q                 (core_i.cs_registers_i.dcsr_q),
+        .dpc_q                  (core_i.cs_registers_i.dpc_q),
+        .dpc_n                  (core_i.cs_registers_i.dpc_n),
+        .mcause_q               (core_i.cs_registers_i.mcause_q),
+        .mtvec                  (core_i.cs_registers_i.mtvec_q),
+        .mepc_q                 (core_i.cs_registers_i.mepc_q),
+        .tdata1                 (core_i.cs_registers_i.tdata1_rdata),
+        .tdata2                 (core_i.cs_registers_i.tdata2_rdata),
+        .mcountinhibit_q        (core_i.cs_registers_i.mcountinhibit_q),
+        .mcycle                 (core_i.cs_registers_i.mhpmcounter_q[0]),
+        .minstret               (core_i.cs_registers_i.mhpmcounter_q[2]),
+        .csr_we_int             (core_i.cs_registers_i.csr_we_int),
 
+        // TODO: review this change from CV32E40X_HASH f6196bf to a26b194. It should be logically equivalent.
+        //assign debug_cov_assert_if.inst_ret = core_i.cs_registers_i.inst_ret;
+      // First attempt: this causes unexpected failures of a_minstret_count
+      //assign debug_cov_assert_if.inst_ret = (core_i.id_valid &
+      //                                       core_i.is_decoding);
+      // Second attempt: (based on OK input).  This passes, but maybe only because p_minstret_count
+      //                                       is the only property sensitive to inst_ret. Will
+      //                                       this work in the general case?
       .inst_ret               (core_i.ctrl_fsm.mhpmevent.minstret),
       .csr_access             (core_i.ex_wb_pipe.csr_en),
       .csr_op                 (core_i.ex_wb_pipe.csr_op),
@@ -706,6 +724,7 @@ module uvmt_cv32e40x_tb;
 
       .*
     );
+  `endif
 
 
     //Atomic assert
@@ -739,68 +758,63 @@ module uvmt_cv32e40x_tb;
     end
 
 
-    bind cv32e40x_wrapper
-      uvmt_cv32e40x_support_logic_module_i_if_t support_logic_module_i_if (
-        .clk     (core_i.clk),
-        .rst_n (rst_ni),
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_support_logic_module_i_if_t support_logic_module_i_if (
+      .clk     (core_i.clk),
+      .rst_n (rst_ni),
 
-        .if_instr (core_i.if_stage_i.prefetch_instr.bus_resp.rdata),
-        .id_instr (core_i.if_id_pipe.instr.bus_resp.rdata),
-        .ex_instr (core_i.id_ex_pipe.instr.bus_resp.rdata),
-        .wb_instr (core_i.ex_wb_pipe.instr.bus_resp.rdata),
+      .if_instr (core_i.if_stage_i.prefetch_instr.bus_resp.rdata),
+      .id_instr (core_i.if_id_pipe.instr.bus_resp.rdata),
+      .ex_instr (core_i.id_ex_pipe.instr.bus_resp.rdata),
+      .wb_instr (core_i.ex_wb_pipe.instr.bus_resp.rdata),
 
-        .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
-        .tdata2_array (uvmt_cv32e40x_tb.tdata2_array),
+      .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
+      .tdata2_array (uvmt_cv32e40x_tb.tdata2_array),
 
-        .ctrl_fsm_o (core_i.controller_i.controller_fsm_i.ctrl_fsm_o),
+      .ctrl_fsm_o (core_i.controller_i.controller_fsm_i.ctrl_fsm_o),
 
-        .fetch_enable        (core_i.fetch_enable),
-        .debug_req_i         (core_i.debug_req_i),
-        .irq_ack             (core_i.irq_ack),
+      .fetch_enable        (core_i.fetch_enable),
+      .debug_req_i         (core_i.debug_req_i),
+      .irq_ack             (core_i.irq_ack),
 
-        .wb_valid (core_i.wb_stage_i.wb_valid_o),
-        .wb_tselect (core_i.cs_registers_i.tselect_rdata),
-        .wb_tdata1 (core_i.cs_registers_i.tdata1_rdata),
-        .wb_tdata2 (core_i.cs_registers_i.tdata2_rdata),
+      .wb_valid (core_i.wb_stage_i.wb_valid_o),
+      .wb_tselect (core_i.cs_registers_i.tselect_rdata),
+      .wb_tdata1 (core_i.cs_registers_i.tdata1_rdata),
+      .wb_tdata2 (core_i.cs_registers_i.tdata2_rdata),
 
-        .data_bus_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
-        .data_bus_req (core_i.m_c_obi_data_if.s_req.req),
-        .data_bus_gnt (core_i.m_c_obi_data_if.s_gnt.gnt),
+      .data_bus_rvalid (core_i.m_c_obi_data_if.s_rvalid.rvalid),
+      .data_bus_req (core_i.m_c_obi_data_if.s_req.req),
+      .data_bus_gnt (core_i.m_c_obi_data_if.s_gnt.gnt),
 
-        .instr_bus_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
-        .instr_bus_req (core_i.m_c_obi_instr_if.s_req.req),
-        .instr_bus_gnt (core_i.m_c_obi_instr_if.s_gnt.gnt),
+      .instr_bus_rvalid (core_i.m_c_obi_instr_if.s_rvalid.rvalid),
+      .instr_bus_req (core_i.m_c_obi_instr_if.s_req.req),
+      .instr_bus_gnt (core_i.m_c_obi_instr_if.s_gnt.gnt),
 
-        //obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) is refered to as abiim
-        .abiim_bus_rvalid (core_i.if_stage_i.prefetch_resp_valid),
-        .abiim_bus_req (core_i.if_stage_i.prefetch_trans_ready),
-        .abiim_bus_gnt (core_i.if_stage_i.prefetch_trans_valid),
+      //obi protocol between alignmentbuffer (ab) and instructoin (i) interface (i) mpu (m) is refered to as abiim
+      .abiim_bus_rvalid (core_i.if_stage_i.prefetch_resp_valid),
+      .abiim_bus_req (core_i.if_stage_i.prefetch_trans_ready),
+      .abiim_bus_gnt (core_i.if_stage_i.prefetch_trans_valid),
 
-        //obi protocol between LSU (l) mpu (m) and LSU (l) is refered to as lml
-        .lml_bus_rvalid (core_i.load_store_unit_i.resp_valid),
-        .lml_bus_req (core_i.load_store_unit_i.trans_ready),
-        .lml_bus_gnt (core_i.load_store_unit_i.trans_valid),
+      //obi protocol between LSU (l) mpu (m) and LSU (l) is refered to as lml
+      .lml_bus_rvalid (core_i.load_store_unit_i.resp_valid),
+      .lml_bus_req (core_i.load_store_unit_i.trans_ready),
+      .lml_bus_gnt (core_i.load_store_unit_i.trans_valid),
 
-        //obi protocol between LSU (l) respons (r) filter (f) and OBI (o) data (d) interface (i) is refered to as lrfodi
-        .lrfodi_bus_rvalid (core_i.load_store_unit_i.bus_resp_valid),
-        .lrfodi_bus_req (core_i.load_store_unit_i.buffer_trans_valid),
-        .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready),
-
-        .req_is_store (core_i.m_c_obi_data_if.req_payload.we),
-        .instr_req_pc ({core_i.m_c_obi_instr_if.req_payload.addr[31:2], 2'b0})
-    );
-
-    bind cv32e40x_wrapper
-      uvmt_cv32e40x_support_logic_module_o_if_t support_logic_module_o_if();
+      //obi protocol between LSU (l) respons (r) filter (f) and OBI (o) data (d) interface (i) is refered to as lrfodi
+      .lrfodi_bus_rvalid (core_i.load_store_unit_i.bus_resp_valid),
+      .lrfodi_bus_req (core_i.load_store_unit_i.buffer_trans_valid),
+      .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready)
+  );
 
 
-    // PMA Asserts & Covers
+  // PMA Asserts & Covers
 
-    wire pma_status_t  pma_status_instr;
-    wire pma_status_t  pma_status_data;
-    wire pma_status_t  pma_status_rvfidata_word0lowbyte;
-    wire pma_status_t  pma_status_rvfidata_word0highbyte;
+  wire pma_status_t  pma_status_instr;
+  wire pma_status_t  pma_status_data;
+  wire pma_status_t  pma_status_rvfidata_word0lowbyte;
+  wire pma_status_t  pma_status_rvfidata_word0highbyte;
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_model #(
         .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
@@ -815,7 +829,9 @@ module uvmt_cv32e40x_tb;
         .pma_status_o (uvmt_cv32e40x_tb.pma_status_instr),
         .*
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_model #(
         .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
@@ -830,7 +846,9 @@ module uvmt_cv32e40x_tb;
         .pma_status_o (uvmt_cv32e40x_tb.pma_status_data),
         .*
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i
       uvmt_cv32e40x_pma_model #(
         .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
@@ -850,7 +868,9 @@ module uvmt_cv32e40x_tb;
         .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte),
         .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i
       uvmt_cv32e40x_pma_model #(
         .DM_REGION_END   (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_DM_REGION_END),
@@ -871,7 +891,9 @@ module uvmt_cv32e40x_tb;
         .pma_status_o         (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte),
         .atomic_access_i      (rvfi_instr_if.rvfi_mem_atop[5])
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_assert #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_inst_req_t),
@@ -890,7 +912,9 @@ module uvmt_cv32e40x_tb;
         .core_trans_atop  ('0),
         .*
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_assert #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_data_req_t),
@@ -909,7 +933,9 @@ module uvmt_cv32e40x_tb;
         .core_trans_atop  (dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i.pma_assert_data_i.core_trans_i.atop),
         .*
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.if_stage_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_inst_req_t),
@@ -923,7 +949,9 @@ module uvmt_cv32e40x_tb;
         .rvfi_if                             (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
         .*
       );
+  `endif
 
+  `ifndef  COREV_ASSERT_OFF
     bind  dut_wrap.cv32e40x_wrapper_i.core_i.load_store_unit_i.mpu_i
       uvmt_cv32e40x_pma_cov #(
         .CORE_REQ_TYPE   (cv32e40x_pkg::obi_data_req_t),
@@ -937,16 +965,20 @@ module uvmt_cv32e40x_tb;
         .rvfi_if                             (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
         .*
       );
+  `endif
 
 
-    // Support Logic
+  // Support Logic
 
-    bind cv32e40x_wrapper uvmt_cv32e40x_support_logic u_support_logic(.rvfi (rvfi_instr_if),
-                                                                      .in_support_if (support_logic_module_i_if.driver_mp),
-                                                                      .out_support_if (support_logic_module_o_if.master_mp)
-                                                                      );
+  bind cv32e40x_wrapper uvmt_cv32e40x_support_logic u_support_logic(.rvfi (rvfi_instr_if),
+                                                                    .in_support_if (support_logic_module_i_if.driver_mp),
+                                                                    .out_support_if (support_logic_module_o_if.master_mp),
+                                                                    .data_obi_if (dut_wrap.obi_data_if),
+                                                                    .instr_obi_if (dut_wrap.obi_instr_if)
+                                                                    );
 
 
+  `ifndef  COREV_ASSERT_OFF
     bind cv32e40x_wrapper uvmt_cv32e40x_debug_assert u_debug_assert(.rvfi(rvfi_instr_if),
                                                                     .csr_dcsr(rvfi_csr_dcsr_if),
                                                                     .csr_dpc(rvfi_csr_dpc_if),
@@ -963,6 +995,7 @@ module uvmt_cv32e40x_tb;
                                                                     .cov_assert_if(debug_cov_assert_if),
                                                                     .support_if (support_logic_module_o_if.slave_mp)
                                                                     );
+  `endif
 
 
     if (CORE_PARAM_RV32 == cv32e40x_pkg::RV32E) begin: gen_rv32e_assert
@@ -971,8 +1004,10 @@ module uvmt_cv32e40x_tb;
     end : gen_rv32e_assert
 
 
+  `ifndef  COREV_ASSERT_OFF
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
       .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
+      .priv_lvl (core_i.priv_lvl),
       .rvfi_if (rvfi_instr_if),
       .clknrst_if (dut_wrap.clknrst_if),
       .support_if (support_logic_module_o_if.slave_mp),
@@ -983,11 +1018,14 @@ module uvmt_cv32e40x_tb;
       .dcsr_if (rvfi_csr_dcsr_if),
       .dpc_if (rvfi_csr_dpc_if)
     );
+  `endif
 
 
+  `ifndef  COREV_ASSERT_OFF
     bind cv32e40x_wrapper uvmt_cv32e40x_zc_assert u_zc_assert(.rvfi(rvfi_instr_if),
                                                               .support_if(support_logic_module_o_if.slave_mp)
                                                               );
+  `endif
 
 
     //uvmt_cv32e40x_rvvi_handcar u_rvvi_handcar();

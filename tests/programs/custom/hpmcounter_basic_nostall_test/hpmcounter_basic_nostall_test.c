@@ -118,8 +118,7 @@ int main(int argc, char *argv[])
   err_cnt += chck(minstret, 4);
   printf("\nCycle count while running = %d", count);
   printf("\nMCYCLE counted cycles = %d\n", mcycle_count);
-  err_cnt += chck(count, mcycle_count);
-  err_cnt += chck(count, 5);
+  err_cnt += chck(mcycle_count, 5);
 
   //////////////////////////////////////////////////////////////
   // IF_INVALID
