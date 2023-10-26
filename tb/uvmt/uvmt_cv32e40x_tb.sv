@@ -806,6 +806,8 @@ module uvmt_cv32e40x_tb;
       .lrfodi_bus_gnt (core_i.load_store_unit_i.buffer_trans_ready)
   );
 
+  bind cv32e40x_wrapper
+    uvmt_cv32e40x_support_logic_module_o_if_t support_logic_module_o_if();
 
   // PMA Asserts & Covers
 
@@ -1007,7 +1009,6 @@ module uvmt_cv32e40x_tb;
   `ifndef  COREV_ASSERT_OFF
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
       .tdata1_array (uvmt_cv32e40x_tb.tdata1_array),
-      .priv_lvl (core_i.priv_lvl),
       .rvfi_if (rvfi_instr_if),
       .clknrst_if (dut_wrap.clknrst_if),
       .support_if (support_logic_module_o_if.slave_mp),

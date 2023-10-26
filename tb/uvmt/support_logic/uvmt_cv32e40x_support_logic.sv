@@ -73,7 +73,6 @@ module uvmt_cv32e40x_support_logic
   assign data_obi_req.memtype   = data_obi_if.memtype;
   assign data_obi_req.prot      = data_obi_if.prot;
   assign data_obi_req.dbg       = data_obi_if.dbg;
-  assign data_obi_req.achk      = data_obi_if.achk;
   assign data_obi_req.atop      = data_obi_if.atop;
 
   obi_inst_req_t instr_obi_req;
@@ -81,7 +80,6 @@ module uvmt_cv32e40x_support_logic
   assign instr_obi_req.memtype   = instr_obi_if.memtype;
   assign instr_obi_req.prot      = instr_obi_if.prot;
   assign instr_obi_req.dbg       = instr_obi_if.dbg;
-  assign instr_obi_req.achk      = instr_obi_if.achk;
 
   // ---------------------------------------------------------------------------
   // Support logic blocks
@@ -337,7 +335,6 @@ end
 
   assign out_support_if.obi_data_packet.resp.rdata         = data_obi_if.rdata;
   assign out_support_if.obi_data_packet.resp.err           = data_obi_if.err;
-  assign out_support_if.obi_data_packet.resp.rchk          = data_obi_if.rchk;
   assign out_support_if.obi_data_packet.resp.exokay        = data_obi_if.exokay;
   assign out_support_if.obi_data_packet.valid              = data_obi_if.rvalid;
 
@@ -360,7 +357,6 @@ end
 
   assign out_support_if.obi_instr_packet.resp.rdata         = instr_obi_if.rdata;
   assign out_support_if.obi_instr_packet.resp.err           = instr_obi_if.err;
-  assign out_support_if.obi_instr_packet.resp.rchk          = instr_obi_if.rchk;
   assign out_support_if.obi_instr_packet.valid              = instr_obi_if.rvalid;
 
 endmodule : uvmt_cv32e40x_support_logic
