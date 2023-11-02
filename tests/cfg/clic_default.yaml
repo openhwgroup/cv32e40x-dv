@@ -15,7 +15,7 @@ ovpsim: >
     #--trace
     #--tracechange
     #--showoverrides
-    # --trace --tracechange --traceshowicount --monitornets
+    #--trace --tracechange --traceshowicount --monitornets
 cflags: >
     -Wl,--nmagic
 plusargs: >

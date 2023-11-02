@@ -1885,7 +1885,7 @@ module uvmt_cv32e40x_clic_interrupt_assert
     // ------------------------------------------------------------------------
 
     property p_mtvt_alignment_correct;
-      accept_on(N_MTVT <= 6) // Pass if field does not exist
+      disable iff (!rst_ni || N_MTVT <= 6) // Disable if field does not exist
       mtvt_fields.base_n_0 == '0;
     endproperty : p_mtvt_alignment_correct
 

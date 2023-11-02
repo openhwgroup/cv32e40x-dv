@@ -399,12 +399,6 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=debug_test_reset
 
-  debug_test_trigger:
-    description: Debug trigger test
-    builds: [ uvmt_cv32e40x, uvmt_cv32e40x_clic]
-    dir: cv32e40x/sim/uvmt
-    cmd: make test TEST=debug_test_trigger
-
   debug_test_boot_set:
     description: Debug test target debug_req at BOOT_SET
     builds: [ uvmt_cv32e40x, uvmt_cv32e40x_clic]
@@ -435,6 +429,12 @@ tests:
     builds: [ uvmt_cv32e40x, uvmt_cv32e40x_clic]
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=isa_fcov_holes
+
+  cov_holes_generic:
+    description: Generic coverage closure test for known coverage holes
+    builds: [ uvmt_cv32e40x_clic ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=cov_holes_generic
 
   instr_bus_error:
     description: Directed instruction bus error test
@@ -484,7 +484,7 @@ tests:
 
   b_ext_test:
     description: Directed Zb extension test
-    builds: [ uvmt_cv32e40x_b_ext_abs, uvmt_cv32e40x_b_ext_all]
+    builds: [ uvmt_cv32e40x_b_ext_all]
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=b_ext_test
 
@@ -494,6 +494,12 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=zc_test
     num: 5
+
+  pushpop_debug_triggers:
+    description: Zc push/pop vs debug triggers
+    builds: [ uvmt_cv32e40x_clic ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=pushpop_debug_triggers
 
   debug_test_trigger:
     description: Test of debug triggers
@@ -509,6 +515,12 @@ tests:
     builds: [uvmt_cv32e40x_debug_trigger_cfg0]
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=debug_test_0_triggers
+
+ wfe_test:
+    description: Short directed wfe test (needs PMP support)
+    builds: [ uvmt_cv32e40x_clic, uvmt_cv32e40x ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=wfe_test
 
   #zalrsc: #TODO, krdosvik, add test when no problem running zalrsc test with ISS
   #  description: Sanity test of ZALRSC extention
