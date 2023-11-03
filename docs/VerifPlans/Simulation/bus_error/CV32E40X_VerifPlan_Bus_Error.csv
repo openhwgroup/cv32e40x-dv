@@ -1,0 +1,110 @@
+Requirement Location,Feature,Sub Feature,Feature Description,Verification Goal,Pass/Fail Criteria,Test Type,Coverage Method,Link to Coverage
+OBIv1.2,"General bus error
+(common features)",OBI compliance,The OBI spec defines a bus error signal (err) that incidates the returning rdata field is invalid. ,Shall be specified in separate OBI verification plan,N/A,"ENV capability, not specific test",Functional Coverage,
+UM 828dac,Instruction bus error ignored for non-executed instruction,,A bus error on an instruction that does not get executed is ignored,Verify that a bus error is ignored in this case,Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,"Instruction bus error shall cause a precise exception.
+
+Note that all sub features can be verified in a single test case",Exception to Machine Mode,Bus error shall cause a switch to machine mode,Verify that a bus error results in a machine mode exception,Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,,Exception to correct address,Bus error shall cause a jump to mtvec_addr_i,Verify correct execution address,Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,,instruction address stored correctly,"The instruction address related to the bus error shall be stored in mepc, mtval CSR","Verify mepc, mtval value",Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,,Correct exception cause value,mcause shall be set to the value given in the mcause table in the CV32E40X User Manual,Verify mcause value,Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,,cover point of feature,cover point of feature,Instruction group vs bus error cover point,Check against RM,"ENV capability, not specific test",Functional Coverage,
+"UM 828dac, RV_ZCE",Instruction bus error with ZCE Table jump,ZCE tablejump proposal specifies exception handling,"mepc is set to pc of the C.TBLJ*, and mtval is set to the address in the jump table entry",verify correct operation for bus error with zce table jump,Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,Misaligned instructions,Partial instruction bus error,A bus error shall apply to any instruction that is fully or partially contained in the faulting bus data field,"Verify that an instruction that is only partially contained in a faulty bus transaction causes an exception
+
+Specific checks required:
+Error on word aligned 32-bit instruction.
+Error on lower half of non-word aligned 32-bit instruction.
+Error on upper half of non-word aligned 32-bit instruction.",Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,,Shared instruction bus error,A bus error shall apply to any instruction that is fully or partially contained in the faulting bus data field,"Verify that a compressed instruction that shares the bus transaction with another instruction causes an exception
+
+Specific checks required:
+Sequential execution with word aligned 16-bit instruction.
+Sequential execution with non-word aligned 16-bit instruction.
+Word aligned 16-bit instruction reached via jump.
+Non-word aligned 16-bit instruction reached via jump.",Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+RV_DEBUG,Debug interaction of instruction bus error,Instruction bus error while in debug,A bus error shall appear according to debug spec when in debug mode.,"Verify a bus error in debug mode
+Verify no registers are updated by the exception",Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+RV_DEBUG,,Instruction bus error while single stepping,A bus error shall appear according to debug spec when in single step mode,"Verify a bus error in single step mode
+Verify that debug is reentered immediately after updating pc, tval and cause",Check against ISS,Directed Non-Self-Checking,Functional Coverage,
+UM 828dac,Data bus error shall cause an imprecise non-maskable interrupt(NMI),non-maskable when single-stepping,A data bus error shall cause an imprecise interrupt that is not masked when single stepping,Verify that the interrupt is present when single stepping,Self Checking Test,Directed Self-Checking,Testcase,
+UM 828dac,,maskable when in debug,An interrupt caused by a data bus error shall be masked when in debug mode,Verify that the interrupt is masked when in debug mode,Self Checking Test,Directed Self-Checking,Testcase,
+UM 828dac,,,,Verify value of nmip bit of dcsr,Self Checking Test,Directed Self-Checking,Testcase,
+UM 828dac,"Data bus error shall cause a NMI.
+
+Note that all sub features can be verified in a single test case",Exception to Machine Mode,Bus error shall cause a switch to machine mode,"Verify that a bus error results in a machine mode exception.
+
+Especially check that the exception is taken with local and global interrupts disabled",Other,Constrained-Random,Functional Coverage,
+UM 828dac,,Exception to correct address,Bus error shall cause a jump to nmi_addr_i,Verify correct execution address,Other,Constrained-Random,Functional Coverage,
+UM 828dac,,Next instruction address stored correctly,mepc CSR shall be written with the address of the next instruction to be executed when the NMI was taken,Verify mepcvalue,Other,Constrained-Random,Functional Coverage,
+UM 828dac,,Faulting data address stored correctly,The mtval CSR shall be written with the faulting data address,Verify mtval value,Other,Constrained-Random,Functional Coverage,
+UM 828dac,,Correct exception cause value,mcause shall be set to the value given in the mcause table in the CV32E40X User Manual,Verify mcause value,Other,Constrained-Random,Functional Coverage,
+UM 828dac,Data bus error on misaligned load/store,,Any load or store instruction that has data associated with a faulting data bus fetch shall have an associated bus error,Verify that misaligned load/stores gets the correct bus error status,Other,Constrained-Random,Functional Coverage,
+UM 828dac,A faulting load shall still write the register file,,"To limit fanout on timing critical signals, faulty data will be written to the register. ",Verify that bus-error related data is written to the register file,Other,Constrained-Random,Functional Coverage,
+UM 828dac,Continous bus error,,"A faulty memory can cause non-stop data bus error. This will stop meaningful execution, but behaviour needs to be verified regardless",Verify behaviour during continous data bus error,Self Checking Test,Directed Self-Checking,Testcase,
+UM 828dac,,,,Verify behaviour during continous instruction bus error,Self Checking Test,Directed Self-Checking,Testcase,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+ ------ END -------,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+Notes,Missing/required features,,,,,,,
+Instruction set simulators,"Instruction set simulators need to be notified and take in to account instruction bus errors, and predict how the core will react to the resulting precise exception. This capability will be necessary in order to fully verify instruction bus error operation on the core.",,,,,,,
+OBI UVM agent,"The OBI agent will be required to randomly generate bus errors, and verify that the signals instr_err_i and data_err_i comply with the OBI Spec. 
+
+In order to use randomization of bus errors without trigger errors with behaviour within spec when confronted with near-continous bus errors, the UVM agent will need to implement a minimum distance between bus errors. This should be controllable via parameter.",,,,,,,
+UVM Scoreboard,"As data bus errors does not result in a precise exception, but rather an NMI, these are not fit for prediction in the instruction set simulators. Therefore the scoreboard must be expanded to take these in to account, and verify that the interrupt appears within reasonable time, and are handled according to spec.
+
+Pass/fail criteria marked as ""other"" in this plan is intended to be checked by the scoreboard.",,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- END -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------,,,,,,,,
