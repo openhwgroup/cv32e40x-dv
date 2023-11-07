@@ -23,6 +23,7 @@
 module  uvmt_cv32e40x_pma_cov
   import uvmt_cv32e40x_base_test_pkg::*;
   import cv32e40x_pkg::*;
+  import isa_decoder_pkg::*;
 #(
   parameter bit  IS_INSTR_SIDE,
   parameter int  PMA_NUM_REGIONS,
@@ -44,7 +45,8 @@ module  uvmt_cv32e40x_pma_cov
   input wire pma_status_t  pma_status_i,
   input wire pma_status_t  pma_status_rvfidata_word0highbyte_i,
   input wire pma_status_t  pma_status_rvfidata_word0lowbyte_i,
-  uvma_rvfi_instr_if_t     rvfi_if
+  uvma_rvfi_instr_if_t     rvfi_if,
+  uvmt_cv32e40x_support_logic_module_o_if_t.slave_mp support_if
 );
 
 
@@ -327,7 +329,7 @@ module  uvmt_cv32e40x_pma_cov
     }
 
     cp_firstfail: coverpoint  pma_status_rvfidata_word0lowbyte_i.allow
-      iff (rvfi_if.is_mem_act)
+      iff (rvfi_if.is_mem_act_intended)
     {
       bins  yes = {0};
       bins  no  = {1};
@@ -355,6 +357,16 @@ module  uvmt_cv32e40x_pma_cov
     cp_fence: coverpoint  rvfi_if.is_fencefencei  iff (rvfi_if.rvfi_valid) {
       bins fencefencei = {1};
       bins no          = {0};
+    }
+
+    cp_lrw: coverpoint  (support_if.asm_rvfi.instr == LR_W)  iff (rvfi_if.rvfi_valid) {
+      bins lrw  = {1};
+      bins no   = {0};
+    }
+
+    cp_scw: coverpoint  (support_if.asm_rvfi.instr == SC_W)  iff (rvfi_if.rvfi_valid) {
+      bins scw  = {1};
+      bins no   = {0};
     }
 
 
@@ -388,6 +400,21 @@ module  uvmt_cv32e40x_pma_cov
 
     x_waspmafault_wasmain_wasloadstore_fence:
       cross  cp_waspmafault, cp_wasmain, cp_wasloadstore, cp_fence;
+
+
+    // ZALRSC Crosses
+
+    x_lrw_firstfail:
+      cross  cp_lrw, cp_firstfail {
+        ignore_bins  no = binsof(cp_lrw.no);
+      }
+
+    x_scw_firstfail:
+      cross  cp_scw, cp_firstfail {
+        ignore_bins  no = binsof(cp_scw.no);
+      }
+
+
   endgroup
 
   if (!IS_INSTR_SIDE) begin: gen_rvfi_cg
