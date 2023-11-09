@@ -76,6 +76,7 @@ module uvmt_cv32e40x_dut_wrap
     logic  alert_major;
     logic  alert_minor;
 
+    logic [63:0]  mcycle;
 
     // instantiate the core
 
@@ -144,7 +145,8 @@ module uvmt_cv32e40x_dut_wrap
          .xif_mem_result_if      ( xif.cpu_mem_result             ),
          .xif_result_if          ( xif.cpu_result                 ),
 
-         .mcycle_o               ( /*todo: connect */             ),
+         .mcycle_o               ( mcycle                         ),
+         .time_i                 ( mcycle                         ),
 
          .irq_i                  ( interrupt_if.irq               ),
          .wu_wfe_i               ( wfe_wu_if.wfe_wu               ),
