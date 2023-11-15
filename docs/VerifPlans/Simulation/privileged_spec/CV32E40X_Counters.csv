@@ -1,0 +1,54 @@
+Requirement Location,Feature,Sub Feature,Feature Description,Verification Goal,Pass/Fail Criteria,Test Type,Coverage  Method,Link to Coverage,Comment
+"Privileged Architecture
+Section 3.1.11, 3.1.13",Hardware Performance Monitor,Count inhibit,mcountinhibit of mcycle stops count,"When mcountinhibit[0] is set to 1, the mcycle counter should stop counting and always return the same value",Self Checking Test,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_mcycle,
+,,,mcountinhibit of minstret stops count,"When mcountinhibit[2] is set to 1, the minstret counter should stop counting and always return the same value",Check against ISS,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret,
+,,,mcountinhibit of mhpmcounterX stops count,"When any of mcountinhibit[3:31] is set to 1 (particularly, even if the corresponding counter has an mhpmevent enabled) then the counter should stop counting and always return the same value",Check against ISS,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.cg_idx_wrapper_*.mhpm_cg.x_check_mhpm,
+,,,mcountinhibit on mcycle/minstret doesn't stop mhpmcounterX,"When inhibit is set for mcycle and/or minstret, then event selection should still be able to make mhpmcounters count for those selectors",Check against ISS,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.cg_idx_wrapper_*.inhibit_mix_cg.x_check_*,
+,,mcycle,Counts the number of clock cycle executed by the processor core.,Check that executing a set of instructions leads to mcycle having advanced the right amount (within some tolerance),Self Checking Test,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_mcycle,
+,,,,"When enabled the count advances with each valid gated clock
+",Assertion Check,Constrained-Random,Assertion Coverage,,
+,,minstret,Counts the number of instructions the hart has retired.,Check the value of the counter. Exercise it with different sequence of instructions.,Check against ISS,Constrained-Random,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret,
+,,,,Read of minstret returns current instruction count. This property could use the RVFI to validate,Assertion Check,Constrained-Random,Assertion Coverage,,
+,,"mhpmcounter3-mhpmcounte31
+
+mhpmevent3-mhpmevent31","Additional 64-bits event counters mhpmcounter3-mhpmcounte31.
+The event selector CSR mhpmevent3-mhpmevent31 control which event causes the corresponding counter to increment.
+The meaning of these events is defined by the platform. Event ""0"" is defined to mean ""no event"".
+","Specific checks in the Directed Test:
+- Check that the event 0 means no event.
+- Check different combinations of events and counters.
+- Check that if multiple events happen at the same cycle, only increment +1.
+- Check all events can individually, separately increment counter.
+- Use parameter NUM_MHPMCOUNTERS to increase counters to maximum and randomly check if counters are implemented/counting
+- mcountinhibit always stops counting for any counter
+",Self Checking Test,Directed Self-Checking,Testcase,"hpmcounter_basic_test.c
+
+hmpcounter_hazard_test.c",
+,,Overflow,"For each counter, its two 32-bit registers works as one 64-bit register",Counter overflows from lower counter mhpmcount to upper counter mhpmcounth (most important to test is mcycle[h] and minstret[h]),Assertion Check,Constrained-Random,Assertion Coverage,,
+,,,,Counter overflows from all ones in both mhpmcount and mhpmcounth to zero (most important to test is mcycle[h] and minstret[h]),Assertion Check,Constrained-Random,Assertion Coverage,,
+CORE-V CV32E40X User Manual,Performance Counters,CYCLES,platform specific event bit[0],Increments as long as the gated clock is ticking,Self Checking Test,Directed Self-Checking,Testcase,"TODO all of these selectors can be tested in ""mhpmcounter_basic_test.c"" and ""mhpmcounter_hazard_test.c"" but the tests have to be updated to the new counters spec",
+,,INSTR,platform specific event bit[1],"Check that the counter increments for each instruction being retired (both non-compressed and compressed)
+",Self Checking Test,Directed Self-Checking,Testcase,,
+,,COMP_INSTR,platform specific event bit[2],"Check that the counter increments for each compressed instruction being retired (and not non-compressed)
+",Self Checking Test,Directed Self-Checking,Testcase,,
+,,JUMP,platform specific event bit[3],Increment for each taken jump instruction retired,Self Checking Test,Directed Self-Checking,Testcase,,
+,,BRANCH,platform specific event bit[4],Increment for each branch instruction retired,Self Checking Test,Directed Self-Checking,Testcase,,
+,,BRANCH_TAKEN,platform specific event bit[5],Increment for each branch instruction being taken is retired,Self Checking Test,Directed Self-Checking,Testcase,,
+,,INTR_TAKEN,platform specific event bit[6],Increment for each taken interrupt (excluding NMI),Self Checking Test,Directed Self-Checking,Testcase,,
+,,DATA_READ,platform specific event bit[7],Increment for each read transactions on the OBI data interface,Self Checking Test,Directed Self-Checking,Testcase,,
+,,DATA_WRITE,platform specific event bit[8],Increment for each write transactions on the OBI data interface,Self Checking Test,Directed Self-Checking,Testcase,,
+,,IF_INVALID,platform specific event bit[9],Increment each time IF causes ID stage under-utilization (!if_valid_o && id_ready_i),Self Checking Test,Directed Self-Checking,Testcase,,
+,,ID_INVALID,platform specific event bit[10],Increment each time ID causes EX stage under-utilization (!id_valid_o && ex_ready_i),Self Checking Test,Directed Self-Checking,Testcase,,
+,,EX_INVALID,platform specific event bit[11],Increment each time EX causes WB stage under-utilization (!ex_valid_o && wb_ready_i),Self Checking Test,Directed Self-Checking,Testcase,,
+,,WB_INVALID,platform specific event bit[12],Increment each time WB causes regfile under-utilization (!wb_valid_o),Self Checking Test,Directed Self-Checking,Testcase,,
+,,ID_LD_STALL,platform specific event bit[13],Check that the counter increments for each stall cycle due to a load use hazard,Self Checking Test,Directed Self-Checking,Testcase,,
+,,ID_JMP_STALL,platform specific event bit[14],Check that the counter increments for each stall cycle due to a jump,Self Checking Test,Directed Self-Checking,Testcase,,
+,,WB_DATA_STALL,platform specific event bit[15],Increment each time WB stage is stalled by loads/stores,Self Checking Test,Directed Self-Checking,Testcase,,
+,,NUM_MHPMCOUNTERS,Parameter controling available number of mhpmcounters,"Test that the CSRs behave correctly when set to 0 (minimum), 29 (maximum), 1 (default), and 4 (arbitrary amount)",Self Checking Test,Directed Self-Checking,Testcase,,
+,,Retirement timing,Updating retirement-related counters must have happened within the time the instruction is considered retired (i.e. must be visible on the rvfi retirement),"Check that retirement-related counters (INSTR, COMP_INSTR, JUMP, BRANCH, BRANCH_TAKEN) don't update too late",Assertion Check,Constrained-Random,Assertion Coverage,,
+RISC-V External Debug Support Version 0.13.2,Debug Mode,stopcount,stopcount is tied to 0 so debug mode has no effect on counters,mcycle continues during debug,Assertion Check,Constrained-Random,Assertion Coverage,,
+,,,,minstret continues during debug,Check against ISS,Constrained-Random,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_minstret_in_dbg,Ensure that minstret is read during debug mode
+,,,,hpmcounter[31-3] continues during debug,Self Checking Test,Directed Self-Checking,Testcase,,
+,,,,,,,,,
+,,,,,,,,,
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- END -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------,,,,,,,,,

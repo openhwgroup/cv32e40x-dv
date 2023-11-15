@@ -1,0 +1,29 @@
+,,,,,
+,URL of Verification Plans:,https://github.com/openhwgroup/core-v-docs/tree/master/verif/CV32E40P/VerificationPlan,,,
+,,,,,
+,,,,,
+,Directory,Vplan,Status,Reviewer(s),Comment
+,Base Instruction Set,Counters,Needs update,Paul Z,Lots of updates to the UM since this was captured
+,,RV32I,Ready for Review,,
+,,RV32C,Ready for Review,Arjan B,
+,,RV32M,Ready for Review,Arjan B,
+,,RV32Z,Ready for Review,Arjan B,
+,,Exceptions,Ready for Review,John Martin,
+,custom_circuity,prefetch unit,Needs capture,,May not be required
+,debug-trace,Debug,Reviewed,Paul Z,
+,,External Debugger,Out of scope,,
+,interrupts,none,Needs capture,,Is this section of the UM up-to-date?
+,privileged_spec,CSRs,Needs capture,,
+,,Privileged Instructions,Needs capture,,"ecall, ebreak, wfi, etc."
+,,Modes,Out of scope,,"Covered by Interrupts, Debug, CSRs for CV32E40P"
+,physical_interfaces,Sleep Unit,Needs capture,,
+,,Configuration and Control,Needs capture,,
+,,APU,Out of scope,,
+,,OBI,Ready for Review,Arjan B,
+,xpulp_instruction_extensions,bit_manipulations,Not certain,,Captured before decision to defer Xpulp instruction verification.  Almost certainly out of date wrt to the latest UM.
+,,general_alu,Not certain,,
+,,Immediate-branching,Not certain,,
+,,hwloop,Not certain,,
+,,packed-simd,Not certain,,
+,,Pulp-cluster,Not certain,,
+,,Xpulp-postinc-loadstore,Not certain,,
