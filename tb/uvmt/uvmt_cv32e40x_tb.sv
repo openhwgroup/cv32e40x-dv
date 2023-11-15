@@ -732,7 +732,9 @@ module uvmt_cv32e40x_tb;
     //Atomic assert
     bind  dut_wrap.cv32e40x_wrapper_i
     uvmt_cv32e40x_atomic_assert #(
-      .A_EXT (A_EXT)
+      .A_EXT (A_EXT),
+      .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
+      .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
     ) atomic_assert_i (
       .clknrst_if              (dut_wrap.clknrst_if),
       .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
@@ -951,6 +953,7 @@ module uvmt_cv32e40x_tb;
         .pma_status_rvfidata_word0lowbyte_i  (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte),
         .pma_status_rvfidata_word0highbyte_i (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte),
         .rvfi_if                             (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+        .support_if                          (support_logic_module_o_if.slave_mp),
         .*
       );
   `endif
@@ -967,6 +970,7 @@ module uvmt_cv32e40x_tb;
         .pma_status_rvfidata_word0lowbyte_i  (uvmt_cv32e40x_tb.pma_status_rvfidata_word0lowbyte),
         .pma_status_rvfidata_word0highbyte_i (uvmt_cv32e40x_tb.pma_status_rvfidata_word0highbyte),
         .rvfi_if                             (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
+        .support_if                          (support_logic_module_o_if.slave_mp),
         .*
       );
   `endif
