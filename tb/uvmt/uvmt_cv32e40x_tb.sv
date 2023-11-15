@@ -1001,12 +1001,12 @@ module uvmt_cv32e40x_tb;
                                                                     );
   `endif
 
-
+  `ifndef  COREV_ASSERT_OFF
     if (CORE_PARAM_RV32 == cv32e40x_pkg::RV32E) begin: gen_rv32e_assert
       bind cv32e40x_wrapper uvmt_cv32e40x_rv32e_assert u_rv32e_assert(.rvfi_if(rvfi_instr_if)
                                                                     );
     end : gen_rv32e_assert
-
+  `endif
 
   `ifndef  COREV_ASSERT_OFF
     bind cv32e40x_wrapper uvmt_cv32e40x_triggers_assert_cov debug_trigger_assert_i(
