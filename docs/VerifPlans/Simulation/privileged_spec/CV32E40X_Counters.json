@@ -12,9 +12,9 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "Count inhibit",
+        "Sub Feature": "",
         "Feature Description": "mcountinhibit of minstret stops count",
         "Verification Goal": "When mcountinhibit[2] is set to 1, the minstret counter should stop counting and always return the same value",
         "Pass/Fail Criteria": "Check against ISS",
@@ -24,9 +24,9 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "Count inhibit",
+        "Sub Feature": "",
         "Feature Description": "mcountinhibit of mhpmcounterX stops count",
         "Verification Goal": "When any of mcountinhibit[3:31] is set to 1 (particularly, even if the corresponding counter has an mhpmevent enabled) then the counter should stop counting and always return the same value",
         "Pass/Fail Criteria": "Check against ISS",
@@ -36,9 +36,9 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "Count inhibit",
+        "Sub Feature": "",
         "Feature Description": "mcountinhibit on mcycle/minstret doesn't stop mhpmcounterX",
         "Verification Goal": "When inhibit is set for mcycle and/or minstret, then event selection should still be able to make mhpmcounters count for those selectors",
         "Pass/Fail Criteria": "Check against ISS",
@@ -48,7 +48,7 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
         "Sub Feature": "mcycle",
         "Feature Description": "Counts the number of clock cycle executed by the processor core.",
@@ -60,19 +60,19 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "mcycle",
-        "Feature Description": "Counts the number of clock cycle executed by the processor core.",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "When enabled the count advances with each valid gated clock\n",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_mcycle",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
         "Sub Feature": "minstret",
         "Feature Description": "Counts the number of instructions the hart has retired.",
@@ -84,19 +84,19 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "minstret",
-        "Feature Description": "Counts the number of instructions the hart has retired.",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Read of minstret returns current instruction count. This property could use the RVFI to validate",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
         "Sub Feature": "mhpmcounter3-mhpmcounte31\n\nmhpmevent3-mhpmevent31",
         "Feature Description": "Additional 64-bits event counters mhpmcounter3-mhpmcounte31.\nThe event selector CSR mhpmevent3-mhpmevent31 control which event causes the corresponding counter to increment.\nThe meaning of these events is defined by the platform. Event \"0\" is defined to mean \"no event\".\n",
@@ -108,7 +108,7 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
         "Sub Feature": "Overflow",
         "Feature Description": "For each counter, its two 32-bit registers works as one 64-bit register",
@@ -116,19 +116,19 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "hpmcounter_basic_test.c\n\nhmpcounter_hazard_test.c",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "Privileged Architecture\nSection 3.1.11, 3.1.13",
+        "Requirement Location": "",
         "Feature": "Hardware Performance Monitor",
-        "Sub Feature": "Overflow",
-        "Feature Description": "For each counter, its two 32-bit registers works as one 64-bit register",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Counter overflows from all ones in both mhpmcount and mhpmcounth to zero (most important to test is mcycle[h] and minstret[h])",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "hpmcounter_basic_test.c\n\nhmpcounter_hazard_test.c",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
@@ -144,7 +144,7 @@
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "INSTR",
         "Feature Description": "platform specific event bit[1]",
@@ -152,11 +152,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "COMP_INSTR",
         "Feature Description": "platform specific event bit[2]",
@@ -164,11 +164,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "JUMP",
         "Feature Description": "platform specific event bit[3]",
@@ -176,11 +176,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "BRANCH",
         "Feature Description": "platform specific event bit[4]",
@@ -188,11 +188,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "BRANCH_TAKEN",
         "Feature Description": "platform specific event bit[5]",
@@ -200,11 +200,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "INTR_TAKEN",
         "Feature Description": "platform specific event bit[6]",
@@ -212,11 +212,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "DATA_READ",
         "Feature Description": "platform specific event bit[7]",
@@ -224,11 +224,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "DATA_WRITE",
         "Feature Description": "platform specific event bit[8]",
@@ -236,11 +236,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "IF_INVALID",
         "Feature Description": "platform specific event bit[9]",
@@ -248,11 +248,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "ID_INVALID",
         "Feature Description": "platform specific event bit[10]",
@@ -260,11 +260,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "EX_INVALID",
         "Feature Description": "platform specific event bit[11]",
@@ -272,11 +272,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "WB_INVALID",
         "Feature Description": "platform specific event bit[12]",
@@ -284,11 +284,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "ID_LD_STALL",
         "Feature Description": "platform specific event bit[13]",
@@ -296,11 +296,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "ID_JMP_STALL",
         "Feature Description": "platform specific event bit[14]",
@@ -308,11 +308,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "WB_DATA_STALL",
         "Feature Description": "platform specific event bit[15]",
@@ -320,11 +320,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "NUM_MHPMCOUNTERS",
         "Feature Description": "Parameter controling available number of mhpmcounters",
@@ -332,11 +332,11 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "CORE-V CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Performance Counters",
         "Sub Feature": "Retirement timing",
         "Feature Description": "Updating retirement-related counters must have happened within the time the instruction is considered retired (i.e. must be visible on the rvfi retirement)",
@@ -344,7 +344,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
@@ -356,14 +356,14 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Assertion Coverage",
-        "Link to Coverage": "TODO all of these selectors can be tested in \"mhpmcounter_basic_test.c\" and \"mhpmcounter_hazard_test.c\" but the tests have to be updated to the new counters spec",
+        "Link to Coverage": "",
         "Comment": ""
     },
     {
-        "Requirement Location": "RISC-V External Debug Support Version 0.13.2",
+        "Requirement Location": "",
         "Feature": "Debug Mode",
-        "Sub Feature": "stopcount",
-        "Feature Description": "stopcount is tied to 0 so debug mode has no effect on counters",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "minstret continues during debug",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
@@ -372,51 +372,51 @@
         "Comment": "Ensure that minstret is read during debug mode"
     },
     {
-        "Requirement Location": "RISC-V External Debug Support Version 0.13.2",
+        "Requirement Location": "",
         "Feature": "Debug Mode",
-        "Sub Feature": "stopcount",
-        "Feature Description": "stopcount is tied to 0 so debug mode has no effect on counters",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "hpmcounter[31-3] continues during debug",
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage  Method": "Testcase",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_minstret_in_dbg",
-        "Comment": "Ensure that minstret is read during debug mode"
+        "Link to Coverage": "",
+        "Comment": ""
     },
     {
-        "Requirement Location": "RISC-V External Debug Support Version 0.13.2",
+        "Requirement Location": "",
         "Feature": "Debug Mode",
-        "Sub Feature": "stopcount",
-        "Feature Description": "stopcount is tied to 0 so debug mode has no effect on counters",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "hpmcounter[31-3] continues during debug",
-        "Pass/Fail Criteria": "Self Checking Test",
-        "Test Type": "Directed Self-Checking",
-        "Coverage  Method": "Testcase",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_minstret_in_dbg",
-        "Comment": "Ensure that minstret is read during debug mode"
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage  Method": "",
+        "Link to Coverage": "",
+        "Comment": ""
     },
     {
-        "Requirement Location": "RISC-V External Debug Support Version 0.13.2",
+        "Requirement Location": "",
         "Feature": "Debug Mode",
-        "Sub Feature": "stopcount",
-        "Feature Description": "stopcount is tied to 0 so debug mode has no effect on counters",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "hpmcounter[31-3] continues during debug",
-        "Pass/Fail Criteria": "Self Checking Test",
-        "Test Type": "Directed Self-Checking",
-        "Coverage  Method": "Testcase",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_minstret_in_dbg",
-        "Comment": "Ensure that minstret is read during debug mode"
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage  Method": "",
+        "Link to Coverage": "",
+        "Comment": ""
     },
     {
         "Requirement Location": " -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- END -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------",
         "Feature": "Debug Mode",
-        "Sub Feature": "stopcount",
-        "Feature Description": "stopcount is tied to 0 so debug mode has no effect on counters",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "hpmcounter[31-3] continues during debug",
-        "Pass/Fail Criteria": "Self Checking Test",
-        "Test Type": "Directed Self-Checking",
-        "Coverage  Method": "Testcase",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_minstret_in_dbg",
-        "Comment": "Ensure that minstret is read during debug mode"
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage  Method": "",
+        "Link to Coverage": "",
+        "Comment": ""
     }
 ]
