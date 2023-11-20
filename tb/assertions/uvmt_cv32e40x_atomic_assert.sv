@@ -245,14 +245,11 @@ module uvmt_cv32e40x_atomic_assert
       !rvfi_if.rvfi_trap.debug &&
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_FAULT &&
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_BUS_FAULT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ECALL_MMODE &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_STORE_FAULT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
+      //rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT
 
       |->
-      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_MISALIGNED
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_FAULT //MISALIGNED
 
     ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
@@ -265,15 +262,12 @@ module uvmt_cv32e40x_atomic_assert
       !rvfi_if.rvfi_trap.debug &&
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_FAULT &&
       rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_INSTR_BUS_FAULT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ECALL_MMODE &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_STORE_FAULT &&
-      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_LOAD_FAULT
+      //rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN &&
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_BREAKPOINT
 
       |->
 
-      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_MISALIGNED
+      rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_FAULT //MISALIGNED
 
     ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
 
