@@ -150,7 +150,6 @@ module uvmt_cv32e40x_dut_wrap
 
          .irq_i                  ( interrupt_if.irq               ),
          .wu_wfe_i               ( wfe_wu_if.wfe_wu               ),
-         .wu_wrs_i               (1'b0                            ),
          .clic_irq_i             ( clic_if.clic_irq               ),
          .clic_irq_id_i          ( clic_if.clic_irq_id            ),
          .clic_irq_level_i       ( clic_if.clic_irq_level         ),
