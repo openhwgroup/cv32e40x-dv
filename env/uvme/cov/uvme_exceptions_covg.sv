@@ -48,10 +48,8 @@ covergroup cg_exceptions
     bins breakpoint          = {3};
     bins load_acc_fault      = {5};
     bins store_amo_acc_fault = {7};
-    bins ecall_umode         = {8};
     bins ecall               = {11};
     bins ins_bus_fault       = {24};
-    bins ins_parity_fault    = {25};
   }
   cp_pcr_mtvec : coverpoint (isacov.instr.rvfi.pc_rdata[31:2] == isacov.instr.rvfi.csrs["mtvec"].get_csr_retirement_data()[31:2]) {
     bins one = {1};
