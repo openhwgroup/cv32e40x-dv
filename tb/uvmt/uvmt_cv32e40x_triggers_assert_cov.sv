@@ -137,8 +137,6 @@ module uvmt_cv32e40x_triggers_assert_cov
   localparam MAX_MEM_ACCESS = 13; //Push and pop can do 13 memory access. TODO: XIF, can potentially do more, so for XIF assertion a_dt_max_memory_transaction might fail.
   localparam MAX_MEM_ACCESS_PLUS_ONE = 53'b1_0000__0000_0000_0000_0000__0000_0000_0000_0000__0000_0000_0000_0000;
 
-
-
   /////////// Signals ///////////
 
   logic [31:0] tdata1_pre_state;
@@ -196,7 +194,6 @@ module uvmt_cv32e40x_triggers_assert_cov
     is_csrrci = rvfi_if.match_instr_isb(rvfi_if.INSTR_OPCODE_CSRRCI);
     csri_uimm = rvfi_if.rvfi_insn[19:15];
   end
-
 
   /////////// Sequences ///////////
 
@@ -1096,7 +1093,6 @@ module uvmt_cv32e40x_triggers_assert_cov
       support_if.is_trigger_match
 
     ) else `uvm_error(info_tag, "We have entered debug mode due to triggers but not due to any of the listed reasons.\n");
-
 
     //- Vplan:
     //Change the type to 2/6/15 and write any data to "tdata2", read it back and check that it always gets set.

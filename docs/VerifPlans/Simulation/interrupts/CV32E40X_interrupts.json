@@ -20,7 +20,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "N/A",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions, when it is fixed",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -32,7 +32,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "N/A",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions, when it is fixed",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -68,7 +68,7 @@
         "Pass/Fail Criteria": "Any/All",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "N/A",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions, when it is fixed",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -80,7 +80,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions, when it is fixed",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -92,7 +92,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions, when it is fixed",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -110,25 +110,25 @@
     {
         "Requirement Location": "UM 612b47",
         "Feature": "Eventually taken",
-        "Sub Feature": "Priority",
+        "Sub Feature": "",
         "Feature Description": "An interrupt that is both pending and enabled shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
         "Verification Goal": "Check that when conditions are right, then the interrupt gets taken within expected time",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32_tb.dut_wrap.cv32e40p_wrapper_i.core_i.interrupt_assert_i,a_irq_arb",
+        "Link to Coverage": "",
         "": ""
     },
     {
         "Requirement Location": "RVPriv1.11",
         "Feature": "interrupt pending becoming enabled",
-        "Sub Feature": "Priority",
+        "Sub Feature": "",
         "Feature Description": "When mip is already set when the interrupt is enabled, the trap occurs immediately.",
         "Verification Goal": "Assert that no instruction is executed between the interrupt being enabled(CSR write or xRET) and the interrupt being taken. Ideally verify with Formal\n\nNOTE: this feature is meant to cover the case which triggered the bug in github issue #325. ",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32_tb.dut_wrap.cv32e40p_wrapper_i.core_i.interrupt_assert_i,a_irq_arb",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -152,7 +152,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "N/A",
-        "Link to Coverage": "DTC \"interrupt_bootstrap_test\"",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -224,7 +224,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "N/A",
-        "Link to Coverage": "DTC \"interrupt_test\"",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -416,7 +416,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "N/A",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -428,7 +428,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -440,7 +440,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "TODO update to non-\"_o\" assertions",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -896,7 +896,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -968,7 +968,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -980,7 +980,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -992,7 +992,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1004,7 +1004,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1016,7 +1016,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1028,7 +1028,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1040,7 +1040,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1052,7 +1052,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1064,7 +1064,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1076,7 +1076,7 @@
         "Pass/Fail Criteria": "N/A",
         "Test Type": "N/A",
         "Coverage Method": "N/A",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1088,7 +1088,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1100,7 +1100,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1112,7 +1112,7 @@
         "Pass/Fail Criteria": "N/A",
         "Test Type": "N/A",
         "Coverage Method": "N/A",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1124,7 +1124,7 @@
         "Pass/Fail Criteria": "N/A",
         "Test Type": "N/A",
         "Coverage Method": "N/A",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1136,7 +1136,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1148,7 +1148,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1160,7 +1160,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1172,7 +1172,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1184,7 +1184,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1196,7 +1196,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1208,7 +1208,7 @@
         "Pass/Fail Criteria": "Self Checking Test",
         "Test Type": "Directed Self-Checking",
         "Coverage Method": "Testcase",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1220,7 +1220,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1232,7 +1232,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1244,7 +1244,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1256,7 +1256,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1268,7 +1268,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1280,7 +1280,7 @@
         "Pass/Fail Criteria": "Check against RM",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1292,7 +1292,7 @@
         "Pass/Fail Criteria": "Check against RM",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1304,7 +1304,7 @@
         "Pass/Fail Criteria": "Check against RM",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1316,7 +1316,7 @@
         "Pass/Fail Criteria": "Check against RM",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1328,7 +1328,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
@@ -1340,79 +1340,79 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Link to Coverage": "",
         "": ""
     },
     {
-        "Requirement Location": "UM 612b47",
+        "Requirement Location": "",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     },
     {
-        "Requirement Location": "UM 612b47",
+        "Requirement Location": "",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     },
     {
-        "Requirement Location": "UM 612b47",
+        "Requirement Location": "",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     },
     {
-        "Requirement Location": "UM 612b47",
+        "Requirement Location": "",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     },
     {
-        "Requirement Location": "UM 612b47",
+        "Requirement Location": "",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     },
     {
         "Requirement Location": " -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- END -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------",
         "Feature": "NMI",
-        "Sub Feature": "Eventually taken",
-        "Feature Description": "An NMI shall be taken, unless if the core is in debug mode or is blocked by external interfaces (rvalid, fence_flush_ack, etc), and the taking happens within a fixed number of cycles",
+        "Sub Feature": "",
+        "Feature Description": "",
         "Verification Goal": "Check that when conditions are right, then the NMI gets taken within expected time",
-        "Pass/Fail Criteria": "Assertion Check",
-        "Test Type": "ENV capability, not specific test",
-        "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "CG: uvm_pkg.uvm_test_top.env.cov_model.interrupt_covg.cg_irq_entry",
+        "Pass/Fail Criteria": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
         "": ""
     }
 ]
