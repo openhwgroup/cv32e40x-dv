@@ -19,9 +19,10 @@ module uvmt_cv32e40x_atomic_assert
   import cv32e40x_pkg::*;
   import isa_decoder_pkg::*;
   #(
-    parameter A_EXT = A_NONE,
+    parameter a_ext_e       A_EXT,
     parameter int           PMA_NUM_REGIONS,
-    parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0]
+    parameter pma_cfg_t     PMA_CFG [PMA_NUM_REGIONS-1:0],
+    parameter rv32_e        RV32
   )(
     uvma_clknrst_if_t       clknrst_if,
     uvma_rvfi_instr_if_t    rvfi_if,
@@ -84,6 +85,7 @@ module uvmt_cv32e40x_atomic_assert
   logic transaction_addrs_within_pma_region;
 
   always_comb begin
+  transaction_addrs_pma_region = 0;
   transaction_addrs_within_pma_region = 0;
     for (int i = PMA_NUM_REGIONS-1; i >= 0; i--) begin
       if ((rvfi_if.rvfi_rs1_rdata >>2) >= PMA_CFG[i].word_addr_low &&
@@ -105,11 +107,21 @@ module uvmt_cv32e40x_atomic_assert
     rvfi_if.rvfi_rs1_rdata[1:0] == 2'b00 && //No memory alignment error
     !rvfi_if.rvfi_dbg_mode; //No change in PMA setting due to debug
 
+
+  // Illegal register for RV32E:
+  logic RV32E_illegal_registers;
+
+  assign RV32E_illegal_registers =
+    support_if.asm_rvfi.rd.gpr.raw > 32'd15 ||
+    support_if.asm_rvfi.rs1.gpr.raw > 32'd15 ||
+    support_if.asm_rvfi.rs2.gpr.raw > 32'd15;
+
   // ---------------------------------------------------------------------------
   // Clocking block
   // ---------------------------------------------------------------------------
+
   default clocking @(posedge clknrst_if.clk); endclocking
-  default disable iff !(clknrst_if.reset_n);
+  default disable iff (!clknrst_if.reset_n || (RV32==RV32E && RV32E_illegal_registers));
 
 
   // ---------------------------------------------------------------------------
@@ -323,6 +335,7 @@ module uvmt_cv32e40x_atomic_assert
         rvfi_if.rvfi_valid &&
         support_if.asm_rvfi.instr == LR_W &&
         !PMA_CFG[transaction_addrs_pma_region].atomic &&
+        transaction_addrs_within_pma_region &&
         !trap_prioritized_higher_than_load_store_faults
 
         |->
@@ -335,6 +348,7 @@ module uvmt_cv32e40x_atomic_assert
         rvfi_if.rvfi_valid &&
         support_if.asm_rvfi.instr == SC_W &&
         !PMA_CFG[transaction_addrs_pma_region].atomic &&
+        transaction_addrs_within_pma_region &&
         !trap_prioritized_higher_than_load_store_faults
 
         |->
