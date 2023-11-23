@@ -945,12 +945,11 @@ module uvmt_cv32e40x_triggers_assert_cov
       //2) Verify that we do not enter debug when triggering unenabled exceptions
 
       //1)
-      //TODO: krdosvik, fails, need rtl fix.
-      /*a_dt_exception_trigger_hit_m_instr_access_fault: assert property(
+      a_dt_exception_trigger_hit_m_instr_access_fault: assert property(
         p_etrigger_hit(
           t,
           EXC_CAUSE_INSTR_FAULT)
-      ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction fault) does not send the core into debug mode.\n");*/
+      ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction fault) does not send the core into debug mode.\n");
 
       a_dt_exception_trigger_hit_m_illegal_instr: assert property(
         p_etrigger_hit(
@@ -982,13 +981,11 @@ module uvmt_cv32e40x_triggers_assert_cov
           EXC_CAUSE_ECALL_MMODE)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, ecall in machine mode) does not send the core into debug mode.\n");
 
-      /* TODO: krdosvik, fails, need rtl fix.
       a_dt_exception_trigger_hit_m_instr_bus_fault: assert property(
         p_etrigger_hit(
           t,
           EXC_CAUSE_INSTR_BUS_FAULT)
       ) else `uvm_error(info_tag, "The trigger match (exception match, machine mode, instruction bus fault) does not send the core into debug mode.\n");
-      */
 
       //2) see a_dt_enter_dbg_reason
 
@@ -1087,8 +1084,7 @@ module uvmt_cv32e40x_triggers_assert_cov
 
 
     //2)
-    //TODO: krdosvik, fails, need rtl fix.
-    /*a_dt_enter_dbg_reason: assert property (
+    a_dt_enter_dbg_reason: assert property (
       rvfi_if.rvfi_valid
       && rvfi_if.rvfi_trap.debug
       && rvfi_if.rvfi_trap.debug_cause == TRIGGER_MATCH
@@ -1096,7 +1092,7 @@ module uvmt_cv32e40x_triggers_assert_cov
       |->
       support_if.is_trigger_match
 
-    ) else `uvm_error(info_tag, "We have entered debug mode due to triggers but not due to any of the listed reasons.\n");*/
+    ) else `uvm_error(info_tag, "We have entered debug mode due to triggers but not due to any of the listed reasons.\n");
 
     //- Vplan:
     //Change the type to 2/6/15 and write any data to "tdata2", read it back and check that it always gets set.
