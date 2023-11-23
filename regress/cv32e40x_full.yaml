@@ -104,6 +104,10 @@ builds:
     cfg: debug_trigger_cfg4
     dir: cv32e40x/sim/uvmt
 
+  uvmt_cv32e40x_TEMPORARY_zalrsc:
+    cmd: make comp_corev-dv comp
+    cfg: TEMPORARY_zalrsc
+    dir: cv32e40x/sim/uvmt
 
 # List of tests
 tests:
@@ -522,8 +526,8 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=wfe_test
 
-  #zalrsc: #TODO, krdosvik, add test when no problem running zalrsc test with ISS
-  #  description: Sanity test of ZALRSC extention
-  #  builds: [ uvmt_cv32e40x_clic ]
-  #  dir: cv32e40x/sim/uvmt
-  #  cmd: make test TEST=zalrsc
+  zalrsc:
+    description: Sanity test of ZALRSC extention
+    builds: [ uvmt_cv32e40x_TEMPORARY_zalrsc ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=zalrsc

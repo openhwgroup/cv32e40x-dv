@@ -732,9 +732,10 @@ module uvmt_cv32e40x_tb;
     //Atomic assert
     bind  dut_wrap.cv32e40x_wrapper_i
     uvmt_cv32e40x_atomic_assert #(
-      .A_EXT (A_EXT),
+      .A_EXT           (A_EXT),
       .PMA_NUM_REGIONS (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_NUM_REGIONS),
-      .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG)
+      .PMA_CFG         (uvmt_cv32e40x_base_test_pkg::CORE_PARAM_PMA_CFG),
+      .RV32            (cv32e40x_pkg::RV32E)
     ) atomic_assert_i (
       .clknrst_if              (dut_wrap.clknrst_if),
       .rvfi_if                 (dut_wrap.cv32e40x_wrapper_i.rvfi_instr_if),
