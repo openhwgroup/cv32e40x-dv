@@ -73,8 +73,8 @@ module uvmt_cv32e40x_dut_wrap
     logic         debug_pc_valid;
     logic [31:0]  debug_pc;
 
-    logic  alert_major;
-    logic  alert_minor;
+    logic alert_major;
+    logic alert_minor;
 
     logic [63:0]  mcycle;
 
