@@ -2,6 +2,7 @@ name: TEMPORARY_zalrsc
 description: Enables the ZALRSC extension, and disables the zcmp extentnion. TODO, krdosvik, remove this configuration when no problem running zalrsc test with ISS=1, so until then run with ISS=0.
 compile_flags:
     +define+A
+    +define+PMA_TEST_CFG_ATOMIC
     #+define+ZALRSC TODO: use zalrsc when ISS is up to date.
 ovpsim: >
     #--showoverrides

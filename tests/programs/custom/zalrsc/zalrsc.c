@@ -25,16 +25,21 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define LR_W 0
+#define SC_W 1
+
 typedef enum {
   MISALIGNED_LRW,
   MISALIGNED_SCW,
+  NONATOMIC_REGION,
   UNEXPECTED_IRQ_BEH
 } trap_behavior_t;
 
 // trap handler behavior definitions
 volatile trap_behavior_t trap_handler_beh;
-volatile uint32_t num_misaligned_LRW_trapped;
-volatile uint32_t num_misaligned_SCW_trapped;
+volatile uint32_t misaligned_LRW_trapped;
+volatile uint32_t misaligned_SCW_trapped;
+volatile uint32_t zalrsc_nonatomic_region_trapped;
 volatile uint32_t unexpected_irq_beh;
 
 
@@ -43,6 +48,8 @@ int test_LR_SC_sequence_failure_address_mismatch(void);
 int test_LR_SC_sequence_failure_additional_SC_access(void);
 int test_LRW_misaligned_access(void);
 int test_SCW_misaligned_access(void);
+int test_zalrsc_to_non_atomic_region(uint8_t is_scw);
+
 
 // Checks the mepc for compressed instructions and increments appropriately
 void increment_mepc(void){
@@ -71,13 +78,19 @@ void trap_handler(void) {
   switch(trap_handler_beh) {
 
     case MISALIGNED_LRW :
-      num_misaligned_LRW_trapped += 1;
+      misaligned_LRW_trapped = 1;
       trap_handler_beh = UNEXPECTED_IRQ_BEH;
       increment_mepc();
       break;
 
     case MISALIGNED_SCW :
-      num_misaligned_SCW_trapped += 1;
+      misaligned_SCW_trapped = 1;
+      trap_handler_beh = UNEXPECTED_IRQ_BEH;
+      increment_mepc();
+      break;
+
+    case NONATOMIC_REGION :
+      zalrsc_nonatomic_region_trapped = 1;
       trap_handler_beh = UNEXPECTED_IRQ_BEH;
       increment_mepc();
       break;
@@ -149,8 +162,8 @@ int main(int argc, char *argv[])
 {
   volatile uint32_t failures=0;
 
-  num_misaligned_LRW_trapped = 0;
-  num_misaligned_SCW_trapped = 0;
+  misaligned_LRW_trapped = 0;
+  misaligned_SCW_trapped = 0;
   unexpected_irq_beh = 0;
   trap_handler_beh = UNEXPECTED_IRQ_BEH;
 
@@ -159,6 +172,8 @@ int main(int argc, char *argv[])
   failures += test_LR_SC_sequence_failure_additional_SC_access();
   failures += test_LRW_misaligned_access();
   failures += test_SCW_misaligned_access();
+  failures += test_zalrsc_to_non_atomic_region(LR_W);
+  failures += test_zalrsc_to_non_atomic_region(SC_W);
   failures += unexpected_irq_beh;
 
   if(failures == 0){
@@ -277,12 +292,12 @@ int test_LRW_misaligned_access(void)
 
   //(Execute exception handler)
 
-  if (num_misaligned_LRW_trapped != 1) {
+  if (misaligned_LRW_trapped != 1) {
     printf("Expected LRW to trap due to misaligned address. However, it did not.\n");
     return 1;
   }
 
-  num_misaligned_LRW_trapped = 0;
+  misaligned_LRW_trapped = 0;
   return 0;
 }
 
@@ -301,11 +316,44 @@ int test_SCW_misaligned_access(void)
 
   //(Execute exception handler)
 
-  if (num_misaligned_SCW_trapped != 1) {
+  if (misaligned_SCW_trapped != 1) {
     printf("Expected SCW to trap due to misaligned address. However, it did not.\n");
     return 1;
   }
 
-  num_misaligned_SCW_trapped = 0;
+  misaligned_SCW_trapped = 0;
   return 0;
 }
+
+int test_zalrsc_to_non_atomic_region(uint8_t is_scw)
+{
+  printf("\n\nTest using LR.W on non atomic memory region.\n\n");
+
+  volatile uint32_t nonatomic_region_addr = 0xFFFFFFFE;
+  volatile uint32_t is_failure = 0;
+  volatile uint32_t random = 0;
+  trap_handler_beh = NONATOMIC_REGION;
+
+  if (is_scw) {
+    __asm__ volatile("sc.w %[is_failure], %[random], (%[nonatomic_region_addr])"
+    : [is_failure]"=r"(is_failure)
+    : [random] "r"(random), [nonatomic_region_addr]"r"(nonatomic_region_addr));
+
+  } else {
+    __asm__ volatile("lr.w %[random], (%[nonatomic_region_addr])"
+    : [random]"=r"(random)
+    : [nonatomic_region_addr]"r"(nonatomic_region_addr));
+  }
+
+  //(Execute exception handler)
+
+  if (!zalrsc_nonatomic_region_trapped) {
+    printf("Expected the zalrsc operation to trap due to pma error for accessing non atomic region. However, it did not.\n");
+    printf("Verify that address <nonatomic_region_addr> is indeed in a non atomic pma region.\n");
+    return 1;
+  }
+
+  zalrsc_nonatomic_region_trapped = 0;
+  return 0;
+}
+
