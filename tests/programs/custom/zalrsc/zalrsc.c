@@ -349,7 +349,6 @@ int test_zalrsc_to_non_atomic_region(uint8_t is_scw)
 
   if (!zalrsc_nonatomic_region_trapped) {
     printf("Expected the zalrsc operation to trap due to pma error for accessing non atomic region. However, it did not.\n");
-    printf("Verify that address <nonatomic_region_addr> is indeed in a non atomic pma region.\n");
     return 1;
   }
 
