@@ -1,5 +1,5 @@
-name: clic_default
-description: Default clic configuration for CV32E40S simulations
+name: enable_counters_std
+description: Default configuration for CV32E40X random simulations that includes turning on the mhpmcounters, to count various stuff.
 compile_flags:
     +define+ZBA_ZBB_ZBC_ZBS
     +define+CLIC_EN
