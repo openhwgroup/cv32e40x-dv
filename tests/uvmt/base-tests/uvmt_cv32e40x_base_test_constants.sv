@@ -369,6 +369,20 @@ parameter int  PMA_MAX_REGIONS = 16;
      '{word_addr_low : 32'h70000000>>2, word_addr_high : 32'h80000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
      '{word_addr_low : 32'h00000000>>2, word_addr_high : 32'hF0000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1}
      };
+`elsif PMA_TEST_CFG_ATOMIC // Used for memory layout generator debug
+   const string pma_cfg_name = "pma_test_cfg_atomic";
+   parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h0030_1000;
+   parameter logic [31:0] CORE_PARAM_DM_REGION_END   = 32'h0030_2000;
+   parameter int unsigned CORE_PARAM_PMA_NUM_REGIONS = 6;
+
+   parameter cv32e40x_pkg::pma_cfg_t CORE_PARAM_PMA_CFG[CORE_PARAM_PMA_NUM_REGIONS-1:0] = '{
+     '{word_addr_low : 32'hFFFFFFFD>>2, word_addr_high : 32'hFFFFFFFF>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b0},
+     '{word_addr_low : 32'h00000000>>2, word_addr_high : 32'h20000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
+     '{word_addr_low : 32'h30000000>>2, word_addr_high : 32'h40000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
+     '{word_addr_low : 32'h50000000>>2, word_addr_high : 32'h60000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
+     '{word_addr_low : 32'h70000000>>2, word_addr_high : 32'h80000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1},
+     '{word_addr_low : 32'h00000000>>2, word_addr_high : 32'hF0000000>>2, main : 1'b1, bufferable : 1'b0, cacheable : 1'b1, atomic : 1'b1}
+     };
 `else
    const string pma_cfg_name = "pma_noregion";
    parameter logic [31:0] CORE_PARAM_DM_REGION_START = 32'h1A11_0000;
