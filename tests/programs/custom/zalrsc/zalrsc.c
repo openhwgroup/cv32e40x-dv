@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
 
   misaligned_LRW_trapped = 0;
   misaligned_SCW_trapped = 0;
+  zalrsc_nonatomic_region_trapped = 0;
   unexpected_irq_beh = 0;
   trap_handler_beh = UNEXPECTED_IRQ_BEH;
 
