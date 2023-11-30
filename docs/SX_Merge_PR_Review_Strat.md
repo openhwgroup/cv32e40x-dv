@@ -1,7 +1,7 @@
 S->X PR review key points:
 
-* "40s" Literals
-    * Check for "40s" or "40S" in file names or content.
+* "40x" Literals
+    * Check for "40x" or "40X" in file names or content.
     * (This has crept in unnoticed before.)
 * S-features
     * No PMP, no user mode, etc.

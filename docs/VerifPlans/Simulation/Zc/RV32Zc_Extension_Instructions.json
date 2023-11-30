@@ -32,7 +32,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -56,7 +56,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -80,7 +80,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -104,7 +104,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -128,7 +128,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -152,7 +152,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -164,7 +164,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -188,7 +188,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -212,7 +212,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -236,7 +236,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -260,7 +260,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -272,7 +272,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -316,11 +316,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_push",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_push",
         "": ""
     },
     {
@@ -328,11 +328,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. (the order might change)\n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. (the order might change)\n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Directed Non-Self-Checking",
         "Coverage Method": "Testcase",
-        "Link to Coverage": "Coverage hole, evaluate priority",
+        "Link to Coverage": "DTC: pma",
         "": ""
     },
     {
@@ -344,7 +344,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -388,11 +388,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_pop",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_pop",
         "": ""
     },
     {
@@ -400,11 +400,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Directed Non-Self-Checking",
         "Coverage Method": "Testcase",
-        "Link to Coverage": "Coverage hole, evaluate priority",
+        "Link to Coverage": "DTC: pma",
         "": ""
     },
     {
@@ -416,7 +416,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -448,11 +448,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_popret",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_popret",
         "": ""
     },
     {
@@ -460,11 +460,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Directed Non-Self-Checking",
         "Coverage Method": "Testcase",
-        "Link to Coverage": "Coverage hole, evaluate priority",
+        "Link to Coverage": "\"push\" and \"pop\" instructions tested, testing every type of instruction is deprioritized",
         "": ""
     },
     {
@@ -476,7 +476,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -508,11 +508,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_popretz",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_popretz",
         "": ""
     },
     {
@@ -520,11 +520,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Coverage hole, evaluate priority",
+        "Link to Coverage": "\"push\" and \"pop\" instructions tested, testing every type of instruction is deprioritized",
         "": ""
     },
     {
@@ -536,7 +536,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -556,11 +556,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_mva01s",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_mva01s",
         "": ""
     },
     {
@@ -568,7 +568,7 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Directed Non-Self-Checking",
         "Coverage Method": "Testcase",
@@ -584,7 +584,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -604,11 +604,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40s, such as PMP/PMA. Synchronize verification effort to avoid double work.",
+        "Verification Goal": "Verify exception behaviour, no following bus transaction: if a sub-operation triggers an exception, no further transaction shall arrive on the bus originating in the trapped instruction\n\nNote: this functionality is closely matched with items mentioned in other features of the 40x, such as PMP/PMA. Synchronize verification effort to avoid double work.",
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_mvsa01",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.u_zc_assert.a_multiop_exception_stop_dbus_mvsa01",
         "": ""
     },
     {
@@ -616,11 +616,11 @@
         "Feature": "Zcmp",
         "Sub Feature": "",
         "Feature Description": "",
-        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40s implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
+        "Verification Goal": "Verify exception behaviour, partially completed state shall match ISS: when a multi-operation instruction is stopped by an exception, state can have changed. Verify against ISS.\n\nNote: 40x implementation follows the example sequence in the Zc spec. ISS's should match this. \n\nCoverage note: cross between possible register lists and exception arriving between/at all sub-operations would be optimal",
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Directed Non-Self-Checking",
         "Coverage Method": "Testcase",
-        "Link to Coverage": "Coverage hole, evaluate priority",
+        "Link to Coverage": "\"push\" and \"pop\" instructions tested, testing every type of instruction is deprioritized",
         "": ""
     },
     {
@@ -632,7 +632,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -644,7 +644,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.core_i.controller_i.controller_fsm_i.controller_fsm_sva.a_no_sequence_interrupt",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.core_i.controller_i.controller_fsm_i.controller_fsm_sva.a_no_sequence_interrupt",
         "": ""
     },
     {
@@ -668,7 +668,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
@@ -680,7 +680,7 @@
         "Pass/Fail Criteria": "Assertion Check",
         "Test Type": "ENV capability, not specific test",
         "Coverage Method": "Assertion Coverage",
-        "Link to Coverage": "A: uvmt_cv32e40s_tb.dut_wrap.cv32e40s_wrapper_i.core_i.controller_i.controller_fsm_i.controller_fsm_sva.a_no_sequence_interrupt",
+        "Link to Coverage": "A: uvmt_cv32e40x_tb.dut_wrap.cv32e40x_wrapper_i.core_i.controller_i.controller_fsm_i.controller_fsm_sva.a_no_sequence_interrupt",
         "": ""
     },
     {
@@ -704,7 +704,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40s_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
+        "Link to Coverage": "Imperas generated coverage, hierarchy path:\nuvmt_cv32e40x_tb.imperas_dv.idv_trace2cov.cov_1.obj_[instr]",
         "": ""
     },
     {
