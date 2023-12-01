@@ -349,8 +349,8 @@ module uvmt_cv32e40x_rvfi_assert
   ) else `uvm_error(info_tag, "!store->!exce, exce->store");
 
 
+  // Disassembler
 
-// Disassembler
   a_unknowninstr_trap: assert property (
     (rvfi_if.instr_asm.instr == UNKNOWN_INSTR) && rvfi_if.rvfi_valid
     |->
@@ -367,6 +367,14 @@ module uvmt_cv32e40x_rvfi_assert
   else `uvm_error(info_tag, $sformatf("RD1 outside implemented register file. RD1==%d", rvfi_if.rvfi_rd1_addr));
 
   end : gen_rv32e_rd1
+  // Exception's don't update GPRs
+
+  a_exceptions_dont_update_gprs: assert property (
+    rvfi_valid && rvfi_trap.exception
+    |->
+    (rvfi_if.rvfi_rd1_addr == 0)
+  ) else `uvm_error(info_tag, "exceptions shouldn't update gprs");
+
 
 endmodule : uvmt_cv32e40x_rvfi_assert
 
