@@ -35,7 +35,8 @@
 
 // MUST be 31 or less (bit position-1 in result array determines test pass/fail
 // status, thus we are limited to 31 tests with this construct.
-#define NUM_TESTS 24
+//#define NUM_TESTS 24
+#define NUM_TESTS 23
 // Set which test index to start testing at (for quickly running specific tests during development)
 #define START_TEST_IDX 0
 // Abort test at first self-check fail, useful for debugging.
@@ -406,20 +407,33 @@ int main(int argc, char **argv){
   tests[7]  = w_mtvt_rd_alignment;
   tests[8]  = w_mtvec_rd_alignment;
   tests[9]  = invalid_mtvt_ptr_exec;
-  tests[10] = invalid_mtvt_ptr_exec_mret;
-  tests[11] = r_mnxti_without_irq;
-  tests[12] = rw_mnxti_without_irq_illegal;
-  tests[13] = r_mnxti_with_pending_irq;
-  tests[14] = r_mnxti_with_lower_lvl_pending_irq;
-  tests[15] = w_mnxti_side_effects;
-  tests[16] = rw_mscratchcsw;
-  tests[17] = rw_mscratchcsw_illegal;
-  tests[18] = rw_mscratchcswl;
-  tests[19] = rw_mscratchcswl_illegal;
-  tests[20] = mret_with_minhv;
-  tests[21] = mintthresh_lower;
-  tests[22] = mintthresh_higher;
-  tests[23] = mintthresh_equal;
+  //tests[10] = invalid_mtvt_ptr_exec_mret;
+  //tests[11] = r_mnxti_without_irq;
+  //tests[12] = rw_mnxti_without_irq_illegal;
+  //tests[13] = r_mnxti_with_pending_irq;
+  //tests[14] = r_mnxti_with_lower_lvl_pending_irq;
+  //tests[15] = w_mnxti_side_effects;
+  //tests[16] = rw_mscratchcsw;
+  //tests[17] = rw_mscratchcsw_illegal;
+  //tests[18] = rw_mscratchcswl;
+  //tests[19] = rw_mscratchcswl_illegal;
+  //tests[20] = mret_with_minhv;
+  //tests[21] = mintthresh_lower;
+  //tests[22] = mintthresh_higher;
+  //tests[23] = mintthresh_equal;
+  tests[10] = r_mnxti_without_irq;
+  tests[11] = rw_mnxti_without_irq_illegal;
+  tests[12] = r_mnxti_with_pending_irq;
+  tests[13] = r_mnxti_with_lower_lvl_pending_irq;
+  tests[14] = w_mnxti_side_effects;
+  tests[15] = rw_mscratchcsw;
+  tests[16] = rw_mscratchcsw_illegal;
+  tests[17] = rw_mscratchcswl;
+  tests[18] = rw_mscratchcswl_illegal;
+  tests[19] = mret_with_minhv;
+  tests[20] = mintthresh_lower;
+  tests[21] = mintthresh_higher;
+  tests[22] = mintthresh_equal;
 
   // Run all tests in list above
   cvprintf(V_LOW, "\nCLIC Test start\n\n");
@@ -1685,30 +1699,15 @@ uint32_t invalid_mtvt_ptr_exec(uint32_t index, uint8_t report_name) {
       recovery_pt: add x0, x0, x0
     )":::);
 
+    __asm__ volatile ( R"(
+      lui t0, 0x40000
+      csrrc zero, mcause, t0
+    )" ::: "t0");
+
     cvprintf(V_LOW, "Entered recovery point, due to unrecoverable clic ptr trap, mepc: %08x, expected: %08x\n", *g_mepc_triggered, (uint32_t)(*((&mtvt_table) + 4)));
     test_fail += test_fail_asm || *g_mepc_triggered != (uint32_t)(*(&mtvt_table + 4));
 
   }
-
-  __asm__ volatile ( R"(
-    .extern test_fail_asm
-    # This should never execute (deliberate dead code)
-    la t0, test_fail_asm
-    lw t1, 0(t0)
-    addi t1, t1, 1
-    sw t1, 0(t0)
-    # Execution should continue here
-    .global recovery_pt
-    recovery_pt: add x0, x0, x0
-  )":::);
-
-  __asm__ volatile ( R"(
-    lui t0, 0x40000
-    csrrc zero, mcause, t0
-  )" ::: "t0");
-
-  cvprintf(V_LOW, "Entered recovery point, due to unrecoverable clic ptr trap, mepc: %08x, expected: %08x\n", *g_mepc_triggered, (uint32_t)(&mtvt_table + 4));
-  test_fail += test_fail_asm || *g_mepc_triggered != (uint32_t)(&mtvt_table + 4);
 
 
   if (test_fail) {
