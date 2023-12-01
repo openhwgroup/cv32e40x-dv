@@ -537,3 +537,9 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=zalrsc
 
+  mhpmcounter_write_test:
+    description: test writing of mhpmcounters
+    builds: [ uvmt_cv32e40x_enable_counters ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=mhpmcounter_write_test
+
