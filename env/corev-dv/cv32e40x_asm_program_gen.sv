@@ -30,6 +30,86 @@ class cv32e40x_asm_program_gen extends corev_asm_program_gen;
     super.new(name);
   endfunction
 
+  virtual function void gen_program_header();
+    string instr[];
+    cv32e40x_instr_gen_config corev_cfg;
+    `DV_CHECK_FATAL($cast(corev_cfg, cfg), "Could not cast cfg into corev_cfg")
+
+    super.gen_program_header();
+
+    if (corev_cfg.enable_counters) begin
+      instr = {
+          //Set mcountinhibit=0
+          $sformatf("mv x%0d, x0", cfg.gpr[0]),
+          $sformatf("csrrw x0, 0x320, x%0d", cfg.gpr[0]),
+          //Set mhpmevent3 .. mhpmevent31 to count one of the 15 various events
+          $sformatf("li x%0d, 0x1", cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x323, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x324, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x325, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x326, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x327, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x328, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x329, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32A, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32B, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32C, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32D, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32E, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x32F, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x330, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x331, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x332, x%0d", cfg.gpr[0]),
+
+          // Make sure we count one of the 15 variouse events
+          $sformatf("li x%0d, 0x1", cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x333, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x334, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x335, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x336, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x337, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x338, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x339, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33A, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33B, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33C, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33D, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33E, x%0d", cfg.gpr[0]),
+          $sformatf("slli x%0d, x%0d, 0x1", cfg.gpr[0], cfg.gpr[0]),
+          $sformatf("csrrs x0, 0x33F, x%0d", cfg.gpr[0])
+        };
+        gen_section(get_label("enable_counters", hart), instr);
+    end
+
+  endfunction : gen_program_header
+
+
   virtual function void trap_vector_init(int hart);
     string instr[];
     privileged_reg_t trap_vec_reg;
