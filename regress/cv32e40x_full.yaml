@@ -543,3 +543,8 @@ tests:
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=mhpmcounter_write_test
 
+  mhpmcounter3_dcsr_stopcount:
+    description: test DSCR's stopcount using mhpmcounter nr. 3
+    builds: [ uvmt_cv32e40x_clic ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=mhpmcounter3_dcsr_stopcount

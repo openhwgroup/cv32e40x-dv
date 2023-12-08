@@ -1,0 +1,4 @@
+name: mhpmcounter3_dcsr_stopcount
+description: Verify that DCSR's stopcount behaviour stops the mhpmcounting in debug mode.
+uvm_test: uvmt_$(CV_CORE_LC)_firmware_test_c
+cflags: -mno-relax
