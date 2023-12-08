@@ -165,7 +165,7 @@ void _debug_handler(void) {
  *
  */
 void execute_debug_command(uint32_t dbg_cmd) {
-  // Disable trigger after use
+
   g_debug_sel = dbg_cmd;
 
   g_debug_entry_status = DEBUG_STATUS_NOT_ENTERED;
@@ -198,11 +198,11 @@ int clear_counter3 (void) {
   //Clear the counter
   __asm__ volatile(R"(
     mv t0, x0
-    csrw 0xB03, t0
+    csrw mhpmcounter3, t0
   )"::: "t0");
 
   //Read the counter's value
-  __asm__ volatile("csrr %[counter], 0xB03" : [counter]"=r"(counter));
+  __asm__ volatile("csrr %[counter], mhpmcounter3" : [counter]"=r"(counter));
 
   if (counter != 0){
     return 1;
@@ -230,7 +230,7 @@ int counter3_minstret_tests (int g_is_dcsr_stopcount)
   int expected_minstret = 3 + 1; //3 nop instructions and 1 instruction to deactivate counter
 
   //Make the counter count number of retired instructions
-  __asm__ volatile("csrw 0x323, %0 " :: "r"(cnt_retired_instr));
+  __asm__ volatile("csrw mhpmevent3, %0 " :: "r"(cnt_retired_instr));
 
   //Activate the counter, run some instructions, deactivate the counter
   __asm__ volatile(R"(
@@ -244,7 +244,7 @@ int counter3_minstret_tests (int g_is_dcsr_stopcount)
   )"::: "t0", "t1");
 
   //Read the counter's value
-  __asm__ volatile("csrr %[counter], 0xB03" : [counter]"=r"(counter));
+  __asm__ volatile("csrr %[counter], mhpmcounter3" : [counter]"=r"(counter));
 
   if(g_is_dcsr_stopcount) {
     is_failure = counter != 0;
@@ -266,11 +266,11 @@ int main(int argc, char *argv[])
   g_debug_sel = DEBUG_UNEXPECTED_ENTRY;
 
   execute_debug_command(DEBUG_CLEAR_DCSR_STOPCOUNT);
-  clear_counter3();
+  g_is_failure += clear_counter3();
   g_is_failure += counter3_minstret_tests(g_is_dcsr_stopcount);
 
   execute_debug_command(DEBUG_SET_DCSR_STOPCOUNT);
-  clear_counter3();
+  g_is_failure += clear_counter3();
   execute_debug_command(DEBUG_RUN_COUNTER_CHECK);
 
   if(g_unexpected_debug_entry){
