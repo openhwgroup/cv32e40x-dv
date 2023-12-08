@@ -199,6 +199,23 @@ module uvmt_cv32e40x_atomic_assert
       rvfi_if.rvfi_mem_addr == rvfi_if.rvfi_rs1_rdata
     ) else `uvm_error(info_tag, "The memory address of a non-traped LR_W instruction is not the value held in RS1.\n");
 
+    a_lrw_rs2_is_x0: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
+      rvfi_if.rvfi_valid &&
+      !rvfi_if.rvfi_trap
+      |->
+      support_if.asm_rvfi.rs2.valid &&
+      support_if.asm_rvfi.rs2.gpr.gpr == X0
+    ) else `uvm_error(info_tag, "LR.W's RS2 is not X0\n");
+
+    a_lrw_rs2_not_x0: assert property (
+      support_if.asm_rvfi.instr == LR_W &&
+      support_if.asm_rvfi.rs2.gpr.gpr == X0 &&
+      rvfi_if.rvfi_valid
+      |->
+      rvfi_if.rvfi_trap.exception_cause != EXC_CAUSE_ILLEGAL_INSN
+    ) else `uvm_error(info_tag, "A LR.W's instruction with RS2 equal to X0 is not an illegal instruction.\n");
+
     a_atomic_lrw_data: assert property (
       support_if.asm_rvfi.instr == LR_W &&
       rvfi_if.rvfi_valid &&
@@ -261,7 +278,7 @@ module uvmt_cv32e40x_atomic_assert
 
       |->
       rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_FAULT
-    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception (shown as load fault).\n");
 
     a_atomic_alignment_exceptions_scw: assert property (
       support_if.asm_rvfi.instr == SC_W &&
@@ -277,7 +294,7 @@ module uvmt_cv32e40x_atomic_assert
       |->
 
       rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_FAULT
-    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception (shown as store fault).\n");
 
 
     if (!PMA_NUM_REGIONS) begin
