@@ -278,7 +278,7 @@ module uvmt_cv32e40x_atomic_assert
 
       |->
       rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_LOAD_FAULT
-    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+    ) else `uvm_error(info_tag, "A LR_W instruction that access a non-aligned memory field does not have a misaligned exception (shown as load fault).\n");
 
     a_atomic_alignment_exceptions_scw: assert property (
       support_if.asm_rvfi.instr == SC_W &&
@@ -294,7 +294,7 @@ module uvmt_cv32e40x_atomic_assert
       |->
 
       rvfi_if.rvfi_trap.exception_cause == cv32e40x_pkg::EXC_CAUSE_STORE_FAULT
-    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception.\n");
+    ) else `uvm_error(info_tag, "A SC_W instruction that access a non-aligned memory field does not have a misaligned exception (shown as store fault).\n");
 
 
     if (!PMA_NUM_REGIONS) begin
