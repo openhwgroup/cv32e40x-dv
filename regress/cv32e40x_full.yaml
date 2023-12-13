@@ -548,3 +548,10 @@ tests:
     builds: [ uvmt_cv32e40x_clic ]
     dir: cv32e40x/sim/uvmt
     cmd: make test TEST=mhpmcounter3_dcsr_stopcount
+
+  minhv_pma_block:
+    description: test minhv=1 and pma block of mepc address
+    builds: [ uvmt_cv32e40x_pma_2 ]
+    dir: cv32e40x/sim/uvmt
+    cmd: make test TEST=minhv_pma_block
+
