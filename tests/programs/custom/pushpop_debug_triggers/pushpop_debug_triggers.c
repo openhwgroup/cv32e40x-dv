@@ -12,7 +12,7 @@
 // Unless required by applicable law or agreed to in writing, any work
 // distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 // WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// 
+//
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
@@ -33,7 +33,18 @@ volatile uint32_t  g_debug_function_setup_triggers = 0;
 volatile uint32_t  g_exception_expected = 0;
 
 volatile uint32_t  g_pushpop_area [32];
+volatile uint32_t  g_pushpop_area_index = 0;
 
+void disable_debug_req(void) {
+  CV_VP_DEBUG_CONTROL = (
+    CV_VP_DEBUG_CONTROL_DBG_REQ(0)             |
+    CV_VP_DEBUG_CONTROL_REQ_MODE(0)            |
+    CV_VP_DEBUG_CONTROL_RAND_PULSE_DURATION(0) |
+    CV_VP_DEBUG_CONTROL_PULSE_DURATION(0)      |
+    CV_VP_DEBUG_CONTROL_RAND_START_DELAY(0)    |
+    CV_VP_DEBUG_CONTROL_START_DELAY(0)
+  );
+}
 
 __attribute__((interrupt("machine")))
 void  u_sw_irq_handler(void){
@@ -101,7 +112,7 @@ void  debug_start(void) {
   )");
 }
 
-static void  setup_triggers(void){
+static void  setup_triggers(int index){
   mcontrol6_t  mcontrol6;
   uint32_t     trigger_addr;
 
@@ -112,7 +123,7 @@ static void  setup_triggers(void){
   mcontrol6.fields.match = 0;  // (match exact address)
   mcontrol6.fields.type  = 6;
 
-  trigger_addr = (uint32_t) &(g_pushpop_area[2]);  // (arbitrary index)
+  trigger_addr = (uint32_t) &(g_pushpop_area[index]);
 
   __asm__ volatile(
     R"(
@@ -159,6 +170,7 @@ static void  incr_dpc(void){
 
 void  debug_handler(void){
   g_debug_entered = 1;
+  disable_debug_req();
   printf("debug handler entered\n");
 
   if (! g_debug_expected) {
@@ -169,7 +181,7 @@ void  debug_handler(void){
 
   if (g_debug_function_setup_triggers) {
     g_debug_function_setup_triggers = 0;
-    setup_triggers();
+    setup_triggers(g_pushpop_area_index);
     return;
   }
   if (g_debug_function_incr_dpc) {
@@ -227,18 +239,22 @@ static void  pop_debug_trigger(void){
   );
 }
 
-static void  let_dmode_setup_triggers(void){
+static void  let_dmode_setup_triggers(int index){
   printf("setup trigs\n");
 
   g_debug_expected = 1;
   g_debug_entered  = 0;
   g_debug_function_setup_triggers = 1;
+  g_pushpop_area_index = index;
 
+  // Prolonged pulse duration so debug req has a chance to be acked and taken
   CV_VP_DEBUG_CONTROL = (
-    CV_VP_DEBUG_CONTROL_DBG_REQ (1)        |
-    CV_VP_DEBUG_CONTROL_REQ_MODE (1)       |
-    CV_VP_DEBUG_CONTROL_PULSE_DURATION (8) |
-    CV_VP_DEBUG_CONTROL_START_DELAY (0)
+    CV_VP_DEBUG_CONTROL_DBG_REQ(1)             |
+    CV_VP_DEBUG_CONTROL_REQ_MODE(1)            |
+    CV_VP_DEBUG_CONTROL_RAND_PULSE_DURATION(0) |
+    CV_VP_DEBUG_CONTROL_PULSE_DURATION(0x1fff) |
+    CV_VP_DEBUG_CONTROL_RAND_START_DELAY(0)    |
+    CV_VP_DEBUG_CONTROL_START_DELAY(200)
   );
 
   while (! g_debug_entered) {
@@ -279,7 +295,13 @@ static void  test_pop_debug_trigger(void){
 }
 
 int main(int argc, char **argv){
-  let_dmode_setup_triggers();
+  let_dmode_setup_triggers(2);
+  test_push_debug_trigger();
+  test_pop_debug_trigger();
+  let_dmode_setup_triggers(1); // trigger at last address in actual sequence
+  test_push_debug_trigger();
+  test_pop_debug_trigger();
+  let_dmode_setup_triggers(3); // trigger at first address in actual sequence
   test_push_debug_trigger();
   test_pop_debug_trigger();
 

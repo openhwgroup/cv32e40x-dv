@@ -189,6 +189,7 @@
         "Coverage Method": "Assertion Coverage",
         "Link to Coverage": "uvmt_cv32e40x_trigger_assert_cov.a_dt_instr_trigger_hit_*",
         "Comment": "These asserts verify that debug is taken when an instruction address breakpoint is taken, implicitly making sure that other non-debug exceptions are not taken.",
+
         "": ""
     },
     {
@@ -201,6 +202,7 @@
         "Coverage Method": "Testcase",
         "Link to Coverage": "uvmt_cv32e40x_trigger_assert_cov.a_dt_[load/store]_trigger_hit_*",
         "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+
         "": ""
     },
     {

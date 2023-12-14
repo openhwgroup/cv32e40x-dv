@@ -53,9 +53,8 @@ module uvmt_cv32e40x_dut_wrap
     uvma_interrupt_if_t             interrupt_if,
     uvma_clic_if_t                  clic_if,
     uvma_wfe_wu_if_t                wfe_wu_if,
-    uvme_cv32e40x_core_cntrl_if_t   core_cntrl_if,
-    uvmt_cv32e40x_core_status_if_t  core_status_if,
     uvmt_cv32e40x_vp_status_if_t    vp_status_if,
+    uvme_cv32e40x_core_cntrl_if_t   core_cntrl_if,
     uvma_obi_memory_if_t            obi_instr_if,
     uvma_obi_memory_if_t            obi_data_if,
     uvma_fencei_if_t                fencei_if
@@ -73,9 +72,10 @@ module uvmt_cv32e40x_dut_wrap
     logic         debug_pc_valid;
     logic [31:0]  debug_pc;
 
-    logic  alert_major;
-    logic  alert_minor;
+    logic alert_major;
+    logic alert_minor;
 
+    logic [63:0]  mcycle;
 
     // instantiate the core
 
@@ -144,7 +144,8 @@ module uvmt_cv32e40x_dut_wrap
          .xif_mem_result_if      ( xif.cpu_mem_result             ),
          .xif_result_if          ( xif.cpu_result                 ),
 
-         .mcycle_o               ( /*todo: connect */             ),
+         .mcycle_o               ( mcycle                         ),
+         .time_i                 ( mcycle                         ),
 
          .irq_i                  ( interrupt_if.irq               ),
          .wu_wfe_i               ( wfe_wu_if.wfe_wu               ),
@@ -166,7 +167,7 @@ module uvmt_cv32e40x_dut_wrap
          .debug_pc_o             ( debug_pc                       ),
 
          .fetch_enable_i         ( core_cntrl_if.fetch_en         ),
-         .core_sleep_o           ( core_status_if.core_busy       )
+         .core_sleep_o           ()
         );
 
 endmodule : uvmt_cv32e40x_dut_wrap
