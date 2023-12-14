@@ -5,6 +5,7 @@ compile_flags: >
    +define+CLIC_EN
    +define+ZBA_ZBB_ZBC_ZBS
 plusargs: >
+   +enable_clic=1
    +enable_pma=1
    +enable_zca_extension=1
    +enable_zcb_extension=1
@@ -16,6 +17,14 @@ plusargs: >
    +enable_zbb_extension=1
    +enable_zbc_extension=1
    +enable_zbs_extension=1
+ovpsim: >
+   --override cpu/CLICLEVELS=256
+   --override cpu/CLICXCSW=T
+   --override cpu/CLICXNXTI=T
+   --override cpu/CLICSELHVEC=T
+   --override cpu/CLICINTCTLBITS=8
+   --override cpu/CLIC_version=master
+   --override cpu/externalCLIC=T
 cflags: >
     -Wl,--nmagic
 cv_sw_march: rv32im_zba1p00_zbb1p00_zbc1p00_zbs1p00_zicsr_zca_zcb_zcmp_zcmt_zifencei
