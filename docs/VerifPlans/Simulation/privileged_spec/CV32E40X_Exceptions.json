@@ -32,7 +32,7 @@
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_all_csrs",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -44,7 +44,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_trap\nuvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_intr uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_to_mtvec uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_in_mtvec",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -56,7 +56,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -68,7 +68,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_ebreak_trap uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -80,7 +80,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -92,7 +92,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -104,7 +104,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -116,7 +116,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -128,11 +128,11 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
-        "Requirement Location": "CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Store/AMO Access Fault",
         "Description": "An atomic write to a non-Atomic region (via PMA attribution) will result in a store access fault exception",
         "Verification Goal": "Exception is entered with mcause set to 0x7",
@@ -140,11 +140,11 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
-        "Requirement Location": "CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Store/AMO Access Fault",
         "Description": "A store conditional to a non-Atomic region (via PMA attribution) will result in a store access fault exception",
         "Verification Goal": "Exception is entered with mcause set to 0x7",
@@ -152,11 +152,11 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
-        "Requirement Location": "CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Load Access Fault",
         "Description": "A non-natively aligned load from I/O memory (via PMA attribution) will result in a load access fault exception",
         "Verification Goal": "Exception is entered with mcause set to 0x5",
@@ -164,11 +164,11 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
-        "Requirement Location": "CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "Load Access Fault",
         "Description": "A Load Reserved from a non-Atomic region (via PMA attribution) will result in a load access fault exception",
         "Verification Goal": "Exception is entered with mcause set to 0x5",
@@ -176,7 +176,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_trap_mcause uvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cross_intr_mcause",
-        "Comment": "ISACOV functional coverage for all load instructions should cover this",
+        "Comment": "",
         "": ""
     },
     {
@@ -192,9 +192,9 @@
         "": ""
     },
     {
-        "Requirement Location": "ISA-P Chapter 3.1.9\nISA-P Chapter 3.1.16",
+        "Requirement Location": "",
         "Feature": "Exception Priority",
-        "Description": "- Synchronous exceptions are of lower priority than all interrupts.\n- Exception priority (high to low)\n-- code=3 (Instruction address breakpoint)\n-- code=1 (PMA instruction access fault)\n-- code=24 (instruction bus fault)\n-- code=2 (illegal instruction)\n-- code=11 (Environment call)\n-- code=3 (Environment break)\n-- code=3 (Load/store/amo address breakpoint)\n-- code=7 (PMA store/AMO access fault)\n-- code=5 (PMA load access fault)",
+        "Description": "",
         "Verification Goal": "Attempt execution of an instruction with a load/store/amo address breakpoint which would otherwise cause a PMA store/AMO access fault and also one which would cause a PMA load access fault",
         "Pass/Fail Critiera": "Check against ISS",
         "Test Type": "Directed Self-Checking",
@@ -212,7 +212,7 @@
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "The scoreboard compares CSRs vs ISS state\nuvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_trap\nuvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_intr",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Comment": "",
         "": ""
     },
     {
@@ -224,7 +224,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "The scoreboard compares CSRs vs ISS state\nuvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_trap\nuvm_pkg.uvm_test_top.env.cov_model.exceptions_covg.exceptions_cg.cp_intr",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Comment": "",
         "": ""
     },
     {
@@ -236,7 +236,7 @@
         "Test Type": "Constrained Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "The scoreboard compares CSRs vs ISS state",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Comment": "",
         "": ""
     },
     {
@@ -248,31 +248,31 @@
         "Test Type": "Constrained-Random",
         "Coverage Method": "Functional Coverage",
         "Link to Coverage": "uvme_exceptions_covg.cg_exceptions.cp_mcause",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Comment": "",
         "": ""
     },
     {
-        "Requirement Location": "CV32E40X User Manual",
+        "Requirement Location": "",
         "Feature": "All exceptions",
-        "Description": "All exceptions are executed",
+        "Description": "",
         "Verification Goal": "All supported exceptions from the CV32E40X User Manual are executed",
-        "Pass/Fail Critiera": "Check against ISS",
-        "Test Type": "Constrained-Random",
-        "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "uvme_exceptions_covg.cg_exceptions.cp_mcause",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Pass/Fail Critiera": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
+        "Comment": "",
         "": ""
     },
     {
         "Requirement Location": "Everything below list line is from the em-micro plan and contains features that are either no supported by CV32E40X or features covered in other DV plans.",
         "Feature": "All exceptions",
-        "Description": "All exceptions are executed",
+        "Description": "",
         "Verification Goal": "All supported exceptions from the CV32E40X User Manual are executed",
-        "Pass/Fail Critiera": "Check against ISS",
-        "Test Type": "Constrained-Random",
-        "Coverage Method": "Functional Coverage",
-        "Link to Coverage": "uvme_exceptions_covg.cg_exceptions.cp_mcause",
-        "Comment": "These asserts verify that debug is taken when an data address breakpoint is taken, implicitly making sure that PMA/AMO exceptions are not taken.",
+        "Pass/Fail Critiera": "",
+        "Test Type": "",
+        "Coverage Method": "",
+        "Link to Coverage": "",
+        "Comment": "",
         "": ""
     }
 ]
