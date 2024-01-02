@@ -80,7 +80,7 @@
         "Pass/Fail Criteria": "Check against ISS",
         "Test Type": "Constrained-Random",
         "Coverage  Method": "Functional Coverage",
-        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret",
+        "Link to Coverage": "uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret. RTC: corev_rand_arithmetic_base_test CFG=enable_counters_std , corev_rand_instr_test CFG=enable_counters_std",
         "Comment": ""
     },
     {

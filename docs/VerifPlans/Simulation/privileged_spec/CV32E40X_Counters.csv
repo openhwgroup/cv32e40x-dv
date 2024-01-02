@@ -7,7 +7,7 @@ Section 3.1.11, 3.1.13",Hardware Performance Monitor,Count inhibit,mcountinhibit
 ,,mcycle,Counts the number of clock cycle executed by the processor core.,Check that executing a set of instructions leads to mcycle having advanced the right amount (within some tolerance),Self Checking Test,Directed Self-Checking,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_mcycle,
 ,,,,"When enabled the count advances with each valid gated clock
 ",Assertion Check,Constrained-Random,Assertion Coverage,,
-,,minstret,Counts the number of instructions the hart has retired.,Check the value of the counter. Exercise it with different sequence of instructions.,Check against ISS,Constrained-Random,Functional Coverage,uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret,
+,,minstret,Counts the number of instructions the hart has retired.,Check the value of the counter. Exercise it with different sequence of instructions.,Check against ISS,Constrained-Random,Functional Coverage,"uvm_pkg.uvm_test_top.env.cov_model.counters_covg.counters_cg.x_check_minstret. RTC: corev_rand_arithmetic_base_test CFG=enable_counters_std , corev_rand_instr_test CFG=enable_counters_std",
 ,,,,Read of minstret returns current instruction count. This property could use the RVFI to validate,Assertion Check,Constrained-Random,Assertion Coverage,,
 ,,"mhpmcounter3-mhpmcounte31
 
