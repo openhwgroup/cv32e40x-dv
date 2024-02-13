@@ -128,7 +128,7 @@ module uvmt_cv32e40x_atomic_assert
   // Assertions
   // ---------------------------------------------------------------------------
 
-  if (A_EXT != A_NONE) begin
+  if (A_EXT inside {A, ZALRSC}) begin
 
     // A_EXT = A or ZALRSC:
 
@@ -154,7 +154,7 @@ module uvmt_cv32e40x_atomic_assert
     ) else `uvm_error(info_tag, "Atop[5] is cleared for a non-traped LR_W or SC_W instruction.\n");
 
   end
-  if (A_EXT != ZALRSC) begin
+  if (A_EXT inside {ZALRSC}) begin
 
     //Verifying that the oposite of the above assertion is also true.
     a_atomic_atop_5_zalrsc: assert property (
@@ -169,7 +169,7 @@ module uvmt_cv32e40x_atomic_assert
     ) else `uvm_error(info_tag, "Atop[5] is set for a memory instruction, but it is not a LR_W or SC_W.\n");
 
   end
-  if (A_EXT != A) begin
+  if (A_EXT inside {A, ZALRSC}) begin
 
     a_atomic_atop_4_to_0_lrw: assert property (
       rvfi_if.rvfi_valid &&
