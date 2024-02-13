@@ -130,7 +130,6 @@ module uvmt_cv32e40x_atomic_assert
 
   if (A_EXT inside {A, ZALRSC}) begin
 
-    // A_EXT = A or ZALRSC:
 
     a_atomic_no_outstanding_req: assert property (
       data_obi_if.req && data_obi_if.gnt && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS] ##1 !data_obi_if.rvalid
