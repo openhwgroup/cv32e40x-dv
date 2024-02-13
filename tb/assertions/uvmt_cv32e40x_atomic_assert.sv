@@ -144,8 +144,6 @@ module uvmt_cv32e40x_atomic_assert
       (!(data_obi_if.req && data_obi_if.atop[ATOP_ATOMIC_OPERATION_POS])) until_with data_obi_if.rvalid
     ) else `uvm_error(info_tag, "There are unfinished earlier memory operations.\n");
 
-    // A_EXT = ZALRSC:
-
     a_atomic_atop_5: assert property (
       rvfi_if.rvfi_valid &&
       !rvfi_if.rvfi_trap.trap &&
@@ -154,6 +152,9 @@ module uvmt_cv32e40x_atomic_assert
       |->
       rvfi_if.rvfi_mem_atop[ATOP_ATOMIC_OPERATION_POS]
     ) else `uvm_error(info_tag, "Atop[5] is cleared for a non-traped LR_W or SC_W instruction.\n");
+
+  end
+  if (A_EXT != ZALRSC) begin
 
     //Verifying that the oposite of the above assertion is also true.
     a_atomic_atop_5_zalrsc: assert property (
@@ -166,6 +167,9 @@ module uvmt_cv32e40x_atomic_assert
       (support_if.asm_rvfi.instr == LR_W ||
       support_if.asm_rvfi.instr == SC_W)
     ) else `uvm_error(info_tag, "Atop[5] is set for a memory instruction, but it is not a LR_W or SC_W.\n");
+
+  end
+  if (A_EXT != A) begin
 
     a_atomic_atop_4_to_0_lrw: assert property (
       rvfi_if.rvfi_valid &&
