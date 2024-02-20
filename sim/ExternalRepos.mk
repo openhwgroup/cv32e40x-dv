@@ -51,4 +51,4 @@ SVLIB_HASH       ?= c25509a7e54a880fe8f58f3daa2f891d6ecf6428
 #riscv-arch-test suite with riscof
 RISCOF_ARCH_TEST_SUITE_REPO    ?= https://github.com/riscv/riscv-arch-test.git
 RISCOF_ARCH_TEST_SUITE_BRANCH  ?= main
-RISCOF_ARCH_TEST_SUITE_TAG     ?= latest
+RISCOF_ARCH_TEST_SUITE_TAG     ?= 3.8.9
