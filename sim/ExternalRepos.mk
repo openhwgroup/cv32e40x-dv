@@ -47,3 +47,8 @@ DPI_DASM_SPIKE_HASH   ?= 8faa928819fb551325e76b463fc0c978e22f5be3
 SVLIB_REPO       ?= https://bitbucket.org/verilab/svlib/src/master/svlib
 SVLIB_BRANCH     ?= master
 SVLIB_HASH       ?= c25509a7e54a880fe8f58f3daa2f891d6ecf6428
+
+#riscv-arch-test suite with riscof
+RISCOF_ARCH_TEST_SUITE_REPO    ?= https://github.com/riscv/riscv-arch-test.git
+RISCOF_ARCH_TEST_SUITE_BRANCH  ?= main
+RISCOF_ARCH_TEST_SUITE_TAG     ?= 3.8.9

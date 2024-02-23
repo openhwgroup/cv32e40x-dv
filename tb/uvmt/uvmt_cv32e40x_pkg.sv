@@ -58,6 +58,7 @@ package uvmt_cv32e40x_pkg;
 
    // Compilance tests
    `include "uvmt_cv32e40x_firmware_test.sv"
+   `include "uvmt_cv32e40x_riscof_firmware_test.sv"
 
 endpackage : uvmt_cv32e40x_pkg
 
