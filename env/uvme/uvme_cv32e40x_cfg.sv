@@ -134,9 +134,14 @@ class uvme_cv32e40x_cfg_c extends uvma_core_cntrl_cfg_c;
       ext_zcmt_supported      == 1;
 
       if (a_ext == cv32e40x_pkg::A_NONE) {
-         ext_a_supported == 0;
-      } else if (a_ext == cv32e40x_pkg::ZALRSC || a_ext == cv32e40x_pkg::A) {
-         ext_a_supported == 1;
+         ext_a_supported      == 0;
+         ext_zalrsc_supported == 0;
+      } else if (a_ext == cv32e40x_pkg::ZALRSC) {
+         ext_a_supported      == 0;
+         ext_zalrsc_supported == 1;
+      } else if (a_ext == cv32e40x_pkg::A) {
+         ext_a_supported      == 1;
+         ext_zalrsc_supported == 1;
       }
 
       if (b_ext == cv32e40x_pkg::B_NONE) {
