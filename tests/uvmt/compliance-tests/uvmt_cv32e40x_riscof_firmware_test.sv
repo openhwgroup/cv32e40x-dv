@@ -41,7 +41,6 @@
 class uvmt_cv32e40x_riscof_firmware_test_c extends uvmt_cv32e40x_base_test_c;
 
    localparam RISCOF_SIGNATURE_HEADER = 32'h6f5ca309;
-   localparam RISCOF_TEST_BOOT_ADDRESS = 32'h80000000;
    localparam RISCOF_TEST_SIG_LOCATION_OFFSET = 32'h03FF1000; // Fixed addr offset wrt BOOT_ADDRESS defined in linker file for riscof sim to store test signature start addr
 
     constraint env_cfg_cons {
@@ -113,7 +112,6 @@ function void uvmt_cv32e40x_riscof_firmware_test_c::build_phase(uvm_phase phase)
       `uvm_fatal("TEST", "Failed to randomize test");
     end
    
-    env_cfg.boot_addr = RISCOF_TEST_BOOT_ADDRESS; //Defined inside riscof linker file
     test_cfg.watchdog_timeout = 10_000_000; // reduce timeout
 
 endfunction : build_phase
@@ -177,8 +175,8 @@ function void uvmt_cv32e40x_riscof_firmware_test_c::write_riscof_signature();
     bit[31:0]     test_sig_end_addr;
 
     //Get the Signature begin and end addresses by reading the mailbox address defined in linker file
-    test_sig_begin_addr = RISCOF_TEST_BOOT_ADDRESS + RISCOF_TEST_SIG_LOCATION_OFFSET;
-    test_sig_end_addr = RISCOF_TEST_BOOT_ADDRESS + RISCOF_TEST_SIG_LOCATION_OFFSET + 4;
+    test_sig_begin_addr = env_cfg.boot_addr + RISCOF_TEST_SIG_LOCATION_OFFSET;
+    test_sig_end_addr = env_cfg.boot_addr + RISCOF_TEST_SIG_LOCATION_OFFSET + 4;
 
     //Read the signature start and end addresses from memory
     mem_read[7:0] = env_cntxt.mem.read(test_sig_begin_addr+0);
