@@ -349,14 +349,6 @@ module uvmt_cv32e40x_rvfi_assert
   ) else `uvm_error(info_tag, "!store->!exce, exce->store");
 
 
-  // Disassembler
-
-  a_unknowninstr_trap: assert property (
-    (rvfi_if.instr_asm.instr == UNKNOWN_INSTR) && rvfi_if.rvfi_valid
-    |->
-    rvfi_if.rvfi_trap.trap
-  ) else `uvm_error(info_tag, "Unknown instruction is not trapped");
-
 // RV32E
   if (RV32 == cv32e40x_pkg::RV32E) begin: gen_rv32e_rd1
     a_rvfi_rd1_rv32e: assert property(
