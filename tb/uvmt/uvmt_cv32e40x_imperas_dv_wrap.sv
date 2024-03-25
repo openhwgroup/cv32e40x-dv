@@ -279,6 +279,7 @@
 `define CSR_TDATA3_ADDR         32'h7A3 // only when DBG_NUM_TRIGGERS > 0
 `define CSR_TINFO_ADDR          32'h7A4 // only when DBG_NUM_TRIGGERS > 0
 `define CSR_TSELECT_ADDR        32'h7A0 // only when DBG_NUM_TRIGGERS > 0
+`define CSR_CPUCTRL_ADDR        32'hBF0
 
 ///////////////////////////////////////////////////////////////////////////////
 // Module wrapper for Imperas DV.
@@ -476,6 +477,7 @@ module uvmt_cv32e40x_imperas_dv_wrap
    `RVVI_SET_CSR( `CSR_MHPMCOUNTER30H_ADDR,mhpmcounter30h )
    `RVVI_SET_CSR( `CSR_MHPMCOUNTER31H_ADDR,mhpmcounter31h )
 
+   `RVVI_SET_CSR( `CSR_CPUCTRL_ADDR,       cpuctrl       )
    `RVVI_SET_CSR( `CSR_MVENDORID_ADDR,     mvendorid     )
    `RVVI_SET_CSR( `CSR_MARCHID_ADDR,       marchid       )
    `RVVI_SET_CSR( `CSR_MIMPID_ADDR,        mimpid        )
