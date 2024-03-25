@@ -247,6 +247,7 @@ module uvmt_cv32e40x_tb;
   `RVFI_CSR_BIND(dpc)
   `RVFI_CSR_BIND(tselect)
   `RVFI_CSR_BIND(tinfo)
+  `RVFI_CSR_BIND(cpuctrl)
 
   `RVFI_CSR_IDX_BIND(mhpmcounter,,3)
   `RVFI_CSR_IDX_BIND(mhpmcounter,,4)
