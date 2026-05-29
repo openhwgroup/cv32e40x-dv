@@ -23,13 +23,11 @@ module tb_top
     // comment to record execution trace
     //`define TRACE_EXECUTION
 
-    const time CLK_PHASE_HI       = 5ns;
-    const time CLK_PHASE_LO       = 5ns;
-    const time CLK_PERIOD         = CLK_PHASE_HI + CLK_PHASE_LO;
-    const time STIM_APPLICATION_DEL = CLK_PERIOD * 0.1;
-    const time RESP_ACQUISITION_DEL = CLK_PERIOD * 0.9;
-    const time RESET_DEL = STIM_APPLICATION_DEL;
-    const int  RESET_WAIT_CYCLES  = 4;
+    // Integer delays; one tb_top for all simulators (Verilator built --timing).
+    const int CLK_PHASE_HI        = 5;
+    const int CLK_PHASE_LO        = 5;
+    const int CLK2NRESET_DELAY    = 1;
+    const int RESET_ASSERT_CYCLES = 4;
 
 
     // clock and reset for tb
@@ -52,6 +50,11 @@ module tb_top
     // make the core start fetching instruction immediately
     assign fetch_enable = '1;
 
+    // Boot address: defaults to module parameter, overridden by ELF entry point
+    // (from +elf_file=) or by an explicit +boot_addr=<hex> plusarg.
+    logic [31:0]            boot_addr;
+    initial boot_addr = BOOT_ADDR;
+
     // allow vcd dump
     initial begin
         if ($test$plusargs("vcd")) begin
@@ -60,49 +63,79 @@ module tb_top
         end
     end
 
-    // we either load the provided firmware or execute a small test program that
-    // doesn't do more than an infinite loop with some I/O
+    // Program loading. Supported plusargs (first matched wins):
+    //   +elf_file=<path>    Read the ELF32 header, extract e_entry as boot_addr,
+    //                       then $readmemh "<path-without-ext>.hex" into memory.
+    //                       Used by `make gen-certify` (ACT4 produces ELF+hex).
+    //   +firmware=<path>    Legacy: $readmemh <path> directly; boot_addr stays
+    //                       at BOOT_ADDR unless +boot_addr=<hex> is also passed.
     initial begin: load_prog
-        automatic string firmware;
-        automatic int prog_size = 6;
+        automatic string      elf_file;
+        automatic string      hex_file;
+        automatic string      firmware;
+        automatic logic [7:0] ehdr [0:51];   // ELF32 file header is 52 bytes
+        automatic integer     elf_fd;
+        automatic int         last_dot;
 
-        if($value$plusargs("firmware=%s", firmware)) begin
-            if($test$plusargs("verbose"))
-                $display("[TESTBENCH] @ t=%0t: loading firmware %0s",
-                         $time, firmware);
+        if ($value$plusargs("elf_file=%s", elf_file)) begin
+            elf_fd = $fopen(elf_file, "rb");
+            if (elf_fd == 0)
+                $fatal(1, "[TESTBENCH] Cannot open ELF file: %s", elf_file);
+            void'($fread(ehdr, elf_fd));
+            $fclose(elf_fd);
+            // e_entry is at byte offset 24, little-endian
+            boot_addr = {ehdr[27], ehdr[26], ehdr[25], ehdr[24]};
+
+            last_dot = -1;
+            for (int i = elf_file.len() - 1; i >= 0; i--) begin
+                if (elf_file.getc(i) == 8'h2e && last_dot == -1)
+                    last_dot = i;
+            end
+            hex_file = (last_dot >= 0) ? {elf_file.substr(0, last_dot - 1), ".hex"}
+                                       : {elf_file, ".hex"};
+
+            if ($test$plusargs("verbose"))
+                $display("[TESTBENCH] @ t=%0t: loading ELF %0s, boot_addr=0x%08h, hex=%0s",
+                         $time, elf_file, boot_addr, hex_file);
+            $readmemh(hex_file, cv32e40x_tb_wrapper_i.ram_i.dp_ram_i.mem);
+
+        end else if ($value$plusargs("firmware=%s", firmware)) begin
+            void'($value$plusargs("boot_addr=%h", boot_addr));
+            if ($test$plusargs("verbose"))
+                $display("[TESTBENCH] @ t=%0t: loading firmware %0s, boot_addr=0x%08h",
+                         $time, firmware, boot_addr);
             $readmemh(firmware, cv32e40x_tb_wrapper_i.ram_i.dp_ram_i.mem);
+
         end else begin
-            $display("No firmware specified");
+            $display("[TESTBENCH] No +elf_file or +firmware specified");
             $finish;
         end
     end
 
     initial begin: clock_gen
-        forever begin
+        core_clk = 1'b1;
+        // Bounded repeat: Verilator's --timing scheduler hangs on a forever
+        // clock; 10M periods exceed any +maxcycles-bounded test.
+        repeat (10_000_000) begin
             #CLK_PHASE_HI core_clk = 1'b0;
             #CLK_PHASE_LO core_clk = 1'b1;
         end
     end: clock_gen
 
 
-    // timing format, reset generation and parameter check
+    // Deterministic reset: init high, sync-assert on negedge, hold, deassert.
+    // Avoids any X on core_rst_n so Verilator (no X-prop) behaves like four-state sims.
     initial begin
         $timeformat(-9, 0, "ns", 9);
-        core_rst_n = 1'b0;
+        core_rst_n = 1'b1;
 
-        // wait a few cycles
-        repeat (RESET_WAIT_CYCLES) begin
-            @(posedge core_clk); //TODO: was posedge, see below
-        end
-
-        // start running
-        #RESET_DEL core_rst_n = 1'b1;
-
-        repeat (3) @(negedge core_clk);
+        @(negedge core_clk) core_rst_n = 1'b0;
+        repeat (RESET_ASSERT_CYCLES) @(posedge core_clk);
+        #CLK2NRESET_DELAY core_rst_n = 1'b1;
         core_rst_n = 1'b1;
 
         if($test$plusargs("verbose")) begin
-            $display("reset deasserted", $time);
+            $display("[TESTBENCH] @ t=%0t: reset deasserted", $time);
         end
 
         if ( !( (INSTR_RDATA_WIDTH == 128) || (INSTR_RDATA_WIDTH == 32) ) ) begin
@@ -148,13 +181,13 @@ module tb_top
     cv32e40x_tb_wrapper
         #(
           .INSTR_RDATA_WIDTH (INSTR_RDATA_WIDTH),
-          .RAM_ADDR_WIDTH    (RAM_ADDR_WIDTH),
-          .BOOT_ADDR         (BOOT_ADDR)
+          .RAM_ADDR_WIDTH    (RAM_ADDR_WIDTH)
          )
     cv32e40x_tb_wrapper_i
         (
          .clk_i          ( core_clk     ),
          .rst_ni         ( core_rst_n   ),
+         .boot_addr_i    ( boot_addr    ),
          .fetch_enable_i ( fetch_enable ),
          .tests_passed_o ( tests_passed ),
          .tests_failed_o ( tests_failed ),

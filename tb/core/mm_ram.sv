@@ -44,13 +44,16 @@ module mm_ram
      input logic                          data_we_i,
      input logic [3:0]                    data_be_i,
      input logic [31:0]                   data_wdata_i,
+     input logic [5:0]                    data_atop_i,
      output logic [31:0]                  data_rdata_o,
+     output logic                         data_exokay_o,
      output logic                         data_rvalid_o,
      output logic                         data_gnt_o,
 
      input logic [4:0]                    irq_id_i,
      input logic                          irq_ack_i,
      output logic [IRQ_WIDTH-1:0]         irq_o,
+     output logic [63:0]                  mtime_o,
 
      input logic [31:0]                   pc_core_id_i,
 
@@ -75,65 +78,39 @@ module mm_ram
 
     localparam int                        RND_IRQ_ID     = 31;
 
-    // Map the virtual peripheral registers. See bsp/corev_uvmt.h
-    parameter CV_VP_REGISTER_BASE          = 32'h0080_0000;
-    parameter CV_VP_REGISTER_SIZE          = 32'h0000_1000;
-
-    parameter CV_VP_VIRTUAL_PRINTER_OFFSET = 32'h0000_0000;
-    parameter CV_VP_RANDOM_NUM_OFFSET      = 32'h0000_0040;
-    parameter CV_VP_CYCLE_COUNTER_OFFSET   = 32'h0000_0080;
-    parameter CV_VP_STATUS_FLAGS_OFFSET    = 32'h0000_00c0;
-    parameter CV_VP_FENCEI_TAMPER_OFFSET   = 32'h0000_0100;
-    parameter CV_VP_INTR_TIMER_OFFSET      = 32'h0000_0140;
-    parameter CV_VP_DEBUG_CONTROL_OFFSET   = 32'h0000_0180;
-    parameter CV_VP_OBI_SLV_RESP_OFFSET    = 32'h0000_01c0;
-    parameter CV_VP_SIG_WRITER_OFFSET      = 32'h0000_0200;
-
-    parameter CV_VP_VIRTUAL_PRINTER_BASE   = CV_VP_REGISTER_BASE + CV_VP_VIRTUAL_PRINTER_OFFSET;
-    parameter CV_VP_RANDOM_NUM_BASE        = CV_VP_REGISTER_BASE + CV_VP_RANDOM_NUM_OFFSET;
-    parameter CV_VP_CYCLE_COUNTER_BASE     = CV_VP_REGISTER_BASE + CV_VP_CYCLE_COUNTER_OFFSET;
-    parameter CV_VP_STATUS_FLAGS_BASE      = CV_VP_REGISTER_BASE + CV_VP_STATUS_FLAGS_OFFSET;
-    parameter CV_VP_INTR_TIMER_BASE        = CV_VP_REGISTER_BASE + CV_VP_INTR_TIMER_OFFSET;
-    parameter CV_VP_DEBUG_CONTROL_BASE     = CV_VP_REGISTER_BASE + CV_VP_DEBUG_CONTROL_OFFSET;
-    parameter CV_VP_OBI_SLV_RESP_BASE      = CV_VP_REGISTER_BASE + CV_VP_OBI_SLV_RESP_OFFSET;
-    parameter CV_VP_SIG_WRITER_BASE        = CV_VP_REGISTER_BASE + CV_VP_SIG_WRITER_OFFSET;
-    parameter CV_VP_FENCEI_TAMPER_BASE     = CV_VP_REGISTER_BASE + CV_VP_FENCEI_TAMPER_OFFSET;
-
-    localparam int                        MMADDR_PRINT          = CV_VP_VIRTUAL_PRINTER_BASE;
-    localparam int                        MMADDR_TESTSTATUS     = CV_VP_STATUS_FLAGS_BASE;
-    localparam int                        MMADDR_EXIT           = CV_VP_STATUS_FLAGS_BASE + 32'h0000_0004;
-    localparam int                        MMADDR_SIGBEGIN       = CV_VP_SIG_WRITER_BASE;
-    localparam int                        MMADDR_SIGEND         = CV_VP_SIG_WRITER_BASE + 32'h0000_0004;
-    localparam int                        MMADDR_SIGDUMP        = CV_VP_SIG_WRITER_BASE + 32'h0000_0008;;
-    localparam int                        MMADDR_TIMERREG       = CV_VP_INTR_TIMER_BASE;
-    localparam int                        MMADDR_TIMERVAL       = CV_VP_INTR_TIMER_BASE + 32'h0000_0004;
-    localparam int                        MMADDR_DBG            = CV_VP_DEBUG_CONTROL_BASE;
+    localparam int                        MMADDR_PRINT          = 32'h1000_0000;
+    localparam int                        MMADDR_TESTSTATUS     = 32'h2000_0000;
+    localparam int                        MMADDR_EXIT           = 32'h2000_0004;
+    localparam int                        MMADDR_SIGBEGIN       = 32'h2000_0008;
+    localparam int                        MMADDR_SIGEND         = 32'h2000_000C;
+    localparam int                        MMADDR_SIGDUMP        = 32'h2000_0010;
+    localparam int                        MMADDR_TIMERREG       = 32'h1500_0000;
+    localparam int                        MMADDR_TIMERVAL       = 32'h1500_0004;
+    localparam int                        MMADDR_DBG            = 32'h1500_0008;
     localparam int                        MMADDR_RNDSTALL       = 16'h1600;
-    localparam int                        MMADDR_RNDNUM         = CV_VP_RANDOM_NUM_BASE;
-    localparam int                        MMADDR_TICKS          = CV_VP_CYCLE_COUNTER_BASE;
-    localparam int                        MMADDR_TICKS_PRINT    = CV_VP_CYCLE_COUNTER_BASE + 32'h0000_0004;
-
-    // Old virtual peripheral register map for RI5CY
-    // localparam int                        MMADDR_PRINT          = 32'h1000_0000;
-    // localparam int                        MMADDR_TESTSTATUS     = 32'h2000_0000;
-    // localparam int                        MMADDR_EXIT           = 32'h2000_0004;
-    // localparam int                        MMADDR_SIGBEGIN       = 32'h2000_0008;
-    // localparam int                        MMADDR_SIGEND         = 32'h2000_000C;
-    // localparam int                        MMADDR_SIGDUMP        = 32'h2000_0010;
-    // localparam int                        MMADDR_TIMERREG       = 32'h1500_0000;
-    // localparam int                        MMADDR_TIMERVAL       = 32'h1500_0004;
-    // localparam int                        MMADDR_DBG            = 32'h1500_0008;
-    // localparam int                        MMADDR_RNDSTALL       = 16'h1600;
-    // localparam int                        MMADDR_RNDNUM         = 32'h1500_1000;
-    // localparam int                        MMADDR_TICKS          = 32'h1500_1004;
-    // localparam int                        MMADDR_TICKS_PRINT    = 32'h1500_1008;
+    localparam int                        MMADDR_RNDNUM         = 32'h1500_1000;
+    localparam int                        MMADDR_TICKS          = 32'h1500_1004;
+    localparam int                        MMADDR_TICKS_PRINT    = 32'h1500_1008;
+    // Sail-protocol simple_interrupt_generator v1.0 (sail-riscv doc).
+    // base+0 = version (R: 0x00010000, W: ignored); base+4 = platform
+    // (R: 0, W: bit31=set/clr, bit3=MSI, bit11=MEI [bit1=SSI, bit9=SEI ignored on M-only]).
+    localparam int                        MMADDR_SIG_VERSION  = 32'h1500_0020;
+    localparam int                        MMADDR_SIG_PLATFORM = 32'h1500_0024;
+    localparam logic [31:0]               SIG_VERSION_VAL     = 32'h0001_0000;
+    localparam logic [31:0]               SIG_ALLOWED_MASK    = 32'h0000_0A0A; // bits 1,3,9,11
+    // CLINT-style machine timer at Sail's CLINT base 0x0200_0000 (matches
+    // sail_macros.h / sail.json). 64-bit mtime/mtimecmp; MTIP = mtime>=mtimecmp.
+    localparam int                        MMADDR_MTIMECMP     = 32'h0200_4000;
+    localparam int                        MMADDR_MTIMECMPH    = 32'h0200_4004;
+    localparam int                        MMADDR_MTIME        = 32'h0200_BFF8;
+    localparam int                        MMADDR_MTIMEH       = 32'h0200_BFFC;
 
     // UVM info tags
     localparam string                     MM_RAM_TAG = "MM_RAM";
     localparam string                     RNDSTALL_TAG = "RNDSTALL";
 
     // mux for read and writes
-    enum logic [2:0]{RAM, MM, RND_STALL, ERR, RND_NUM, TICKS} select_rdata_d, select_rdata_q;
+    enum logic [2:0]{RAM, MM, RND_STALL, ERR, RND_NUM, TICKS, CLINT} select_rdata_d, select_rdata_q;
 
     enum logic {T_RAM, T_PER} transaction;
 
@@ -219,6 +196,21 @@ module mm_ram
 
     //random or monitor interrupt request
     logic                          rnd_irq;
+`ifdef VERILATOR
+    assign rnd_irq = 1'b0;
+`endif
+    // Sail simple_interrupt_generator platform-register state
+    logic [IRQ_WIDTH-1:0]          sig_platform_q;
+    logic                          sig_platform_we;
+    logic [31:0]                   sig_platform_wdata;
+    // CLINT machine timer state
+    logic [63:0]                   mtime_q;
+    logic [63:0]                   mtimecmp_q;
+    logic                          mtime_we_lo, mtime_we_hi;
+    logic                          mtimecmp_we_lo, mtimecmp_we_hi;
+    logic [31:0]                   clint_wdata;
+    logic                          mtip;
+    logic [31:0]                   clint_rdata_d, clint_rdata_q;
 
     // used by dump_signature methods
     string                         sig_file;
@@ -231,10 +223,95 @@ module mm_ram
     // uhh, align?
     always_comb data_addr_aligned = {data_addr_i[31:2], 2'b0};
 
+    // A-extension (Zaamo/Zalrsc) atomic memory model. data_atop_i[5]=atomic
+    // flag, [4:0]=op. Inert when [5]==0, so the rv32imc (A_NONE) build is
+    // unaffected.
+    localparam logic [4:0] AMO_LR_OP   = 5'b00010;
+    localparam logic [4:0] AMO_SC_OP   = 5'b00011;
+    localparam logic [4:0] AMO_SWAP_OP = 5'b00001;
+    localparam logic [4:0] AMO_ADD_OP  = 5'b00000;
+    localparam logic [4:0] AMO_XOR_OP  = 5'b00100;
+    localparam logic [4:0] AMO_AND_OP  = 5'b01100;
+    localparam logic [4:0] AMO_OR_OP   = 5'b01000;
+    localparam logic [4:0] AMO_MIN_OP  = 5'b10000;
+    localparam logic [4:0] AMO_MAX_OP  = 5'b10100;
+    localparam logic [4:0] AMO_MINU_OP = 5'b11000;
+    localparam logic [4:0] AMO_MAXU_OP = 5'b11100;
+
+    function automatic logic [31:0] amo_alu_result(input logic [4:0]  op,
+                                                   input logic [31:0] mem_val,
+                                                   input logic [31:0] rs2_val);
+        case (op)
+            AMO_ADD_OP:  amo_alu_result = mem_val + rs2_val;
+            AMO_SWAP_OP: amo_alu_result = rs2_val;
+            AMO_XOR_OP:  amo_alu_result = mem_val ^ rs2_val;
+            AMO_OR_OP:   amo_alu_result = mem_val | rs2_val;
+            AMO_AND_OP:  amo_alu_result = mem_val & rs2_val;
+            AMO_MIN_OP:  amo_alu_result = ($signed(mem_val) < $signed(rs2_val)) ? mem_val : rs2_val;
+            AMO_MAX_OP:  amo_alu_result = ($signed(mem_val) > $signed(rs2_val)) ? mem_val : rs2_val;
+            AMO_MINU_OP: amo_alu_result = (mem_val < rs2_val) ? mem_val : rs2_val;
+            AMO_MAXU_OP: amo_alu_result = (mem_val > rs2_val) ? mem_val : rs2_val;
+            default:     amo_alu_result = rs2_val;
+        endcase
+    endfunction
+
+    logic                      atomic_txn;
+    logic                      is_lr;
+    logic                      is_sc;
+    logic                      is_amo;            // AMO_* (read-modify-write)
+    logic [31:0]               atomic_word_addr;  // word-aligned full address
+    logic                      sc_hit;            // SC matches a valid reservation
+    logic                      sc_exokay;
+    logic [RAM_ADDR_WIDTH-1:0] amo_mem_addr;      // word-aligned RAM byte index
+    logic [31:0]               amo_old_word;
+    logic [31:0]               amo_new_word;
+
+    logic                      rsv_valid_q;       // LR/SC reservation (single hart)
+    logic [31:0]               rsv_addr_q;
+    logic                      amo_resp_q;        // AMO old-value response due this cycle
+    logic [31:0]               amo_old_q;
+
+    assign atomic_txn       = data_atop_i[5];
+    assign is_lr            = atomic_txn && (data_atop_i[4:0] == AMO_LR_OP);
+    assign is_sc            = atomic_txn && (data_atop_i[4:0] == AMO_SC_OP);
+    assign is_amo           = atomic_txn && !is_lr && !is_sc;
+    assign atomic_word_addr = {data_addr_i[31:2], 2'b0};
+    assign sc_hit           = rsv_valid_q && (rsv_addr_q == atomic_word_addr);
+    assign amo_mem_addr     = {data_addr_i[RAM_ADDR_WIDTH-1:2], 2'b0};
+
+    // SC success drives exokay (rd = !exokay); known at the request phase and
+    // carried with the response through riscv_rvalid_stall.
+    assign sc_exokay = (data_req_i && data_gnt_o && is_sc) ? sc_hit : 1'b0;
+
+    // mem updates only on posedge, so during the grant cycle this is the
+    // pre-AMO word. The new value still flows through dp_ram's write port,
+    // keeping dp_ram the single writer of mem.
+    assign amo_old_word = {dp_ram_i.mem[amo_mem_addr + 3], dp_ram_i.mem[amo_mem_addr + 2],
+                           dp_ram_i.mem[amo_mem_addr + 1], dp_ram_i.mem[amo_mem_addr + 0]};
+    assign amo_new_word = amo_alu_result(data_atop_i[4:0], amo_old_word, data_wdata_i);
+
+    // Zero rnd_stall_regs at t=0 too: the negedge-rst_ni block below only
+    // fires if reset actually goes 1->0 during sim, but Verilator's
+    // tb_top_verilator.cpp drives rst_ni starting at 0 with no prior 1, so
+    // no negedge event occurs and the regs would keep their X-init values.
+    initial begin : init_stalls
+        for (int k = 0; k < RND_STALL_REGS; k=k+1) begin
+            rnd_stall_regs[k] = 0;
+        end
+    end
+
     always @(negedge rst_ni) begin : configure_stalls
         for (i = 0; i < RND_STALL_REGS; i=i+1) begin
             rnd_stall_regs[i] = 0;
         end
+`ifdef VERILATOR
+        // Deterministic data-channel OBI stalls exercise the gnt/rvalid
+        // backpressure path with fixed delays so signatures stay reproducible.
+        rnd_stall_regs[RND_STALL_DATA_EN]    = 1;
+        rnd_stall_regs[RND_STALL_DATA_MODE]  = perturbation_defines::STANDARD;
+        rnd_stall_regs[RND_STALL_DATA_GNT]   = 2;
+        rnd_stall_regs[RND_STALL_DATA_VALID] = 2;
+`endif
 `ifndef VERILATOR
         if (!$test$plusargs("rand_stall_obi_disable")) begin
             if ($test$plusargs("max_data_zero_instr_stall")) begin
@@ -331,6 +408,14 @@ module mm_ram
         timer_val_valid     = '0;
         debugger_wdata      = '0;
         debugger_valid      = '0;
+        sig_platform_we     = '0;
+        sig_platform_wdata  = '0;
+        mtime_we_lo         = '0;
+        mtime_we_hi         = '0;
+        mtimecmp_we_lo      = '0;
+        mtimecmp_we_hi      = '0;
+        clint_wdata         = data_wdata_i;
+        clint_rdata_d       = '0;
         sig_end_d           = sig_end_q;
         sig_begin_d         = sig_begin_q;
         rnd_stall_req       = '0;
@@ -359,8 +444,16 @@ module mm_ram
                                          2**RAM_ADDR_WIDTH - 2**DBG_ADDR_WIDTH;
                     else
                         data_addr_dec  = data_addr_i[RAM_ADDR_WIDTH-1:0];
-                    data_wdata_dec = data_wdata_i;
-                    data_we_dec    = data_we_i;
+                    if (is_amo) begin
+                        data_wdata_dec = amo_new_word;
+                        data_we_dec    = 1'b1;
+                    end else if (is_sc) begin
+                        data_wdata_dec = data_wdata_i;
+                        data_we_dec    = sc_hit;
+                    end else begin
+                        data_wdata_dec = data_wdata_i;
+                        data_we_dec    = data_we_i;
+                    end
                     data_be_dec    = data_be_i;
                     transaction    = T_RAM;
                 end else if (data_addr_i == MMADDR_PRINT) begin
@@ -445,6 +538,23 @@ module mm_ram
                     debugger_wdata = data_wdata_i;
                     debugger_valid = '1;
 
+                end else if (data_addr_i == MMADDR_SIG_PLATFORM) begin
+                    // Sail simple_interrupt_generator platform write
+                    sig_platform_we    = '1;
+                    sig_platform_wdata = data_wdata_i;
+
+                end else if (data_addr_i == MMADDR_SIG_VERSION) begin
+                    // version register is read-only; writes ignored per spec
+
+                end else if (data_addr_i == MMADDR_MTIMECMP) begin
+                    mtimecmp_we_lo = '1;
+                end else if (data_addr_i == MMADDR_MTIMECMPH) begin
+                    mtimecmp_we_hi = '1;
+                end else if (data_addr_i == MMADDR_MTIME) begin
+                    mtime_we_lo = '1;
+                end else if (data_addr_i == MMADDR_MTIMEH) begin
+                    mtime_we_hi = '1;
+
                 end else if (data_addr_i[31:16] == MMADDR_RNDSTALL) begin
                     rnd_stall_req   = data_req_i;
                     rnd_stall_wdata = data_wdata_i;
@@ -491,6 +601,18 @@ module mm_ram
                     select_rdata_d = RND_NUM;
                 end else if (data_addr_i == MMADDR_TICKS) begin
                     select_rdata_d = TICKS;
+                end else if (data_addr_i == MMADDR_MTIME) begin
+                    select_rdata_d = CLINT;
+                    clint_rdata_d  = mtime_q[31:0];
+                end else if (data_addr_i == MMADDR_MTIMEH) begin
+                    select_rdata_d = CLINT;
+                    clint_rdata_d  = mtime_q[63:32];
+                end else if (data_addr_i == MMADDR_MTIMECMP) begin
+                    select_rdata_d = CLINT;
+                    clint_rdata_d  = mtimecmp_q[31:0];
+                end else if (data_addr_i == MMADDR_MTIMECMPH) begin
+                    select_rdata_d = CLINT;
+                    clint_rdata_d  = mtimecmp_q[63:32];
                 end else
                     select_rdata_d = ERR;
 
@@ -517,6 +639,12 @@ module mm_ram
          || data_addr_i == MMADDR_SIGDUMP
          || data_addr_i == MMADDR_TICKS
          || data_addr_i == MMADDR_TICKS_PRINT
+         || data_addr_i == MMADDR_SIG_VERSION
+         || data_addr_i == MMADDR_SIG_PLATFORM
+         || data_addr_i == MMADDR_MTIMECMP
+         || data_addr_i == MMADDR_MTIMECMPH
+         || data_addr_i == MMADDR_MTIME
+         || data_addr_i == MMADDR_MTIMEH
          || data_addr_i[31:16] == MMADDR_RNDSTALL))
            else `uvm_fatal(MM_RAM_TAG, $sformatf("out of bounds write to %08x with %08x", data_addr_i, data_wdata_i))
 `endif
@@ -536,6 +664,8 @@ module mm_ram
 `endif
         end else if (select_rdata_q == RND_NUM) begin
             data_rdata_mux = rnd_num;
+        end else if (select_rdata_q == CLINT) begin
+            data_rdata_mux = clint_rdata_q;
         end else if (select_rdata_q == TICKS) begin
             data_rdata_mux = cycle_count_q;
 `ifndef VERILATOR
@@ -566,7 +696,38 @@ module mm_ram
         end
     end
 
-    assign irq_o    = irq_q | rnd_irq << RND_IRQ_ID;
+    // MTIP (mip bit 7) is level-sensitive: asserted while mtime >= mtimecmp.
+    assign mtip     = (mtime_q >= mtimecmp_q);
+    assign irq_o    = irq_q | sig_platform_q | {{24{1'b0}}, mtip, 7'b0} | (rnd_irq << RND_IRQ_ID);
+    assign mtime_o  = mtime_q;
+
+    // CLINT machine timer: free-running mtime; MTIP via mtime/mtimecmp compare.
+    // mtimecmp resets to all-ones so MTIP stays low until a test arms it.
+    always_ff @(posedge clk_i, negedge rst_ni) begin: clint_timer
+        if (~rst_ni) begin
+            mtime_q    <= '0;
+            mtimecmp_q <= '1;
+        end else begin
+            mtime_q <= mtime_q + 64'd1;
+            if (mtime_we_lo)    mtime_q[31:0]     <= clint_wdata;
+            if (mtime_we_hi)    mtime_q[63:32]    <= clint_wdata;
+            if (mtimecmp_we_lo) mtimecmp_q[31:0]  <= clint_wdata;
+            if (mtimecmp_we_hi) mtimecmp_q[63:32] <= clint_wdata;
+        end
+    end
+
+    // Sail simple_interrupt_generator platform-register update.
+    // Reserved bits ignored; write 0 to stay compatible.
+    always_ff @(posedge clk_i, negedge rst_ni) begin: sig_platform_reg
+      if (!rst_ni) begin
+        sig_platform_q <= '0;
+      end else if (sig_platform_we) begin
+        if (sig_platform_wdata[31])
+          sig_platform_q <= sig_platform_q | (sig_platform_wdata & SIG_ALLOWED_MASK);
+        else
+          sig_platform_q <= sig_platform_q & ~(sig_platform_wdata & SIG_ALLOWED_MASK);
+      end
+    end
 
     // Set irq vector to timer_irq_mask_q when timer counts down
     // irq bit cleared when acknowledged
@@ -618,6 +779,33 @@ module mm_ram
 
             if (cycle_count_q + 1 == 0) begin
                 cycle_count_overflow_q <= 1;
+            end
+        end
+    end
+
+    // Atomic state: LR/SC reservation and the AMO old-value capture. amo_old_q
+    // is presented one cycle after grant, when riscv_rvalid_stall samples
+    // rdata_i, so the AMO response carries the old word through any stall delay.
+    always_ff @(posedge clk_i or negedge rst_ni) begin: atomic_state
+        if (~rst_ni) begin
+            rsv_valid_q   <= 1'b0;
+            rsv_addr_q    <= '0;
+            amo_resp_q    <= 1'b0;
+            amo_old_q     <= '0;
+        end else begin
+            amo_resp_q    <= data_req_i && data_gnt_o && is_amo;
+            if (data_req_i && data_gnt_o && is_amo)
+                amo_old_q <= amo_old_word;
+
+            if (data_req_i && data_gnt_o) begin
+                if (is_lr) begin
+                    rsv_valid_q <= 1'b1;
+                    rsv_addr_q  <= atomic_word_addr;
+                end else if (is_sc) begin
+                    rsv_valid_q <= 1'b0;
+                end else if (data_we_i && rsv_valid_q && (atomic_word_addr == rsv_addr_q)) begin
+                    rsv_valid_q <= 1'b0;
+                end
             end
         end
     end
@@ -761,7 +949,9 @@ module mm_ram
         .gnt_i      ( instr_gnt_o     ),
         .we_i       ( 1'b0            ),
         .rdata_i    ( ram_instr_rdata ),
+        .exokay_i   ( 1'b0            ),
         .rdata_o    ( instr_rdata_o   ),
+        .exokay_o   (                 ),
         .rvalid_o   ( instr_rvalid_o  ),
         .en_stall_i   ( rnd_stall_regs[RND_STALL_INSTR_EN][0]),
         .stall_mode_i ( rnd_stall_regs[RND_STALL_INSTR_MODE] ),
@@ -773,9 +963,11 @@ module mm_ram
         .rst_ni     ( rst_ni          ),
         .req_i      ( data_req_i      ),
         .gnt_i      ( data_gnt_o      ),
-        .we_i       ( data_we_i       ),
+        .we_i       ( data_we_i & ~is_amo ),
         .rdata_i    ( data_rdata_mux  ),
+        .exokay_i   ( sc_exokay       ),
         .rdata_o    ( data_rdata_o    ),
+        .exokay_o   ( data_exokay_o   ),
         .rvalid_o   ( data_rvalid_o   ),
         .en_stall_i   ( rnd_stall_regs[RND_STALL_DATA_EN][0]),
         .stall_mode_i ( rnd_stall_regs[RND_STALL_DATA_MODE] ),
@@ -796,8 +988,10 @@ module mm_ram
     always_ff @(posedge clk_i, negedge rst_ni) begin
         if (~rst_ni) begin
             select_rdata_q <= RAM;
+            clint_rdata_q  <= '0;
         end else begin
             select_rdata_q <= select_rdata_d;
+            clint_rdata_q  <= clint_rdata_d;
         end
     end
 
@@ -814,13 +1008,15 @@ module mm_ram
   begin
     ram_instr_req    = instr_req_i;
     ram_instr_addr   = instr_addr_remap;
-    ram_instr_gnt    = instr_req_i ? 1'b1 : $urandom;
+    // OBI ignores grant when req is deasserted, so randomize that branch only.
+    ram_instr_gnt    = instr_req_i ? 1'b1 : ($urandom_range(0, 10) != 0);
     core_instr_rdata = ram_instr_rdata;
 
     ram_data_req     = data_req_dec;
     ram_data_addr    = data_addr_dec;
-    ram_data_gnt     = data_req_i ? 1'b1 : $urandom;
-    core_data_rdata  = ram_data_rdata;
+    ram_data_gnt     = data_req_i ? 1'b1 : ($urandom_range(0, 10) != 0);
+    // AMO returns the captured old word (dp_ram is busy writing the new one).
+    core_data_rdata  = amo_resp_q ? amo_old_q : ram_data_rdata;
     ram_data_wdata   = data_wdata_dec;
     ram_data_we      = data_we_dec;
     ram_data_be      = data_be_dec;
