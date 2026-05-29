@@ -1,0 +1,3 @@
+# RTL cores are cloned here by `make clone_<core>_rtl` (see sim/ExternalRepos.mk).
+*
+!.gitignore

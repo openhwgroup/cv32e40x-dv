@@ -45,8 +45,10 @@
 # "Constants"
 MAKE                  = make
 MAKE_PATH            := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-export CORE_V_VERIF   = $(abspath $(MAKE_PATH)/../../..)
+# Standalone per-core layout: core-v-verif is vendored under the repo root.
+export CV32E40X_DV    = $(abspath $(MAKE_PATH)/../../)
+export CORE_V_VERIF   = $(CV32E40X_DV)/vendor_lib/openhwgroup_core-v-verif
 export CV_CORE       ?= cv32e40x
 
 include ../ExternalRepos.mk
-include $(CORE_V_VERIF)/mk/uvmt/uvmt.mk
+include $(CV32E40X_DV)/mk/uvmt/uvmt.mk
