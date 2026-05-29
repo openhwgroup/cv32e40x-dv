@@ -45,7 +45,10 @@ MAKE           = make
 MAKE_DIR       = $(PWD)
 MAKE_PATH     := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 COREV_PROJ     = cv32
-CORE_V_VERIF   = $(abspath $(MAKE_PATH)/../../..)
+# Standalone per-core layout: this repo is self-contained. CV32E40X_DV is the
+# repo root; core-v-verif is vendored under it (cloned on demand).
+CV32E40X_DV    = $(abspath $(MAKE_PATH)/../../)
+CORE_V_VERIF   = $(CV32E40X_DV)/vendor_lib/openhwgroup_core-v-verif
 DATE           = $(shell date +%F)
 WAVES          = 0
 
@@ -66,32 +69,20 @@ SIM_BSP_RESULTS          = $(SIM_TEST_PROGRAM_RESULTS)/bsp
 
 # Test-Program directores.
 # Relative path is used for Verilator which cannot seem to handle loooong pathnames.
-TEST_PROGRAM_PATH    ?= $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs/custom
+TEST_PROGRAM_PATH    ?= $(CV32E40X_DV)/tests/programs/custom
 TEST_PROGRAM_RELPATH ?= ../../tests/programs/custom
 # Default test-program
 TEST                 ?= hello-world
 
-###############################################################################
-# Generate and include TEST_FLAGS_MAKE, based on the YAML test description.
-# An example of what is generated is below (not all of these flags are used):
-#       TEST_DESCRIPTION=Simple hello-world sanity test
-#       TEST_NAME=hello-world
-#       TEST_PROGRAM=hello-world
-#       TEST_TEST_DIR=/home/mike/GitHubRepos/MikeOpenHWGroup/core-v-verif/master/cv32e40p/tests/programs/custom/hello-world
-#       TEST_UVM_TEST=uvmt_$(CV_CORE_LC)_firmware_test_c
-###############################################################################
-YAML2MAKE = $(CORE_V_VERIF)/bin/yaml2make
-TEST_FLAGS_MAKE := $(shell $(YAML2MAKE) --test=$(TEST) --yaml=test.yaml  $(YAML2MAKE_DEBUG) --run-index=$(u) --prefix=TEST --core=$(CV_CORE))
-ifeq ($(TEST_FLAGS_MAKE),)
-$(error ERROR Could not find test.yaml for test: $(TEST))
-endif
-include $(TEST_FLAGS_MAKE)
+# TEST_FLAGS_MAKE / CFG_FLAGS_MAKE (parsed from test.yaml/cfg.yaml via
+# bin/yaml2make) are generated in mk/Common.mk, conditionally on the make goal,
+# so non-test goals (e.g. gen / certify / gen-certify) do not require a TEST.
 
 # Common Makefiles:
 #  -Variables for RTL and other dependencies (e.g. RISCV-DV)
 include ../ExternalRepos.mk
 #  -Core Firmware and the RISCV GCC Toolchain (SDK)
-include $(CORE_V_VERIF)/mk/Common.mk
+include $(CV32E40X_DV)/mk/Common.mk
 
 # vsim configuration
 VVERSION  = "10.7b"
@@ -174,7 +165,7 @@ ASIM_DEBUG_FLAGS  = -dbg
 ASIM_GUI_FLAGS    = -gui
 
 # TB source files for the CV32E core
-TBSRC_HOME  := $(CORE_V_VERIF)/$(CV_CORE_LC)/tb
+TBSRC_HOME  := $(CV32E40X_DV)/tb
 TBSRC_TOP   := $(TBSRC_HOME)/core/tb_top.sv
 TBSRC_CORE  := $(TBSRC_HOME)/core
 TBSRC_PKG   := $(TBSRC_CORE)/tb_riscv/include/perturbation_defines.sv
@@ -192,7 +183,8 @@ TBSRC       := $(TBSRC_CORE)/tb_top.sv \
 RTLSRC_VLOG_TB_TOP	:= $(basename $(notdir $(TBSRC_TOP)))
 RTLSRC_VOPT_TB_TOP	:= $(addsuffix _vopt, $(RTLSRC_VLOG_TB_TOP))
 
-TBSRC_VERI  := $(TBSRC_CORE)/tb_top_verilator.sv \
+TBSRC_VERI  := $(TBSRC_PKG) \
+               $(TBSRC_CORE)/tb_top.sv \
                $(TBSRC_CORE)/cv32e40x_tb_wrapper.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_rvalid_stall.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_gnt_stall.sv \
@@ -202,7 +194,7 @@ SIM_LIBS    := $(CORE_V_VERIF)/lib/sim_libs
 
 # RTL source files for the CV32E core
 # DESIGN_RTL_DIR is used by CV_CORE_MANIFEST file
-CV_CORE_PKG           := $(CORE_V_VERIF)/core-v-cores/$(CV_CORE_LC)
+CV_CORE_PKG           := $(CV32E40X_DV)/core-v-cores/$(CV_CORE_LC)
 CV_CORE_RTLSRC_INCDIR := $(CV_CORE_PKG)/rtl/include
 CV_CORE_RTLSRC_PKG    := $(CV_CORE_PKG)/rtl/fpnew/src/fpnew_pkg.sv \
 				$(addprefix $(CV_CORE_RTLSRC_INCDIR)/,\
@@ -215,6 +207,39 @@ CV_CORE_RTLSRC  := $(filter-out $(CV_CORE_PKG)/rtl/$(CV_CORE_LC)_register_file_l
 #        https://github.com/openhwgroup/CV_CORE/pull/421 is resolved.
 CV_CORE_MANIFEST    := $(CV_CORE_PKG)/cv32e40x_manifest.flist
 export DESIGN_RTL_DIR = $(CV_CORE_PKG)/rtl
+
+###############################################################################
+# ACT4 certification (gen-certify) configuration
+#
+# ACT4_PKG is the cloned ACT4 checkout (see mk/Common.mk / sim/ExternalRepos.mk).
+# CV_CORE_CONFIG selects the ISA config -> the ACT4 CTP directory under
+# config/cores/cve4/ and a per-config Verilator binary (so configs are certified
+# side by side without rebuilding). rv32imcab additionally enables the A and B
+# extensions via compile defines consumed by cv32e40x_tb_wrapper localparams.
+CV_CORE_CONFIG          ?= rv32imc
+CERT_CONFIG_NAME        ?= cv32e40x-$(CV_CORE_CONFIG)
+# Sm: excluded by ACT4 by default.
+# SsstrictSm: excluded due to an ACT4 issue.
+CERT_EXCLUDE_EXTENSIONS ?= Sm,SsstrictSm
+# Per-test cycle bound so a non-terminating ELF can't hang the certify sweep.
+CERT_MAXCYCLES          ?= 200000
+
+CERT_BIN_DIR             = $(SIM_RESULTS)/certification_$(CV_CORE_CONFIG)
+CERT_BIN                 = $(CERT_BIN_DIR)/verilator_executable
+
+ifeq ($(CV_CORE_CONFIG),rv32imcab)
+  CERT_EXT_DEFINES = +define+CV32E40X_RVA +define+CV32E40X_RVB
+else
+  CERT_EXT_DEFINES =
+endif
+
+# ACT4 emits ELFs here. ELFs have varying entry points, so the testbench reads
+# each ELF header for boot_addr (+elf_file=) rather than a shared +test_program.
+certification_PROGRAM_PATH = $(ACT4_PKG)/work/$(CERT_CONFIG_NAME)/elfs
+
+# Optional extension filter: narrows the certify scan to a subdirectory.
+# Usage: make certify FILTER=priv/InterruptsSm
+FILTER ?=
 
 # Shorthand rules for convience
 CV_CORE_pkg: clone_$(CV_CORE_LC)_rtl
@@ -474,34 +499,36 @@ VERI_TRACE="--trace"
 VERI_CFLAGS+="-DVCD_TRACE"
 endif
 
-verilate: testbench_verilator
-
 sanity-veri-run:
 	make veri-test TEST=hello-world
 
-testbench_verilator: CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
+# Single consolidated tb_top built with Verilator's --main (no hand-written C++
+# harness). --timing is required by tb_top's integer clock/reset delays.
+# --trace is ALWAYS passed: without it a Verilator X-propagation optimization
+# makes tests pass vacuously / fail silently (hard regression guard).
+verilate: CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
 	@echo "$(BANNER)"
 	@echo "* Compiling CORE TB and CV32E40X with Verilator"
 	@echo "$(BANNER)"
-	$(VERILATOR) --cc --sv --exe \
-		$(VERI_TRACE) \
-		--Wno-lint --Wno-UNOPTFLAT \
-		--Wno-MODDUP --top-module \
-		tb_top_verilator $(TBSRC_VERI) \
+	$(VERILATOR) --cc --sv --exe --build --main --timing \
+		--trace \
+		--Wno-lint --Wno-UNOPTFLAT --Wno-MODDUP --Wno-SYMRSVDWORD \
+		--top-module tb_top \
+		$(TBSRC_VERI) \
 		-f $(CV_CORE_MANIFEST) \
 		$(CV_CORE_PKG)/bhv/$(CV_CORE_LC)_core_log.sv \
-		$(TBSRC_CORE)/tb_top_verilator.cpp --Mdir $(VERI_OBJ_DIR) \
-		-CFLAGS "-std=gnu++11 $(VERI_CFLAGS)" \
+		--Mdir $(VERI_OBJ_DIR) \
+		-CFLAGS "-std=gnu++14 $(VERI_CFLAGS)" \
 		$(VERI_COMPILE_FLAGS)
-	$(MAKE) -C $(VERI_OBJ_DIR) -f Vtb_top_verilator.mk
-	cp $(VERI_OBJ_DIR)/Vtb_top_verilator testbench_verilator
+	mkdir -p $(SIM_TEST_RESULTS)
+	cp $(VERI_OBJ_DIR)/Vtb_top $(SIM_TEST_RESULTS)/verilator_executable
 
 veri-test: verilate $(TEST_PROGRAM_PATH)/$(TEST)/$(TEST).hex
 	@echo "$(BANNER)"
 	@echo "* Running with Verilator: logfile in $(VERI_LOG_DIR)/$(TEST).log"
 	@echo "$(BANNER)"
 	mkdir -p $(VERI_LOG_DIR)
-	./testbench_verilator $(VERI_FLAGS) \
+	$(SIM_TEST_RESULTS)/verilator_executable $(VERI_FLAGS) \
 		"+firmware=$(TEST_PROGRAM_PATH)/$(TEST)/$(TEST).hex" \
 		| tee $(VERI_LOG_DIR)/$(TEST).log
 
@@ -670,13 +697,13 @@ clone_$(CV_CORE_LC)_rtl:
 
 # clean up toolchain generated files
 clean-test-programs:
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.o       -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.hex     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.elf     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.map     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.readelf -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.objdump -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name corev_*.S -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.o       -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.hex     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.elf     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.map     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.readelf -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.objdump -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name corev_*.S -exec rm {} \;
 
 .PHONY: clean clean_all distclean
 clean: clean-test-programs questa-clean verilate-clean vcs-clean firmware-clean dsim-clean xrun-clean vcs-clean clean_bsp riviera-clean
@@ -686,3 +713,130 @@ distclean: clean
 
 clean_all: distclean
 #endend
+
+###############################################################################
+# ACT4 certification flow (gen-certify)
+#
+#   gen              : generate the ACT4 ELFs for CV_CORE_CONFIG (needs `uv`).
+#   certify          : build the per-config Verilator binary and run every ELF,
+#                      tallying PASS/FAIL into certification_summary.txt.
+#   gen-certify      : gen + certify.
+#   elfs-package     : tar the generated ELFs (CI cache of the slow `gen` step).
+#   certify-prebuilt : unpack a prebuilt ELF tarball and certify (CI fast path).
+#
+# Validate with:  make gen-certify CV_CORE_CONFIG=rv32imc     (Sm excluded)
+#                 make gen-certify CV_CORE_CONFIG=rv32imcab   (adds A + B)
+###############################################################################
+.PHONY: gen certify gen-certify elfs-package certify-prebuilt
+
+# objcopy used to turn ACT4 ELFs into $readmemh hex. The ACT4 ELFs are built by
+# ACT4's own toolchain, so this is decoupled from the DUT's CV_SW_PREFIX.
+CERT_SW_PREFIX ?= riscv64-unknown-elf-
+
+# Per-config Verilator build dir so configs don't clobber each other.
+CERT_OBJ_DIR    = $(VERI_OBJ_DIR)_$(CV_CORE_CONFIG)
+
+# Per-config Verilator binary. Same recipe as `verilate` (tb_top, --main,
+# --timing, ALWAYS --trace) plus the A/B extension defines for this config.
+$(CERT_BIN): CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
+	@echo "$(BANNER)"
+	@echo "* Compiling CORE TB and CV32E40X with Verilator ($(CV_CORE_CONFIG))"
+	@echo "$(BANNER)"
+	$(VERILATOR) --cc --sv --exe --build --main --timing \
+		--trace \
+		--Wno-lint --Wno-UNOPTFLAT --Wno-MODDUP --Wno-SYMRSVDWORD \
+		--top-module tb_top \
+		$(TBSRC_VERI) \
+		-f $(CV_CORE_MANIFEST) \
+		$(CV_CORE_PKG)/bhv/$(CV_CORE_LC)_core_log.sv \
+		--Mdir $(CERT_OBJ_DIR) \
+		-CFLAGS "-std=gnu++14 $(VERI_CFLAGS)" \
+		$(VERI_COMPILE_FLAGS) \
+		$(CERT_EXT_DEFINES)
+	mkdir -p $(CERT_BIN_DIR)
+	cp $(CERT_OBJ_DIR)/Vtb_top $(CERT_BIN)
+
+gen: $(ACT4_PKG)
+	@command -v uv >/dev/null 2>&1 || { echo "Error: 'uv' not found. Install from https://docs.astral.sh/uv/getting-started/installation/"; exit 1; }
+	@echo "* Cleaning ACT4 directory..."
+	@$(MAKE) -C $(ACT4_PKG) clean
+	@echo "* Generating ACT4 tests for $(CERT_CONFIG_NAME)..."
+	@$(MAKE) -C $(ACT4_PKG) \
+		EXCLUDE_EXTENSIONS=$(CERT_EXCLUDE_EXTENSIONS) \
+		CONFIG_FILES=config/cores/cve4/$(CERT_CONFIG_NAME)/test_config.yaml
+	@echo "* Tests generated in: $(certification_PROGRAM_PATH)"
+	@echo "* Pre-generating .hex files alongside ELFs..."
+	@find "$(certification_PROGRAM_PATH)" \( -iname '*.elf' -o -iname '*.elf32' \) | \
+		while IFS= read -r elf; do \
+		  hex="$${elf%.*}.hex"; \
+		  if [ ! -f "$$hex" ] || [ "$$elf" -nt "$$hex" ]; then \
+		    $(CERT_SW_PREFIX)objcopy -O verilog "$$elf" "$$hex"; \
+		  fi; \
+		done
+
+certify: $(CERT_BIN)
+	@echo "$(BANNER)"
+	@echo "* Running ALL ACT4 ELFs through Verilator ($(CERT_CONFIG_NAME))"
+	@echo "$(BANNER)"
+	@set -e; \
+	mkdir -p "$(VERI_LOG_DIR)"; \
+	SUMMARY="$(VERI_LOG_DIR)/certification_summary.txt"; \
+	echo "RESULT  TEST" > "$$SUMMARY"; \
+	echo "------  ----" >> "$$SUMMARY"; \
+	ROOT="$(certification_PROGRAM_PATH)$(if $(FILTER),/$(FILTER),)"; \
+	ELFS="$$(find -L "$$ROOT" \( -type f -o -type l \) -a \( -iname '*.elf' -o -iname '*.elf32' \) 2>/dev/null | sort)"; \
+	if [ -z "$$ELFS" ]; then \
+	  echo "No .elf files found under $$ROOT"; \
+	  echo "Hint: run \`make gen CV_CORE_CONFIG=$(CV_CORE_CONFIG)\` first."; \
+	  exit 2; \
+	fi; \
+	PASS=0; FAIL=0; TOTAL=0; \
+	for ELF in $$ELFS; do \
+	  TOTAL=$$((TOTAL+1)); \
+	  REL="$${ELF#$$ROOT/}"; \
+	  BASE="$${ELF%.*}"; HEX="$$BASE.hex"; \
+	  LOG="$(VERI_LOG_DIR)/$${REL%.*}.log"; \
+	  mkdir -p "$$(dirname "$$LOG")"; \
+	  if [ ! -f "$$HEX" ] || [ "$$ELF" -nt "$$HEX" ]; then \
+	    $(CERT_SW_PREFIX)objcopy -O verilog "$$ELF" "$$HEX"; \
+	  fi; \
+	  set +e; \
+	  "$(CERT_BIN)" $(VERI_FLAGS) "+maxcycles=$(CERT_MAXCYCLES)" "+elf_file=$$ELF" > "$$LOG" 2>&1; \
+	  RC=$$?; \
+	  set -e; \
+	  if [ $$RC -eq 0 ] && grep -q "ALL TESTS PASSED" "$$LOG"; then \
+	    echo "PASS    $$REL" | tee -a "$$SUMMARY"; PASS=$$((PASS+1)); \
+	  else \
+	    echo "FAIL    $$REL" | tee -a "$$SUMMARY"; FAIL=$$((FAIL+1)); \
+	  fi; \
+	done; \
+	echo "" | tee -a "$$SUMMARY"; \
+	echo "TOTAL=$$TOTAL PASS=$$PASS FAIL=$$FAIL" | tee -a "$$SUMMARY"; \
+	echo "Summary saved to: $$SUMMARY"; \
+	true
+
+gen-certify: gen certify
+
+CERT_TARBALL = $(CV32E40X_DV)/tests/act4/act4-elfs-$(CERT_CONFIG_NAME).tar.gz
+
+elfs-package:
+	@if [ -z "$$(find -L "$(certification_PROGRAM_PATH)" \( -iname '*.elf' -o -iname '*.elf32' \) 2>/dev/null)" ]; then \
+	    echo "Error: no ELFs at $(certification_PROGRAM_PATH). Run 'make gen CV_CORE_CONFIG=$(CV_CORE_CONFIG)' first."; \
+	    exit 1; \
+	fi
+	@mkdir -p $(CV32E40X_DV)/tests/act4
+	@tar --sort=name --owner=0 --group=0 --numeric-owner --mtime='UTC 2020-01-01' \
+	    --exclude='*.objdump' \
+	    -C $(certification_PROGRAM_PATH) \
+	    -czf $(CERT_TARBALL) .
+	@echo "Tests:   $(CERT_TARBALL)"
+
+certify-prebuilt:
+	@if [ ! -f "$(CERT_TARBALL)" ]; then \
+	    echo "Error: no prebuilt tarball at $(CERT_TARBALL)."; \
+	    echo "Run 'make elfs-package CV_CORE_CONFIG=$(CV_CORE_CONFIG)' or download one first."; \
+	    exit 2; \
+	fi
+	@mkdir -p $(CV32E40X_DV)/tests/act4/unpacked_$(CV_CORE_CONFIG)
+	@tar -xzf $(CERT_TARBALL) -C $(CV32E40X_DV)/tests/act4/unpacked_$(CV_CORE_CONFIG)
+	@$(MAKE) certify certification_PROGRAM_PATH=$(CV32E40X_DV)/tests/act4/unpacked_$(CV_CORE_CONFIG)

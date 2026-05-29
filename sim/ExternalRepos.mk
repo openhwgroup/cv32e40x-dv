@@ -15,7 +15,10 @@ export SHELL = /bin/bash
 
 CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40x
 CV_CORE_BRANCH ?= master
-CV_CORE_HASH   ?= b658fbe0b24da9b60d18d737c4ff4cf58b15dd8f
+# Pinned to the 0.10.0 release: the tb wrapper uses 0.10.0 signal names
+# (clic_irq_level_i/clic_irq_shv_i, mimpid_patch_i, wu_wfe_i, fencei_flush_ack_i,
+# debug_pc_valid_o). The gen-certify flow was validated against this commit.
+CV_CORE_HASH   ?= 18c88fd78a37f270c8301c552f5fd0f564d0ab20
 CV_CORE_TAG    ?= none
 
 #RISCVDV_REPO    ?= https://github.com/google/riscv-dv
@@ -52,3 +55,14 @@ SVLIB_HASH       ?= c25509a7e54a880fe8f58f3daa2f891d6ecf6428
 RISCOF_ARCH_TEST_SUITE_REPO    ?= https://github.com/riscv/riscv-arch-test.git
 RISCOF_ARCH_TEST_SUITE_BRANCH  ?= main
 RISCOF_ARCH_TEST_SUITE_TAG     ?= 3.8.9
+
+# CORE-V-VERIF (UVM verification library). Vendored under
+# vendor_lib/openhwgroup_core-v-verif; cloned on demand.
+CV_VERIF_REPO   ?= https://github.com/openhwgroup/core-v-verif
+CV_VERIF_BRANCH ?= master
+CV_VERIF_HASH   ?= head
+
+# ACT4 (RISC-V Architectural Certification Tests v4) for `make gen-certify`.
+ACT4_REPO   ?= https://github.com/riscv/riscv-arch-test
+ACT4_BRANCH ?= act4
+ACT4_HASH   ?= head

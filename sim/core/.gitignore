@@ -1,4 +1,6 @@
-cobj_dir
+cobj_dir*
+simulation_results
 memory_dump.bin
 testbench_verilator
+verilator_executable
 results
