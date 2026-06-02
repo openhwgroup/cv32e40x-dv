@@ -61,7 +61,8 @@ SIM_RESULTS       ?= $(MAKE_PATH)/simulation_results
 VERI_RUN_FLAGS    ?=
 VERI_WAVE_CMD     ?=
 # Per-test cycle bound so a non-terminating ELF can't hang the certify sweep.
-CERT_MAXCYCLES    ?= 200000
+# SsstrictSm trap sweeps need several million cycles (largest ran in <8M).
+CERT_MAXCYCLES    ?= 10000000
 
 # Map ISA config -> ACT4 CTP directory (config/cores/cve4/<name>): cv32e40x-rv32imc, cv32e40x-rv32imcab
 CV_CORE_CONFIG          ?= rv32imc
