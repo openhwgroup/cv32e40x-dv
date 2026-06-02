@@ -45,13 +45,44 @@ MAKE           = make
 MAKE_DIR       = $(PWD)
 MAKE_PATH     := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 COREV_PROJ     = cv32
-CORE_V_VERIF   = $(abspath $(MAKE_PATH)/../../..)
+CV32E40X_DV    = $(abspath $(MAKE_PATH)/../../)
+CORE_V_VERIF   = $(CV32E40X_DV)/vendor_lib/openhwgroup_core-v-verif
 DATE           = $(shell date +%F)
 WAVES          = 0
 
 CV_CORE       ?= CV32E40X
 CV_CORE_LC     = $(shell echo $(CV_CORE) | tr A-Z a-z)
 CV_CORE_UC     = $(shell echo $(CV_CORE) | tr a-z A-Z)
+
+# Paths used by the ACT4 certification flow (gen-certify target).
+ACT_MACROS         = $(CV32E40X_DV)/bsp/act4
+ACT4_PKG          ?= $(CV32E40X_DV)/vendor_lib/riscv-arch-test
+SIM_RESULTS       ?= $(MAKE_PATH)/simulation_results
+VERI_RUN_FLAGS    ?=
+VERI_WAVE_CMD     ?=
+# Per-test cycle bound so a non-terminating ELF can't hang the certify sweep.
+# SsstrictSm trap sweeps need several million cycles (largest ran in <8M).
+CERT_MAXCYCLES    ?= 10000000
+
+# Map ISA config -> ACT4 CTP directory (config/cores/cve4/<name>): cv32e40x-rv32imc, cv32e40x-rv32imcab
+CV_CORE_CONFIG          ?= rv32imc
+CERT_CONFIG_NAME        ?= cv32e40x-$(CV_CORE_CONFIG)
+CERT_EXCLUDE_EXTENSIONS ?= Sm
+
+# Per-config Verilator binary (mirrors cv32e40p-dv): each CV_CORE_CONFIG builds
+# its own executable, so configs are certified side-by-side without rebuilding.
+CERT_BIN_DIR             = $(SIM_RESULTS)/certification_$(CV_CORE_CONFIG)
+CERT_BIN                 = $(CERT_BIN_DIR)/verilator_executable
+
+# Config -> core extension enables. A_EXT/B_EXT are SystemVerilog enums, so they
+# are selected by compile defines consumed by cv32e40x_tb_wrapper localparams.
+ifeq ($(CV_CORE_CONFIG),rv32imcab)
+  CERT_EXT_DEFINES = +define+CV32E40X_RVA +define+CV32E40X_RVB
+else
+  CERT_EXT_DEFINES =
+endif
+
+certification_PROGRAM_PATH    = $(ACT4_PKG)/work/$(CERT_CONFIG_NAME)/elfs
 
 # Compile compile flags for all simulators
 SV_CMP_FLAGS =
@@ -66,7 +97,7 @@ SIM_BSP_RESULTS          = $(SIM_TEST_PROGRAM_RESULTS)/bsp
 
 # Test-Program directores.
 # Relative path is used for Verilator which cannot seem to handle loooong pathnames.
-TEST_PROGRAM_PATH    ?= $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs/custom
+TEST_PROGRAM_PATH    ?= $(CV32E40X_DV)/tests/programs/custom
 TEST_PROGRAM_RELPATH ?= ../../tests/programs/custom
 # Default test-program
 TEST                 ?= hello-world
@@ -80,18 +111,11 @@ TEST                 ?= hello-world
 #       TEST_TEST_DIR=/home/mike/GitHubRepos/MikeOpenHWGroup/core-v-verif/master/cv32e40p/tests/programs/custom/hello-world
 #       TEST_UVM_TEST=uvmt_$(CV_CORE_LC)_firmware_test_c
 ###############################################################################
-YAML2MAKE = $(CORE_V_VERIF)/bin/yaml2make
-TEST_FLAGS_MAKE := $(shell $(YAML2MAKE) --test=$(TEST) --yaml=test.yaml  $(YAML2MAKE_DEBUG) --run-index=$(u) --prefix=TEST --core=$(CV_CORE))
-ifeq ($(TEST_FLAGS_MAKE),)
-$(error ERROR Could not find test.yaml for test: $(TEST))
-endif
-include $(TEST_FLAGS_MAKE)
-
 # Common Makefiles:
 #  -Variables for RTL and other dependencies (e.g. RISCV-DV)
 include ../ExternalRepos.mk
 #  -Core Firmware and the RISCV GCC Toolchain (SDK)
-include $(CORE_V_VERIF)/mk/Common.mk
+include $(CV32E40X_DV)/mk/Common.mk
 
 # vsim configuration
 VVERSION  = "10.7b"
@@ -150,10 +174,11 @@ XRUN_DIR          = xcelium.d
 # verilator configuration
 VERILATOR           = verilator
 VERI_FLAGS         +=
-VERI_COMPILE_FLAGS += -Wno-COMBDLY -Wno-BLKANDNBLK +define+COREV_ASSERT_OFF $(SV_CMP_FLAGS) # hope this doesn't hurt us in the long run
+VERI_COMPILE_FLAGS += -Wno-BLKANDNBLK -Wno-COMBDLY -Wno-SYMRSVDWORD +define+COREV_ASSERT_OFF $(SV_CMP_FLAGS) \
+                      --x-assign unique --x-initial unique  # let reset clauses determine state
 VERI_TRACE         ?=
 VERI_OBJ_DIR       ?= cobj_dir
-VERI_LOG_DIR       ?= cobj_dir/logs
+VERI_LOG_DIR       ?= $(CERT_BIN_DIR)/logs
 VERI_CFLAGS        += -O2
 
 #riviera configuration
@@ -174,7 +199,7 @@ ASIM_DEBUG_FLAGS  = -dbg
 ASIM_GUI_FLAGS    = -gui
 
 # TB source files for the CV32E core
-TBSRC_HOME  := $(CORE_V_VERIF)/$(CV_CORE_LC)/tb
+TBSRC_HOME  := $(CV32E40X_DV)/tb
 TBSRC_TOP   := $(TBSRC_HOME)/core/tb_top.sv
 TBSRC_CORE  := $(TBSRC_HOME)/core
 TBSRC_PKG   := $(TBSRC_CORE)/tb_riscv/include/perturbation_defines.sv
@@ -192,7 +217,8 @@ TBSRC       := $(TBSRC_CORE)/tb_top.sv \
 RTLSRC_VLOG_TB_TOP	:= $(basename $(notdir $(TBSRC_TOP)))
 RTLSRC_VOPT_TB_TOP	:= $(addsuffix _vopt, $(RTLSRC_VLOG_TB_TOP))
 
-TBSRC_VERI  := $(TBSRC_CORE)/tb_top_verilator.sv \
+TBSRC_VERI  := $(TBSRC_PKG) \
+               $(TBSRC_CORE)/tb_top.sv \
                $(TBSRC_CORE)/cv32e40x_tb_wrapper.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_rvalid_stall.sv \
                $(TBSRC_CORE)/tb_riscv/riscv_gnt_stall.sv \
@@ -202,7 +228,7 @@ SIM_LIBS    := $(CORE_V_VERIF)/lib/sim_libs
 
 # RTL source files for the CV32E core
 # DESIGN_RTL_DIR is used by CV_CORE_MANIFEST file
-CV_CORE_PKG           := $(CORE_V_VERIF)/core-v-cores/$(CV_CORE_LC)
+CV_CORE_PKG           := $(CV32E40X_DV)/core-v-cores/$(CV_CORE_LC)
 CV_CORE_RTLSRC_INCDIR := $(CV_CORE_PKG)/rtl/include
 CV_CORE_RTLSRC_PKG    := $(CV_CORE_PKG)/rtl/fpnew/src/fpnew_pkg.sv \
 				$(addprefix $(CV_CORE_RTLSRC_INCDIR)/,\
@@ -464,44 +490,39 @@ xrun-clean-all: xrun-clean
 ###############################################################################
 # Verilator
 
-# We first test if the user wants to to vcd dumping. This hacky part is required
-# because we need to conditionally compile the testbench (-DVCD_TRACE) and pass
-# the --trace flags to the verilator call
-#ifeq ($(findstring +vcd,$(VERI_FLAGS)),+vcd)
-
 ifneq (${WAVES}, 0)
-VERI_TRACE="--trace"
 VERI_CFLAGS+="-DVCD_TRACE"
 endif
 
-verilate: testbench_verilator
+verilate: $(CERT_BIN)
 
 sanity-veri-run:
 	make veri-test TEST=hello-world
 
-testbench_verilator: CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
+$(CERT_BIN): CV_CORE_pkg $(TBSRC_VERI) $(TBSRC_PKG)
 	@echo "$(BANNER)"
-	@echo "* Compiling CORE TB and CV32E40X with Verilator"
+	@echo "* Compiling CORE TB and CV32E40X with Verilator ($(CV_CORE_CONFIG))"
 	@echo "$(BANNER)"
-	$(VERILATOR) --cc --sv --exe \
-		$(VERI_TRACE) \
-		--Wno-lint --Wno-UNOPTFLAT \
-		--Wno-MODDUP --top-module \
-		tb_top_verilator $(TBSRC_VERI) \
+	$(VERILATOR) --cc --sv --exe --build --main --timing \
+		--trace \
+		--Wno-lint --Wno-UNOPTFLAT --Wno-MODDUP \
+		--top-module tb_top \
+		$(TBSRC_VERI) \
 		-f $(CV_CORE_MANIFEST) \
 		$(CV_CORE_PKG)/bhv/$(CV_CORE_LC)_core_log.sv \
-		$(TBSRC_CORE)/tb_top_verilator.cpp --Mdir $(VERI_OBJ_DIR) \
-		-CFLAGS "-std=gnu++11 $(VERI_CFLAGS)" \
-		$(VERI_COMPILE_FLAGS)
-	$(MAKE) -C $(VERI_OBJ_DIR) -f Vtb_top_verilator.mk
-	cp $(VERI_OBJ_DIR)/Vtb_top_verilator testbench_verilator
+		--Mdir $(VERI_OBJ_DIR) \
+		-CFLAGS "-std=gnu++14 $(VERI_CFLAGS)" \
+		$(VERI_COMPILE_FLAGS) \
+		$(CERT_EXT_DEFINES)
+	mkdir -p $(CERT_BIN_DIR)
+	cp $(VERI_OBJ_DIR)/Vtb_top $(CERT_BIN)
 
 veri-test: verilate $(TEST_PROGRAM_PATH)/$(TEST)/$(TEST).hex
 	@echo "$(BANNER)"
 	@echo "* Running with Verilator: logfile in $(VERI_LOG_DIR)/$(TEST).log"
 	@echo "$(BANNER)"
 	mkdir -p $(VERI_LOG_DIR)
-	./testbench_verilator $(VERI_FLAGS) \
+	$(CERT_BIN) $(VERI_FLAGS) \
 		"+firmware=$(TEST_PROGRAM_PATH)/$(TEST)/$(TEST).hex" \
 		| tee $(VERI_LOG_DIR)/$(TEST).log
 
@@ -509,10 +530,107 @@ veri-test: verilate $(TEST_PROGRAM_PATH)/$(TEST)/$(TEST).hex
 veri-clean: verilate-clean
 
 verilate-clean: tc-clean
-	if [ -d $(VERI_LOG_DIR) ]; then rm -r $(VERI_LOG_DIR); fi
+	if [ -d $(SIM_RESULTS) ]; then rm -r $(SIM_RESULTS); fi
 	if [ -d $(VERI_OBJ_DIR) ]; then rm -r $(VERI_OBJ_DIR); fi
 	rm -rf testbench_verilator
 	if [ -e memory_dump.bin ]; then rm memory_dump.bin; fi
+
+###############################################################################
+# ACT4 / RVCP certification flow (`make gen-certify`)
+#
+# Two-stage: `gen` produces ELFs+hex via the ACT4 generator, `certify` runs
+# every ELF through the Verilator build and tallies PASS/FAIL.
+#
+# Variables of interest:
+#   CV_CORE_CONFIG          ISA config; selects CERT_CONFIG_NAME
+#   CERT_CONFIG_NAME        ACT4 CTP directory under config/cores/cve4/...
+#   CERT_EXCLUDE_EXTENSIONS Comma-separated extensions to skip during gen
+#   ACT4_PKG                Local checkout of riscv-arch-test/act4
+#   ACT_MACROS              cv32e40x BSP macros for ACT4 (link.ld, rvmodel_macros.h, ...)
+
+.PHONY: gen-certify gen certify clone_act4
+
+gen-certify: gen certify
+
+# Clone the ACT4 suite into $(ACT4_PKG) (ACT4_{REPO,BRANCH,HASH} from ExternalRepos.mk).
+ifeq ($(ACT4_BRANCH), master)
+  TMP_ACT4 = git clone $(ACT4_REPO) $(ACT4_PKG)
+else
+  TMP_ACT4 = git clone -b $(ACT4_BRANCH) --single-branch $(ACT4_REPO) $(ACT4_PKG)
+endif
+ifeq ($(ACT4_HASH), head)
+  CLONE_ACT4_CMD = $(TMP_ACT4)
+else
+  CLONE_ACT4_CMD = $(TMP_ACT4); cd $(ACT4_PKG); git checkout $(ACT4_HASH)
+endif
+
+clone_act4: $(ACT4_PKG)
+
+$(ACT4_PKG):
+	$(CLONE_ACT4_CMD)
+
+gen: $(ACT4_PKG)
+	@command -v uv >/dev/null 2>&1 || { echo "Error: 'uv' not found. Install from https://docs.astral.sh/uv/getting-started/installation/"; exit 1; }
+	@echo "* Cleaning ACT4 directory..."
+	@$(MAKE) -C $(ACT4_PKG) clean
+	@echo "* Generating ACT4 tests for $(CERT_CONFIG_NAME)..."
+	@$(MAKE) -C $(ACT4_PKG) \
+		EXCLUDE_EXTENSIONS=$(CERT_EXCLUDE_EXTENSIONS) \
+		CONFIG_FILES=config/cores/cve4/$(CERT_CONFIG_NAME)/test_config.yaml
+	@echo "* Tests generated in: $(certification_PROGRAM_PATH)"
+	@echo "* Pre-generating .hex files alongside ELFs..."
+	@find "$(certification_PROGRAM_PATH)" \
+		\( -iname '*.elf' -o -iname '*.elf32' \) | \
+		while IFS= read -r elf; do \
+		  hex="$${elf%.*}.hex"; \
+		  if [ ! -f "$$hex" ] || [ "$$elf" -nt "$$hex" ]; then \
+		    $(CV_SW_PREFIX)objcopy -O verilog "$$elf" "$$hex"; \
+		  fi; \
+		done
+
+certify: verilate
+	@echo "$(BANNER)"
+	@echo "* Running ALL ACT4 ELFs through Verilator ($(CERT_CONFIG_NAME))"
+	@echo "$(BANNER)"
+	@set -e; \
+	mkdir -p "$(VERI_LOG_DIR)"; \
+	SUMMARY="$(VERI_LOG_DIR)/certification_summary.txt"; \
+	echo "RESULT  TEST" > "$$SUMMARY"; \
+	echo "------  ----" >> "$$SUMMARY"; \
+	ROOT="$(certification_PROGRAM_PATH)"; \
+	ELFS="$$(find -L "$$ROOT" \( -type f -o -type l \) -a \( -iname '*.elf' -o -iname '*.elf32' \) 2>/dev/null | sort)"; \
+	if [ -z "$$ELFS" ]; then \
+	  echo "No .elf files found under $$ROOT"; \
+	  echo "Hint: run \`make gen\` first."; \
+	  exit 2; \
+	fi; \
+	PASS=0; FAIL=0; TOTAL=0; \
+	for ELF in $$ELFS; do \
+	  TOTAL=$$((TOTAL+1)); \
+	  REL="$${ELF#$$ROOT/}"; \
+	  LOG="$(VERI_LOG_DIR)/$${REL%.*}.log"; \
+	  mkdir -p "$$(dirname "$$LOG")"; \
+	  set +e; \
+	  "$(CERT_BIN)" \
+	    $(VERI_RUN_FLAGS) \
+	    $(VERI_WAVE_CMD) \
+	    "+maxcycles=$(CERT_MAXCYCLES)" \
+	    "+elf_file=$$ELF" \
+	    > "$$LOG" 2>&1; \
+	  RC=$$?; \
+	  set -e; \
+	  if [ $$RC -eq 0 ] && grep -q "ALL TESTS PASSED" "$$LOG"; then \
+	    echo "PASS    $$REL" | tee -a "$$SUMMARY"; \
+	    PASS=$$((PASS+1)); \
+	  else \
+	    echo "FAIL    $$REL" | tee -a "$$SUMMARY"; \
+	    FAIL=$$((FAIL+1)); \
+	  fi; \
+	done; \
+	echo "" | tee -a "$$SUMMARY"; \
+	echo "TOTAL=$$TOTAL PASS=$$PASS FAIL=$$FAIL" | tee -a "$$SUMMARY"; \
+	echo "Summary saved to: $$SUMMARY"; \
+	true
 
 
 ###############################################################################
@@ -656,13 +774,14 @@ riviera-clean:
 # CV_CORE RTL dependencies
 
 clone_$(CV_CORE_LC)_rtl:
-	@echo "$(BANNER)"
-	@echo "* Cloning CV32E40X RTL model"
-	@echo "$(BANNER)"
-	$(CLONE_CV_CORE_CMD)
-
-
-
+	@if [ -d "$(CV_CORE_PKG)" ]; then \
+	  echo "* CV32E40X RTL already present at $(CV_CORE_PKG); skipping clone"; \
+	else \
+	  echo "$(BANNER)"; \
+	  echo "* Cloning CV32E40X RTL model"; \
+	  echo "$(BANNER)"; \
+	  $(CLONE_CV_CORE_CMD); \
+	fi
 
 ###############################################################################
 # general targets
@@ -670,13 +789,13 @@ clone_$(CV_CORE_LC)_rtl:
 
 # clean up toolchain generated files
 clean-test-programs:
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.o       -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.hex     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.elf     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.map     -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.readelf -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name *.objdump -exec rm {} \;
-	find $(CORE_V_VERIF)/$(CV_CORE_LC)/tests/programs -name corev_*.S -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.o       -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.hex     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.elf     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.map     -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.readelf -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name *.objdump -exec rm {} \;
+	find $(CV32E40X_DV)/tests/programs -name corev_*.S -exec rm {} \;
 
 .PHONY: clean clean_all distclean
 clean: clean-test-programs questa-clean verilate-clean vcs-clean firmware-clean dsim-clean xrun-clean vcs-clean clean_bsp riviera-clean

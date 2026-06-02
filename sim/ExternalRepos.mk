@@ -15,8 +15,14 @@ export SHELL = /bin/bash
 
 CV_CORE_REPO   ?= https://github.com/openhwgroup/cv32e40x
 CV_CORE_BRANCH ?= master
-CV_CORE_HASH   ?= b658fbe0b24da9b60d18d737c4ff4cf58b15dd8f
+# gen-certify TB validated against CV32E40X 0.10.0; pin to that hash for repro.
+CV_CORE_HASH   ?= head
 CV_CORE_TAG    ?= none
+
+CV_VERIF_REPO   ?= https://github.com/openhwgroup/core-v-verif
+CV_VERIF_BRANCH ?= master
+# Pinned to the hash the gen-certify TB was validated against.
+CV_VERIF_HASH   ?= 298a5f6d066fe15cceb761cdf434b8487561faae
 
 #RISCVDV_REPO    ?= https://github.com/google/riscv-dv
 RISCVDV_REPO    ?= https://github.com/silabs-hfegran/riscv-dv
@@ -52,3 +58,7 @@ SVLIB_HASH       ?= c25509a7e54a880fe8f58f3daa2f891d6ecf6428
 RISCOF_ARCH_TEST_SUITE_REPO    ?= https://github.com/riscv/riscv-arch-test.git
 RISCOF_ARCH_TEST_SUITE_BRANCH  ?= main
 RISCOF_ARCH_TEST_SUITE_TAG     ?= 3.8.9
+
+ACT4_REPO        ?= https://github.com/riscv/riscv-arch-test
+ACT4_BRANCH      ?= act4
+ACT4_HASH        ?= head

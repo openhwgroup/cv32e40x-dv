@@ -40,8 +40,12 @@ module riscv_rvalid_stall(
     // Read data valid, signals that read data from RAM is valid on this cycle
     input [31:0]        rdata_i,
 
+    // OBI exclusive-okay, travels with the response (used by SC.W)
+    input logic         exokay_i,
+
     // Response bus, connect directly to OBI response port
     output logic [31:0] rdata_o,
+    output logic        exokay_o,
     output logic        rvalid_o,
 
     // Stall knobs
@@ -79,6 +83,7 @@ logic [FIFO_PTR_WL-1:0] rptr;
 logic [FIFO_PTR_WL-2:0] wptr_rdata;
 
 reg [FIFO_WL-1:0] fifo[FIFO_DEPTH];
+reg               fifo_exokay[FIFO_DEPTH];
 reg rvalid_i_q;
 
 wire [FIFO_DELAY_WL-1:0] current_delay;
@@ -88,7 +93,6 @@ integer i;
 // -----------------------------------------------------------------------------------------------
 // Tasks and functions
 // -----------------------------------------------------------------------------------------------
-`ifndef VERILATOR
 function logic [FIFO_DELAY_WL-1:0] get_random_delay();
     if (!en_stall_i)
         get_random_delay = 0;
@@ -99,7 +103,6 @@ function logic [FIFO_DELAY_WL-1:0] get_random_delay();
     else
         get_random_delay = 0;
 endfunction : get_random_delay
-`endif
 
 // -----------------------------------------------------------------------------------------------
 // Begin module code
@@ -125,18 +128,18 @@ always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
         for (i = 0; i < FIFO_DEPTH; i++) begin
             fifo[i] = {FIFO_WL{1'b0}};
+            fifo_exokay[i] = 1'b0;
         end
     end
     else begin
         if (fifo_push) begin
             fifo[wptr[FIFO_PTR_WL-2:0]] = {
                 we_i,
-`ifdef VERILATOR
-                4'h0,
-`else
                 get_random_delay(),
-`endif
                 32'h0};
+            // exokay is known at the request phase (unlike rdata, which has the
+            // RAM read latency), so capture it directly into the entry.
+            fifo_exokay[wptr[FIFO_PTR_WL-2:0]] = exokay_i;
 
             wptr_rdata <= wptr[FIFO_PTR_WL-2:0];
 
@@ -158,8 +161,10 @@ assign current_delay = fifo[rptr[FIFO_PTR_WL-2:0]][FIFO_DELAY_LSB +: FIFO_DELAY_
 always @(*) begin
     rdata_o = '0;
     rvalid_o = '0;
+    exokay_o = '0;
     if (!fifo_empty && current_delay == 0) begin
         rvalid_o = 1'b1;
+        exokay_o = fifo_exokay[rptr[FIFO_PTR_WL-2:0]];
         if (rptr[FIFO_PTR_WL-2:0] == wptr_rdata && rvalid_i_q)
             if (fifo[rptr[FIFO_PTR_WL-2:0]][FIFO_WE_LSB])
                 rdata_o = 32'h0;
